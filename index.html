@@ -81,7 +81,10 @@
 
         const imageUrls = [];
         for (let file of imageFiles) {
-          const fileName = `${Date.now()}_${file.name}`;
+          // បង្កើតឈ្មោះ File ថ្មីជាលេខស្វ័យប្រវត្តិដើម្បីចៀសវាង Error ឈ្មោះអក្សរខ្មែរ
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+          
           const { data, error } = await supabaseClient.storage
             .from('product-images')
             .upload(fileName, file);
