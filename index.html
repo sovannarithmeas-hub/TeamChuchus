@@ -51,9 +51,10 @@
   </div>
 
   <script>
-    // === ជំនួស Supabase Keys របស់អ្នកនៅត្រង់នេះ ===
+    // === Supabase Keys របស់អ្នក ===
     const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co/rest/v1/'; 
-    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
+    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww
+    // សូមប្រាកដថាប្រើ Publishable Key ឬ anon key ពេញលេញរបស់អ្នក
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -62,6 +63,7 @@
       const statusDiv = document.getElementById('status');
       const submitBtn = document.getElementById('submitBtn');
       
+      statusDiv.className = 'mt-4 text-center font-medium text-blue-600';
       statusDiv.innerText = '⏳ កំពុង Upload រូបភាព និងរក្សាទុក...';
       submitBtn.disabled = true;
 
@@ -76,24 +78,25 @@
         if (imageFiles.length === 0) {
           alert('សូមជ្រើសរើសរូបថតយ៉ាងហោចណាស់ ១ សន្លឹក!');
           submitBtn.disabled = false;
+          statusDiv.innerText = '';
           return;
         }
 
         const imageUrls = [];
         for (let file of imageFiles) {
-          // បង្កើតឈ្មោះ File ថ្មីជាលេខស្វ័យប្រវត្តិដើម្បីចៀសវាង Error ឈ្មោះអក្សរខ្មែរ
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-          
+          // បង្កើតឈ្មោះ File ជានិមិត្តសញ្ញាអង់គ្លេសសុទ្ធ ដើម្បីចៀសវាង Error Invalid path
+          const ext = file.name.split('.').pop();
+          const cleanFileName = `img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+
           const { data, error } = await supabaseClient.storage
             .from('product-images')
-            .upload(fileName, file);
+            .upload(cleanFileName, file);
 
           if (error) throw error;
 
           const { data: publicUrlData } = supabaseClient.storage
             .from('product-images')
-            .getPublicUrl(fileName);
+            .getPublicUrl(cleanFileName);
 
           imageUrls.push(publicUrlData.publicUrl);
         }
