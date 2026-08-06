@@ -24,7 +24,7 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700">Size (ជ្រើសរើសបានច្រើន)</label>
-        <div class="flex gap-4 mt-1">
+        <div class="flex gap-4 mt-1 flex-wrap">
           <label><input type="checkbox" name="sizes" value="S"> S</label>
           <label><input type="checkbox" name="sizes" value="M"> M</label>
           <label><input type="checkbox" name="sizes" value="L"> L</label>
@@ -51,10 +51,10 @@
   </div>
 
   <script>
-    // === Supabase Keys របស់អ្នក ===
-    const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co/rest/v1/'; 
-    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww
-    // សូមប្រាកដថាប្រើ Publishable Key ឬ anon key ពេញលេញរបស់អ្នក
+    // === Supabase Credentials ===
+    const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co/rest/v1/';
+    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww';
+    // ដាក់ Anon/Publishable key ពេញលេញរបស់អ្នកនៅទីនេះ
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -83,20 +83,27 @@
         }
 
         const imageUrls = [];
-        for (let file of imageFiles) {
-          // បង្កើតឈ្មោះ File ជានិមិត្តសញ្ញាអង់គ្លេសសុទ្ធ ដើម្បីចៀសវាង Error Invalid path
-          const ext = file.name.split('.').pop();
-          const cleanFileName = `img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+        for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          // បង្កើតឈ្មោះ File ជាអក្សរ និងលេខអង់គ្លេសសុទ្ធ (ឧ. img_17000000_0.jpg)
+          const fileExt = file.name.split('.').pop().toLowerCase() || 'jpg';
+          const cleanPath = `img_${Date.now()}_${i}.${fileExt}`;
 
-          const { data, error } = await supabaseClient.storage
+          const { data, error: uploadError } = await supabaseClient.storage
             .from('product-images')
-            .upload(cleanFileName, file);
+            .upload(cleanPath, file, {
+              cacheControl: '3600',
+              upsert: true
+            });
 
-          if (error) throw error;
+          if (uploadError) {
+            console.error("Upload error:", uploadError);
+            throw uploadError;
+          }
 
           const { data: publicUrlData } = supabaseClient.storage
             .from('product-images')
-            .getPublicUrl(cleanFileName);
+            .getPublicUrl(cleanPath);
 
           imageUrls.push(publicUrlData.publicUrl);
         }
@@ -120,7 +127,7 @@
       } catch (err) {
         console.error(err);
         statusDiv.className = 'mt-4 text-center font-medium text-red-600';
-        statusDiv.innerText = '❌ មានបញ្ហា៖ ' + err.message;
+        statusDiv.innerText = '❌ មានបញ្ហា៖ ' + (err.message || 'មិនអាចបញ្ចូលទិន្នន័យបាន');
       } finally {
         submitBtn.disabled = false;
       }
