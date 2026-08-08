@@ -52,11 +52,60 @@
 
   <script>
     const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; // ⚠️ ឬ Anon Key របស់អ្នក
     
-    // ⚠️ ប្តូរ Key នេះទៅជា Anon Key វែង (eyJhbGci...) ឬ Publishable Key របស់អ្នក
-    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
+    // ⚙️ ការកំណត់ TELEGRAM BOT (សូមបំពេញ Token និង Channel Username របស់អ្នកនៅទីនេះ)
+    const TELEGRAM_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN_HERE'; // ឧ. 123456789:ABCdefGhIJK...
+    const TELEGRAM_CHAT_ID = '@your_channel_username';       // ឧ. @TobChuchusChannel ឬ ID -100xxxxxxxxx
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Function ផ្ញើសារទៅ Telegram (ការពារមិនឱ្យដួល Mini App បើផ្ញើមិនចេញ)
+    async function sendToTelegramChannel(title, price, sizes, description, imageUrls) {
+      if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN_HERE') {
+        console.log(' Telegram Bot Token មិនទាន់បានកំណត់');
+        return;
+      }
+
+      try {
+        const captionText = `👖 <b>${title}</b>\n\n` +
+                            `💵 តម្លៃ៖ <b>$${price.toFixed(2)}</b>\n` +
+                            `Free Size/Size៖ <b>${sizes.join(', ')}</b>\n` +
+                            `📝 ពណ៌នា៖ ${description || 'គ្មាន'}\n\n` +
+                            `📩 កម្ម៉ង់ទិញភ្លាមៗតាម Telegram Admin!`;
+
+        if (imageUrls.length === 1) {
+          await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: TELEGRAM_CHAT_ID,
+              photo: imageUrls[0],
+              caption: captionText,
+              parse_mode: 'HTML'
+            })
+          });
+        } else if (imageUrls.length > 1) {
+          const media = imageUrls.map((url, index) => ({
+            type: 'photo',
+            media: url,
+            caption: index === 0 ? captionText : '',
+            parse_mode: 'HTML'
+          }));
+
+          await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: TELEGRAM_CHAT_ID,
+              media: media
+            })
+          });
+        }
+      } catch (tgErr) {
+        console.error(' Telegram Post Error (មិនប៉ះពាល់ដល់ស្តុក):', tgErr);
+      }
+    }
 
     document.getElementById('stockForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -84,12 +133,12 @@
 
         const imageUrls = [];
 
+        // 1. រក្សាកូដ Upload រូបភាព Blob ដែលដើរជោគជ័យមុននេះដដែល
         for (let i = 0; i < imageFiles.length; i++) {
           const rawFile = imageFiles[i];
           const ext = rawFile.name.split('.').pop().toLowerCase() || 'jpg';
           const fileName = `${Date.now()}_${i}.${ext}`;
 
-          // 🔥 បំប្លែង File ទៅជា Blob ដើម្បីដោះស្រាយបញ្ហា URL Encoding
           const blobData = new Blob([await rawFile.arrayBuffer()], { type: rawFile.type || 'image/jpeg' });
 
           const { data, error: uploadError } = await supabaseClient.storage
@@ -100,10 +149,7 @@
               upsert: true
             });
 
-          if (uploadError) {
-            console.error('Storage Upload Error:', uploadError);
-            throw new Error('Upload រូបភាពមិនបាន៖ ' + uploadError.message);
-          }
+          if (uploadError) throw new Error('Upload រូបភាពមិនបាន៖ ' + uploadError.message);
 
           const { data: publicUrlData } = supabaseClient.storage
             .from('product-images')
@@ -114,6 +160,7 @@
 
         statusDiv.innerText = '⏳ កំពុងរក្សាទុកទិន្នន័យស្តុក...';
 
+        // 2. រក្សាកូដ Insert ចូល Database ដដែល
         const { error: dbError } = await supabaseClient
           .from('products')
           .insert([{
@@ -126,6 +173,10 @@
           }]);
 
         if (dbError) throw dbError;
+
+        // 3. ផ្ញើ Auto-Post ទៅ Telegram (បើខុសក៏មិនធ្វើឱ្យដួលបញ្ចូលស្តុកដែរ)
+        statusDiv.innerText = '⏳ កំពុង Post ទៅ Telegram Channel...';
+        await sendToTelegramChannel(title, price, sizes, description, imageUrls);
 
         statusDiv.className = 'mt-4 text-center font-medium text-green-600';
         statusDiv.innerText = '✅ បញ្ចូលស្តុកជោគជ័យ!';
