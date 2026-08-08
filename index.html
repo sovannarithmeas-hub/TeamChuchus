@@ -52,19 +52,11 @@
 
   <script>
     const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE'; // ⚠️ ឬ Anon Key របស់អ្នក
+    
+    // ⚠️ ប្តូរ Key នេះទៅជា Anon Key វែង (eyJhbGci...) ឬ Publishable Key របស់អ្នក
+    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // Helper Function សម្រាប់បំប្លែង File ទៅជា ArrayBuffer (ការពារ Error Path លើ Browser Mini App)
-    function fileToArrayBuffer(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsArrayBuffer(file);
-      });
-    }
 
     document.getElementById('stockForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -93,23 +85,24 @@
         const imageUrls = [];
 
         for (let i = 0; i < imageFiles.length; i++) {
-          const file = imageFiles[i];
-          const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
-          const fileName = `img_${Date.now()}_${i}.${ext}`;
+          const rawFile = imageFiles[i];
+          const ext = rawFile.name.split('.').pop().toLowerCase() || 'jpg';
+          const fileName = `${Date.now()}_${i}.${ext}`;
 
-          // បំប្លែងទៅជា ArrayBuffer មុន Upload 
-          const fileBuffer = await fileToArrayBuffer(file);
+          // 🔥 បំប្លែង File ទៅជា Blob ដើម្បីដោះស្រាយបញ្ហា URL Encoding
+          const blobData = new Blob([await rawFile.arrayBuffer()], { type: rawFile.type || 'image/jpeg' });
 
           const { data, error: uploadError } = await supabaseClient.storage
             .from('product-images')
-            .upload(fileName, fileBuffer, {
-              contentType: file.type || 'image/jpeg',
+            .upload(fileName, blobData, {
+              contentType: rawFile.type || 'image/jpeg',
+              cacheControl: '3600',
               upsert: true
             });
 
           if (uploadError) {
             console.error('Storage Upload Error:', uploadError);
-            throw new Error(uploadError.message);
+            throw new Error('Upload រូបភាពមិនបាន៖ ' + uploadError.message);
           }
 
           const { data: publicUrlData } = supabaseClient.storage
