@@ -51,92 +51,8 @@
   </div>
 
   <script>
-    // === Supabase Config ===
-    const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co/rest/v1/';
-    const SUPABASE_KEY = 'b_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; // សូមបិទភ្ជាប់ (Paste) Publishable/Anon key ពេញលេញរបស់អ្នកនៅទីនេះ
-    
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    document.getElementById('stockForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const statusDiv = document.getElementById('status');
-      const submitBtn = document.getElementById('submitBtn');
-      
-      statusDiv.className = 'mt-4 text-center font-medium text-blue-600';
-      statusDiv.innerText = '⏳ កំពុងដំណើរការបញ្ចូលស្តុក...';
-      submitBtn.disabled = true;
-
-      try {
-        const title = document.getElementById('title').value;
-        const price = parseFloat(document.getElementById('price').value);
-        const description = document.getElementById('description').value;
-        const sizeNodes = document.querySelectorAll('input[name="sizes"]:checked');
-        const sizes = Array.from(sizeNodes).map(node => node.value);
-        const imageFiles = document.getElementById('images').files;
-
-        if (imageFiles.length === 0) {
-          alert('សូមជ្រើសរើសរូបថតយ៉ាងហោចណាស់ ១ សន្លឹក!');
-          submitBtn.disabled = false;
-          statusDiv.innerText = '';
-          return;
-        }
-
-        <!DOCTYPE html>
-<html lang="km">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>តូបជជុស Online - Admin Stock</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="bg-gray-100 p-4 font-sans">
-  <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
-    <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">👖 បញ្ចូលស្តុកខោអាវថ្មី</h2>
-    
-    <form id="stockForm" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700">ឈ្មោះខោ/ម៉ូដ</label>
-        <input type="text" id="title" required class="mt-1 w-full p-2 border rounded-md" placeholder="ឧ. ខោជើងកណ្តឹង ក្បាលខ្ពស់">
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700">តម្លៃ ($)</label>
-        <input type="number" step="0.01" id="price" required class="mt-1 w-full p-2 border rounded-md" placeholder="12.50">
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Size (ជ្រើសរើសបានច្រើន)</label>
-        <div class="flex gap-4 mt-1 flex-wrap">
-          <label><input type="checkbox" name="sizes" value="S"> S</label>
-          <label><input type="checkbox" name="sizes" value="M"> M</label>
-          <label><input type="checkbox" name="sizes" value="L"> L</label>
-          <label><input type="checkbox" name="sizes" value="XL"> XL</label>
-          <label><input type="checkbox" name="sizes" value="Free Size"> Free Size</label>
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700">ការពិពណ៌នាបន្ថែម (Caption)</label>
-        <textarea id="description" rows="3" class="mt-1 w-full p-2 border rounded-md" placeholder="សាច់ស្អាត ទន់ លាតសន្ធឹងបានល្អ..."></textarea>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700">ថតរូប/ជ្រើសរើសរូប (៤ - ៥ សន្លឹក)</label>
-        <input type="file" id="images" multiple accept="image/*" class="mt-1 w-full p-2 border rounded-md">
-      </div>
-
-      <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700">
-        📤 រក្សាទុក & បញ្ចូលស្តុក
-      </button>
-    </form>
-    <div id="status" class="mt-4 text-center font-medium"></div>
-  </div>
-
-  <script>
-    // === Supabase Config ===
     const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.storage.supabase.co/storage/v1/s3';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6amJkd3hnZmtnb3NuZnhha2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMzE3OTQsImV4cCI6MjA1NjgwNzc5NH0.G7tT_xxxxxx'; // សូមបិទភ្ជាប់ (Paste) Publishable/Anon key ពេញលេញរបស់អ្នកនៅទីនេះ
+    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; // ⚠️ សូម Paste Anon Key ពេញលេញរបស់អ្នកនៅទីនេះ
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -146,7 +62,7 @@
       const submitBtn = document.getElementById('submitBtn');
       
       statusDiv.className = 'mt-4 text-center font-medium text-blue-600';
-      statusDiv.innerText = '⏳ កំពុងដំណើរការបញ្ចូលស្តុក...';
+      statusDiv.innerText = '⏳ កំពុង Upload រូបភាព...';
       submitBtn.disabled = true;
 
       try {
@@ -164,19 +80,14 @@
           return;
         }
 
-                const imageUrls = [];
+        const imageUrls = [];
 
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
-          
-          // ១. Extract extension
           const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
-          
-          // ២. បន្ថែម Folder Path នាំមុខ (ឧទាហរណ៍: items/img_1710000_0.jpg) 
-          // *** ចំណុចនេះហើយដែលដោះស្រាយ Error Invalid path ***
+          // កំណត់ Path មាន Folder នាំមុខ: items/
           const filePath = `items/img_${Date.now()}_${i}.${ext}`;
 
-          // ៣. Upload ទៅ Supabase
           const { data, error: uploadError } = await supabaseClient.storage
             .from('product-images')
             .upload(filePath, file, {
@@ -186,11 +97,10 @@
             });
 
           if (uploadError) {
-            console.error('Upload Error Details:', uploadError);
+            console.error('Upload Error:', uploadError);
             throw new Error('Upload រូបភាពមិនបាន៖ ' + uploadError.message);
           }
 
-          // ៤. ទាញ Public URL
           const { data: publicUrlData } = supabaseClient.storage
             .from('product-images')
             .getPublicUrl(filePath);
@@ -198,15 +108,8 @@
           imageUrls.push(publicUrlData.publicUrl);
         }
 
-          // ទាញយក Public URL
-          const { data: publicUrlData } = supabaseClient.storage
-            .from('product-images')
-            .getPublicUrl(filePath);
+        statusDiv.innerText = '⏳ កំពុងរក្សាទុកទិន្នន័យ...';
 
-          imageUrls.push(publicUrlData.publicUrl);
-        }
-
-        // រក្សាទុកទិន្នន័យចូល Database
         const { error: dbError } = await supabaseClient
           .from('products')
           .insert([{
@@ -218,51 +121,7 @@
             stock_quantity: 1
           }]);
 
-        if (dbError) {
-          console.error('Database Insert Error:', dbError);
-          throw new Error('រក្សាទុកទិន្នន័យមិនបាន៖ ' + dbError.message);
-        }
-
-        statusDiv.className = 'mt-4 text-center font-medium text-green-600';
-        statusDiv.innerText = '✅ បញ្ចូលស្តុកជោគជ័យ!';
-        document.getElementById('stockForm').reset();
-      } catch (err) {
-        console.error(err);
-        statusDiv.className = 'mt-4 text-center font-medium text-red-600';
-        statusDiv.innerText = '❌ ' + err.message;
-      } finally {
-        submitBtn.disabled = false;
-      }
-    });
-  </script>
-</body>
-</html>
-
-
-          // ទាញយក Public URL
-          const { data: publicUrlData } = supabaseClient.storage
-            .from('product-images')
-            .getPublicUrl(filePath);
-
-          imageUrls.push(publicUrlData.publicUrl);
-        }
-
-        // រក្សាទុកទិន្នន័យចូល Database
-        const { error: dbError } = await supabaseClient
-          .from('products')
-          .insert([{
-            title: title,
-            price: price,
-            sizes: sizes,
-            description: description,
-            images: imageUrls,
-            stock_quantity: 1
-          }]);
-
-        if (dbError) {
-          console.error('Database Insert Error:', dbError);
-          throw new Error('រក្សាទុកទិន្នន័យមិនបាន៖ ' + dbError.message);
-        }
+        if (dbError) throw dbError;
 
         statusDiv.className = 'mt-4 text-center font-medium text-green-600';
         statusDiv.innerText = '✅ បញ្ចូលស្តុកជោគជ័យ!';
