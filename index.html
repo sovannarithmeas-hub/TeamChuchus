@@ -83,7 +83,6 @@
       if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN_HERE') return;
 
       try {
-        // 🔥 ប្រព័ន្ធបង្កើត Content អូតូពីទិន្នន័យដែលអ្នកវាយរហ័ស
         let detailText = '';
         if (waist) detailText += `• ចង្កេះ (Waist)៖ <b>${waist}</b>\n`;
         if (length) detailText += `• ប្រវែង (Length)៖ <b>${length}</b>\n`;
@@ -129,7 +128,7 @@
       const submitBtn = document.getElementById('submitBtn');
       
       statusDiv.className = 'mt-4 text-center font-medium text-blue-600';
-      statusDiv.innerText = '⏳ កំពុងពិនិត្យលេខកូដ...';
+      statusDiv.innerText = '⏳ កំពុងដំណើរការ...';
       submitBtn.disabled = true;
 
       try {
@@ -144,18 +143,6 @@
         const sizeNodes = document.querySelectorAll('input[name="sizes"]:checked');
         const sizes = Array.from(sizeNodes).map(node => node.value);
         const imageFiles = document.getElementById('images').files;
-
-        // 🛡️ 1. ពិនិត្យមើលថាកូដនេះមានក្នុង Supabase រួចហើយឬនៅ? (ការពារកូដជាន់គ្នា)
-        const { data: existingProduct, error: checkError } = await supabaseClient
-          .from('products')
-          .select('code')
-          .ilike('code', code);
-
-        if (checkError) console.error('Check code error:', checkError);
-
-        if (existingProduct && existingProduct.length > 0) {
-          throw new Error(`លេខកូដ #${code.toUpperCase()} នេះមានក្នុងស្តុករួចហើយ! សូមប្រើកូដផ្សេង។`);
-        }
 
         if (imageFiles.length === 0) {
           alert('សូមជ្រើសរើសរូបថតយ៉ាងហោចណាស់ ១ សន្លឹក!');
@@ -174,7 +161,7 @@
 
           const blobData = new Blob([await rawFile.arrayBuffer()], { type: rawFile.type || 'image/jpeg' });
 
-          const { uploadData, error: uploadError } = await supabaseClient.storage
+          const { error: uploadError } = await supabaseClient.storage
             .from('product-images')
             .upload(fileName, blobData, {
               contentType: rawFile.type || 'image/jpeg',
@@ -193,15 +180,16 @@
 
         statusDiv.innerText = '⏳ កំពុងរក្សាទុកទិន្នន័យស្តុក...';
 
-        // 2. Insert ចូល Database
+        // 💡 រក្សាទុកកូដបញ្ចូលក្នុង description តែម្តង ដើម្បីការពារ Error Column
+        const fullDescription = `[Code: ${code.toUpperCase()}] W:${waist} L:${length} Leg:${leg} ${note}`;
+
         const { error: dbError } = await supabaseClient
           .from('products')
           .insert([{
-            code: code.toUpperCase(),
             title: title,
             price: price,
             sizes: sizes,
-            description: `W:${waist} L:${length} Leg:${leg} ${note}`,
+            description: fullDescription,
             images: imageUrls,
             stock_quantity: 1
           }]);
