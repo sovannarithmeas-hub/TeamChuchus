@@ -51,8 +51,11 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE'; // ⚠️ សូម Paste Anon Key ពេញលេញរបស់អ្នកនៅទីនេះ
+    const SUPABASE_PROJECT_ID = 'gzclvhcvsfcslilxaiyg';
+    const SUPABASE_URL = `https://${SUPABASE_PROJECT_ID}.supabase.co`;
+    
+    // ⚠️ សូម Paste Anon Key វែង (eyJhbGci...) ឬ Publishable Key របស់អ្នកនៅទីនេះ
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE'; 
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -85,31 +88,35 @@
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
           const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
-          // កំណត់ Path មាន Folder នាំមុខ: items/
-          const filePath = `items/img_${Date.now()}_${i}.${ext}`;
+          const fileName = `img_${Date.now()}_${i}.${ext}`;
 
-          const { data, error: uploadError } = await supabaseClient.storage
-            .from('product-images')
-            .upload(filePath, file, {
-              cacheControl: '3600',
-              contentType: file.type || 'image/jpeg',
-              upsert: true
-            });
+          // 🔥 ប្រើ Direct Direct Storage REST API (ដើរលើ Telegram 100%)
+          const uploadUrl = `${SUPABASE_URL}/storage/v1/object/product-images/${fileName}`;
+          
+          const uploadResponse = await fetch(uploadUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+              'apikey': SUPABASE_KEY,
+              'Content-Type': file.type || 'image/jpeg',
+              'x-upsert': 'true'
+            },
+            body: file
+          });
 
-          if (uploadError) {
-            console.error('Upload Error:', uploadError);
-            throw new Error('Upload រូបភាពមិនបាន៖ ' + uploadError.message);
+          if (!uploadResponse.ok) {
+            const errJson = await uploadResponse.json().catch(() => ({}));
+            throw new Error(errJson.message || errJson.error || `Upload មិនបាន (Code ${uploadResponse.status})`);
           }
 
-          const { data: publicUrlData } = supabaseClient.storage
-            .from('product-images')
-            .getPublicUrl(filePath);
-
-          imageUrls.push(publicUrlData.publicUrl);
+          // ទាញ Public URL មកវិញ
+          const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/product-images/${fileName}`;
+          imageUrls.push(publicUrl);
         }
 
-        statusDiv.innerText = '⏳ កំពុងរក្សាទុកទិន្នន័យ...';
+        statusDiv.innerText = '⏳ កំពុងរក្សាទុកទិន្នន័យស្តុក...';
 
+        // បញ្ចូលទិន្នន័យទៅ Table Products
         const { error: dbError } = await supabaseClient
           .from('products')
           .insert([{
