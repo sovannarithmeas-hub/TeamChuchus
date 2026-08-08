@@ -72,20 +72,58 @@
       }
 
       try {
-        // 1. ចាប់យកតម្លៃ Code ពី Form
-    const code = document.getElementById('code').value;
+       async function sendToTelegramChannel(code, title, price, sizes, description, imageUrls) {
+      if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN_HERE') return;
 
-    // 2. រៀបចំ Caption ថ្មីដែលមានលេខកូដ
-    const captionText = `✨ <b>[ ផលិតផលថ្មីចូលស្តុក ]</b> ✨\n\n` +
-                        `🏷️ លេខកូដ៖ <b>#${code}</b>\n` +
-                        `👖 ម៉ូដ៖ <b>${title}</b>\n` +
-                        `💵 តម្លៃ៖ <b>$${price.toFixed(2)}</b>\n` +
-                        `📏 Size / ទំហំ៖ <b>${sizes.join(', ')}</b>\n\n` +
-                        `📝 <b>ព័ត៌មានលម្អិត៖</b>\n` +
-                        `${description || 'សាច់ស្អាត ទន់ លាតសន្ធឹងបានល្អ ធានាជូន ១០០%'}\n\n` +
-                        `──────────────────\n` +
-                        `🛍️ <b>កម្ម៉ង់ទិញភ្លាមៗឆាតមក៖</b> @YourAdminUsername\n` +
-                        `🚚 ដឹកជញ្ជូនរហ័ស ២៥ ខេត្ត/ក្រុង`;
+      try {
+        // 🔥 Caption រៀបចំថ្មី វែង លម្អិត ទាក់ទាញបែប Selling Content
+        const captionText = `✨ <b>[ ផលិតផលថ្មីចូលស្តុក - Premium Quality ]</b> ✨\n\n` +
+                            `🏷️ លេខកូដទំនិញ៖ <b>#${code}</b>\n` +
+                            `👖 ប្រភេទម៉ូដ៖ <b>${title}</b>\n` +
+                            `💵 តម្លៃពិសេស៖ <b>$${price.toFixed(2)}</b> <i>(ធានាតម្លៃ និងគុណភាព)</i>\n` +
+                            `📏 ទំហំ / Size៖ <b>${sizes.join(', ')}</b>\n\n` +
+                            `📝 <b>ព័ត៌មានលម្អិត៖</b>\n` +
+                            `• ${description || 'សាច់ក្រណាត់ស្អាត មិនបែកព្រុយ ពាក់ត្រូវរាងស្អាត'}\n` +
+                            `• ទំនិញជ្រើសរើសរួច គុណភាពខ្ពស់ ធានាជូន ១០០%\n\n` +
+                            `──────────────────\n` +
+                            `🛍️ <b>កម្ម៉ង់ទិញភ្លាមៗឆាតមក Admin៖</b>\n` +
+                            `👉 @YourAdminUsername\n\n` +
+                            `🚚 <b>សេវាកម្មដឹកជញ្ជូន៖</b>\n` +
+                            `• ដឹកជញ្ជូនរហ័ស ២៥ ខេត្ត/ក្រុង\n` +
+                            `• រៀបចំឥវ៉ាន់ផ្ញើជូនរហ័សទាន់ចិត្ត!`;
+
+        if (imageUrls.length === 1) {
+          await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: TELEGRAM_CHAT_ID,
+              photo: imageUrls[0],
+              caption: captionText,
+              parse_mode: 'HTML'
+            })
+          });
+        } else if (imageUrls.length > 1) {
+          const media = imageUrls.map((url, index) => ({
+            type: 'photo',
+            media: url,
+            caption: index === 0 ? captionText : '',
+            parse_mode: 'HTML'
+          }));
+
+          await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: TELEGRAM_CHAT_ID,
+              media: media
+            })
+          });
+        }
+      } catch (tgErr) {
+        console.error('Telegram Post Error:', tgErr);
+      }
+    }
 
         if (imageUrls.length === 1) {
           await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
