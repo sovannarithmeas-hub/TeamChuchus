@@ -9,26 +9,27 @@
 </head>
 <body class="bg-gray-100 p-4 font-sans">
   <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
-    <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">👖 បញ្ចូលស្តុកខោអាវថ្មី</h2>
+    <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">👖 បញ្ចូលស្តុកខោអាវ (Fast Mode)</h2>
     
-    <form id="stockForm" class="space-y-4">
+    <form id="stockForm" class="space-y-3">
       <div>
-  <label class="block text-sm font-medium text-gray-700">លេខកូដខោ (Code)</label>
-  <input type="text" id="code" required class="mt-1 w-full p-2 border rounded-md" placeholder="ឧ. J-001, A01">
+        <label class="block text-sm font-medium text-gray-700">លេខកូដខោ (Code)</label>
+        <input type="text" id="code" required class="mt-1 w-full p-2 border rounded-md uppercase font-bold" placeholder="ឧ. J-001">
       </div>
+
       <div>
-        <label class="block text-sm font-medium text-gray-700">ឈ្មោះខោ/ម៉ូដ</label>
-        <input type="text" id="title" required class="mt-1 w-full p-2 border rounded-md" placeholder="ឧ. ខោជើងកណ្តឹង ក្បាលខ្ពស់">
+        <label class="block text-sm font-medium text-gray-700">ប្រភេទ/ម៉ូដខោ</label>
+        <input type="text" id="title" required class="mt-1 w-full p-2 border rounded-md" placeholder="ឧ. ខោជើងវែង/ជើងកណ្តឹង">
       </div>
 
       <div>
         <label class="block text-sm font-medium text-gray-700">តម្លៃ ($)</label>
-        <input type="number" step="0.01" id="price" required class="mt-1 w-full p-2 border rounded-md" placeholder="12.50">
+        <input type="number" step="0.01" id="price" required class="mt-1 w-full p-2 border rounded-md" placeholder="15.50">
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Size (ជ្រើសរើសបានច្រើន)</label>
-        <div class="flex gap-4 mt-1 flex-wrap">
+        <label class="block text-sm font-medium text-gray-700">Size (ទំហំ)</label>
+        <div class="flex gap-3 mt-1 flex-wrap">
           <label><input type="checkbox" name="sizes" value="S"> S</label>
           <label><input type="checkbox" name="sizes" value="M"> M</label>
           <label><input type="checkbox" name="sizes" value="L"> L</label>
@@ -37,13 +38,28 @@
         </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">ការពិពណ៌នាបន្ថែម (Caption)</label>
-        <textarea id="description" rows="3" class="mt-1 w-full p-2 border rounded-md" placeholder="សាច់ស្អាត ទន់ លាតសន្ធឹងបានល្អ..."></textarea>
+      <div class="grid grid-cols-3 gap-2 bg-blue-50 p-3 rounded-lg border border-blue-200">
+        <div>
+          <label class="block text-xs font-semibold text-blue-800">ចង្កេះ (W)</label>
+          <input type="text" id="waist" class="mt-1 w-full p-1.5 border rounded-md bg-white" placeholder="ឧ. 32">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-blue-800">ប្រវែង (L)</label>
+          <input type="text" id="length" class="mt-1 w-full p-1.5 border rounded-md bg-white" placeholder="ឧ. 106">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-blue-800">បំពង់ជើង</label>
+          <input type="text" id="leg" class="mt-1 w-full p-1.5 border rounded-md bg-white" placeholder="ឧ. 17">
+        </div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">ថតរូប/ជ្រើសរើសរូប (៤ - ៥ សន្លឹក)</label>
+        <label class="block text-sm font-medium text-gray-700">ចំណាំបន្ថែម (ជម្រើស)</label>
+        <input type="text" id="description" class="mt-1 w-full p-2 border rounded-md" placeholder="ឧ. សាច់ទន់ ស្អាត 99%">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">រូបថត (ជ្រើសរើសបានច្រើន)</label>
         <input type="file" id="images" multiple accept="image/*" class="mt-1 w-full p-2 border rounded-md">
       </div>
 
@@ -56,105 +72,54 @@
 
   <script>
     const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; // ⚠️ ឬ Anon Key របស់អ្នក
+    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
     
-    // ⚙️ ការកំណត់ TELEGRAM BOT (សូមបំពេញ Token និង Channel Username របស់អ្នកនៅទីនេះ)
-    const TELEGRAM_BOT_TOKEN = '8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA'; // ឧ. 123456789:ABCdefGhIJK...
-    const TELEGRAM_CHAT_ID = '@tobchuchusonline';       // ឧ. @TobChuchusChannel ឬ ID -100xxxxxxxxx
+    const TELEGRAM_BOT_TOKEN = '8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA'; 
+    const TELEGRAM_CHAT_ID = '@tobchuchusonline';       
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Function ផ្ញើសារទៅ Telegram (ការពារមិនឱ្យដួល Mini App បើផ្ញើមិនចេញ)
-    async function sendToTelegramChannel(title, price, sizes, description, imageUrls) {
-      if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN_HERE') {
-        console.log(' Telegram Bot Token មិនទាន់បានកំណត់');
-        return;
-      }
-
-      try {
-       async function sendToTelegramChannel(code, title, price, sizes, description, imageUrls) {
+    async function sendToTelegramChannel(code, title, price, sizes, waist, length, leg, note, imageUrls) {
       if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN_HERE') return;
 
       try {
-        // 🔥 Caption រៀបចំថ្មី វែង លម្អិត ទាក់ទាញបែប Selling Content
-        const captionText = `✨ <b>[ ផលិតផលថ្មីចូលស្តុក - Premium Quality ]</b> ✨\n\n` +
-                            `🏷️ លេខកូដទំនិញ៖ <b>#${code}</b>\n` +
+        // 🔥 ប្រព័ន្ធបង្កើត Content អូតូពីទិន្នន័យដែលអ្នកវាយរហ័ស
+        let detailText = '';
+        if (waist) detailText += `• ចង្កេះ (Waist)៖ <b>${waist}</b>\n`;
+        if (length) detailText += `• ប្រវែង (Length)៖ <b>${length}</b>\n`;
+        if (leg) detailText += `• ជុងជើង៖ <b>${leg}</b>\n`;
+        if (note) detailText += `• ចំណាំ៖ ${note}\n`;
+        if (!detailText) detailText = '• សាច់ស្អាត គុណភាពល្អ ជ្រើសរើសរួច ១០០%\n';
+
+        const captionText = `✨ <b>[ ផលិតផលថ្មីចូលស្តុក ]</b> ✨\n\n` +
+                            `🏷️ លេខកូដទំនិញ៖ <b>#${code.toUpperCase()}</b>\n` +
                             `👖 ប្រភេទម៉ូដ៖ <b>${title}</b>\n` +
-                            `💵 តម្លៃពិសេស៖ <b>$${price.toFixed(2)}</b> <i>(ធានាតម្លៃ និងគុណភាព)</i>\n` +
-                            `📏 ទំហំ / Size៖ <b>${sizes.join(', ')}</b>\n\n` +
-                            `📝 <b>ព័ត៌មានលម្អិត៖</b>\n` +
-                            `• ${description || 'សាច់ក្រណាត់ស្អាត មិនបែកព្រុយ ពាក់ត្រូវរាងស្អាត'}\n` +
-                            `• ទំនិញជ្រើសរើសរួច គុណភាពខ្ពស់ ធានាជូន ១០០%\n\n` +
+                            `💵 តម្លៃ៖ <b>$${price.toFixed(2)}</b>\n` +
+                            `📏 Size / ទំហំ៖ <b>${sizes.join(', ') || 'Free Size'}</b>\n\n` +
+                            `📝 <b>ព័ត៌មានទំហំ & លម្អិត៖</b>\n` +
+                            `${detailText}\n` +
                             `──────────────────\n` +
-                            `🛍️ <b>កម្ម៉ង់ទិញភ្លាមៗឆាតមក Admin៖</b>\n` +
-                            `👉 @YourAdminUsername\n\n` +
-                            `🚚 <b>សេវាកម្មដឹកជញ្ជូន៖</b>\n` +
-                            `• ដឹកជញ្ជូនរហ័ស ២៥ ខេត្ត/ក្រុង\n` +
-                            `• រៀបចំឥវ៉ាន់ផ្ញើជូនរហ័សទាន់ចិត្ត!`;
+                            `🛍️ <b>កម្ម៉ង់ទិញឆាតមក Admin៖</b> @YourAdminUsername\n` +
+                            `🚚 <b>សេវាកម្មដឹកជញ្ជូន៖</b> ២៥ ខេត្ត/ក្រុង`;
 
         if (imageUrls.length === 1) {
           await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: TELEGRAM_CHAT_ID,
-              photo: imageUrls[0],
-              caption: captionText,
-              parse_mode: 'HTML'
-            })
+            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, photo: imageUrls[0], caption: captionText, parse_mode: 'HTML' })
           });
         } else if (imageUrls.length > 1) {
           const media = imageUrls.map((url, index) => ({
-            type: 'photo',
-            media: url,
-            caption: index === 0 ? captionText : '',
-            parse_mode: 'HTML'
+            type: 'photo', media: url, caption: index === 0 ? captionText : '', parse_mode: 'HTML'
           }));
-
           await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: TELEGRAM_CHAT_ID,
-              media: media
-            })
+            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, media: media })
           });
         }
       } catch (tgErr) {
         console.error('Telegram Post Error:', tgErr);
-      }
-    }
-
-        if (imageUrls.length === 1) {
-          await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: TELEGRAM_CHAT_ID,
-              photo: imageUrls[0],
-              caption: captionText,
-              parse_mode: 'HTML'
-            })
-          });
-        } else if (imageUrls.length > 1) {
-          const media = imageUrls.map((url, index) => ({
-            type: 'photo',
-            media: url,
-            caption: index === 0 ? captionText : '',
-            parse_mode: 'HTML'
-          }));
-
-          await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: TELEGRAM_CHAT_ID,
-              media: media
-            })
-          });
-        }
-      } catch (tgErr) {
-        console.error(' Telegram Post Error (មិនប៉ះពាល់ដល់ស្តុក):', tgErr);
       }
     }
 
@@ -164,16 +129,33 @@
       const submitBtn = document.getElementById('submitBtn');
       
       statusDiv.className = 'mt-4 text-center font-medium text-blue-600';
-      statusDiv.innerText = '⏳ កំពុង Upload រូបភាព...';
+      statusDiv.innerText = '⏳ កំពុងពិនិត្យលេខកូដ...';
       submitBtn.disabled = true;
 
       try {
+        const code = document.getElementById('code').value.trim();
         const title = document.getElementById('title').value;
         const price = parseFloat(document.getElementById('price').value);
-        const description = document.getElementById('description').value;
+        const waist = document.getElementById('waist').value.trim();
+        const length = document.getElementById('length').value.trim();
+        const leg = document.getElementById('leg').value.trim();
+        const note = document.getElementById('description').value.trim();
+        
         const sizeNodes = document.querySelectorAll('input[name="sizes"]:checked');
         const sizes = Array.from(sizeNodes).map(node => node.value);
         const imageFiles = document.getElementById('images').files;
+
+        // 🛡️ 1. ពិនិត្យមើលថាកូដនេះមានក្នុង Supabase រួចហើយឬនៅ? (ការពារកូដជាន់គ្នា)
+        const { data: existingProduct, error: checkError } = await supabaseClient
+          .from('products')
+          .select('code')
+          .ilike('code', code);
+
+        if (checkError) console.error('Check code error:', checkError);
+
+        if (existingProduct && existingProduct.length > 0) {
+          throw new Error(`លេខកូដ #${code.toUpperCase()} នេះមានក្នុងស្តុករួចហើយ! សូមប្រើកូដផ្សេង។`);
+        }
 
         if (imageFiles.length === 0) {
           alert('សូមជ្រើសរើសរូបថតយ៉ាងហោចណាស់ ១ សន្លឹក!');
@@ -182,9 +164,9 @@
           return;
         }
 
+        statusDiv.innerText = '⏳ កំពុង Upload រូបភាព...';
         const imageUrls = [];
 
-        // 1. រក្សាកូដ Upload រូបភាព Blob ដែលដើរជោគជ័យមុននេះដដែល
         for (let i = 0; i < imageFiles.length; i++) {
           const rawFile = imageFiles[i];
           const ext = rawFile.name.split('.').pop().toLowerCase() || 'jpg';
@@ -192,7 +174,7 @@
 
           const blobData = new Blob([await rawFile.arrayBuffer()], { type: rawFile.type || 'image/jpeg' });
 
-          const { data, error: uploadError } = await supabaseClient.storage
+          const { uploadData, error: uploadError } = await supabaseClient.storage
             .from('product-images')
             .upload(fileName, blobData, {
               contentType: rawFile.type || 'image/jpeg',
@@ -211,26 +193,26 @@
 
         statusDiv.innerText = '⏳ កំពុងរក្សាទុកទិន្នន័យស្តុក...';
 
-        // 2. រក្សាកូដ Insert ចូល Database ដដែល
+        // 2. Insert ចូល Database
         const { error: dbError } = await supabaseClient
           .from('products')
           .insert([{
+            code: code.toUpperCase(),
             title: title,
             price: price,
             sizes: sizes,
-            description: description,
+            description: `W:${waist} L:${length} Leg:${leg} ${note}`,
             images: imageUrls,
             stock_quantity: 1
           }]);
 
         if (dbError) throw dbError;
 
-        // 3. ផ្ញើ Auto-Post ទៅ Telegram (បើខុសក៏មិនធ្វើឱ្យដួលបញ្ចូលស្តុកដែរ)
-        statusDiv.innerText = '⏳ កំពុង Post ទៅ Telegram Channel...';
-        await sendToTelegramChannel(title, price, sizes, description, imageUrls);
+        statusDiv.innerText = '⏳ កំពុង Post ទៅ Telegram...';
+        await sendToTelegramChannel(code, title, price, sizes, waist, length, leg, note, imageUrls);
 
         statusDiv.className = 'mt-4 text-center font-medium text-green-600';
-        statusDiv.innerText = '✅ បញ្ចូលស្តុកជោគជ័យ!';
+        statusDiv.innerText = '✅ បញ្ចូលស្តុក និង Post រួចរាល់!';
         document.getElementById('stockForm').reset();
       } catch (err) {
         console.error(err);
