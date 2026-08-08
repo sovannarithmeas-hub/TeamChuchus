@@ -164,27 +164,39 @@
           return;
         }
 
-        const imageUrls = [];
+                const imageUrls = [];
 
-        // Upload រូបភាពនីមួយៗដោយប្រើប្រព័ន្ធ Safe Path Naming
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
-          const timestamp = new Date().getTime();
-          const randomNum = Math.floor(Math.random() * 1000);
-          // បង្កើតឈ្មោះ Simple Path: item_12345678_0.jpg
-          const filePath = `item_${timestamp}_${i}_${randomNum}.jpg`;
+          
+          // ១. Extract extension
+          const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+          
+          // ២. បន្ថែម Folder Path នាំមុខ (ឧទាហរណ៍: items/img_1710000_0.jpg) 
+          // *** ចំណុចនេះហើយដែលដោះស្រាយ Error Invalid path ***
+          const filePath = `items/img_${Date.now()}_${i}.${ext}`;
 
+          // ៣. Upload ទៅ Supabase
           const { data, error: uploadError } = await supabaseClient.storage
             .from('product-images')
             .upload(filePath, file, {
+              cacheControl: '3600',
               contentType: file.type || 'image/jpeg',
               upsert: true
             });
 
           if (uploadError) {
-            console.error('Storage Upload Error:', uploadError);
+            console.error('Upload Error Details:', uploadError);
             throw new Error('Upload រូបភាពមិនបាន៖ ' + uploadError.message);
           }
+
+          // ៤. ទាញ Public URL
+          const { data: publicUrlData } = supabaseClient.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+
+          imageUrls.push(publicUrlData.publicUrl);
+        }
 
           // ទាញយក Public URL
           const { data: publicUrlData } = supabaseClient.storage
