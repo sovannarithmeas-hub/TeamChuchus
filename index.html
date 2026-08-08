@@ -128,11 +128,11 @@
       const submitBtn = document.getElementById('submitBtn');
       
       statusDiv.className = 'mt-4 text-center font-medium text-blue-600';
-      statusDiv.innerText = '⏳ កំពុងដំណើរការ...';
+      statusDiv.innerText = '🔍 កំពុងពិនិត្យមើលលេខកូដក្នុងស្តុក...';
       submitBtn.disabled = true;
 
       try {
-        const code = document.getElementById('code').value.trim();
+        const code = document.getElementById('code').value.trim().toUpperCase();
         const title = document.getElementById('title').value;
         const price = parseFloat(document.getElementById('price').value);
         const waist = document.getElementById('waist').value.trim();
@@ -143,6 +143,22 @@
         const sizeNodes = document.querySelectorAll('input[name="sizes"]:checked');
         const sizes = Array.from(sizeNodes).map(node => node.value);
         const imageFiles = document.getElementById('images').files;
+
+        // 🛡️ 1. ពិនិត្យមើលក្នុង Supabase ថាតើមានកូដនេះក្នុង Description ដែរឬទេ (Check Duplicate)
+        const searchTag = `[Code: ${code}]`;
+        const { data: existingProducts, error: checkError } = await supabaseClient
+          .from('products')
+          .select('id, description')
+          .ilike('description', `%${searchTag}%`);
+
+        if (checkError) {
+          console.error('Check Duplicate Error:', checkError);
+        }
+
+        // បើមានកូដស្ទួន ឱ្យ Stop ភ្លាមៗតែម្តង!
+        if (existingProducts && existingProducts.length > 0) {
+          throw new Error(`លេខកូដ #${code} នេះមានក្នុងស្តុករួចហើយ! សូមប្រើលេខកូដផ្សេង។`);
+        }
 
         if (imageFiles.length === 0) {
           alert('សូមជ្រើសរើសរូបថតយ៉ាងហោចណាស់ ១ សន្លឹក!');
@@ -180,8 +196,7 @@
 
         statusDiv.innerText = '⏳ កំពុងរក្សាទុកទិន្នន័យស្តុក...';
 
-        // 💡 រក្សាទុកកូដបញ្ចូលក្នុង description តែម្តង ដើម្បីការពារ Error Column
-        const fullDescription = `[Code: ${code.toUpperCase()}] W:${waist} L:${length} Leg:${leg} ${note}`;
+        const fullDescription = `[Code: ${code}] W:${waist} L:${length} Leg:${leg} ${note}`;
 
         const { error: dbError } = await supabaseClient
           .from('products')
