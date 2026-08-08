@@ -13,6 +13,10 @@
     
     <form id="stockForm" class="space-y-4">
       <div>
+  <label class="block text-sm font-medium text-gray-700">លេខកូដខោ (Code)</label>
+  <input type="text" id="code" required class="mt-1 w-full p-2 border rounded-md" placeholder="ឧ. J-001, A01">
+      </div>
+      <div>
         <label class="block text-sm font-medium text-gray-700">ឈ្មោះខោ/ម៉ូដ</label>
         <input type="text" id="title" required class="mt-1 w-full p-2 border rounded-md" placeholder="ឧ. ខោជើងកណ្តឹង ក្បាលខ្ពស់">
       </div>
@@ -68,11 +72,20 @@
       }
 
       try {
-        const captionText = `👖 <b>${title}</b>\n\n` +
-                            `💵 តម្លៃ៖ <b>$${price.toFixed(2)}</b>\n` +
-                            `Free Size/Size៖ <b>${sizes.join(', ')}</b>\n` +
-                            `📝 ពណ៌នា៖ ${description || 'គ្មាន'}\n\n` +
-                            `📩 កម្ម៉ង់ទិញភ្លាមៗតាម Telegram Admin!`;
+        // 1. ចាប់យកតម្លៃ Code ពី Form
+    const code = document.getElementById('code').value;
+
+    // 2. រៀបចំ Caption ថ្មីដែលមានលេខកូដ
+    const captionText = `✨ <b>[ ផលិតផលថ្មីចូលស្តុក ]</b> ✨\n\n` +
+                        `🏷️ លេខកូដ៖ <b>#${code}</b>\n` +
+                        `👖 ម៉ូដ៖ <b>${title}</b>\n` +
+                        `💵 តម្លៃ៖ <b>$${price.toFixed(2)}</b>\n` +
+                        `📏 Size / ទំហំ៖ <b>${sizes.join(', ')}</b>\n\n` +
+                        `📝 <b>ព័ត៌មានលម្អិត៖</b>\n` +
+                        `${description || 'សាច់ស្អាត ទន់ លាតសន្ធឹងបានល្អ ធានាជូន ១០០%'}\n\n` +
+                        `──────────────────\n` +
+                        `🛍️ <b>កម្ម៉ង់ទិញភ្លាមៗឆាតមក៖</b> @YourAdminUsername\n` +
+                        `🚚 ដឹកជញ្ជូនរហ័ស ២៥ ខេត្ត/ក្រុង`;
 
         if (imageUrls.length === 1) {
           await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
