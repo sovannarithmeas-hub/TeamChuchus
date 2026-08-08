@@ -51,10 +51,9 @@
   </div>
 
   <script>
-    // === Supabase Credentials ===
-    const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co/rest/v1/';
-    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww';
-    // ដាក់ Anon/Publishable key ពេញលេញរបស់អ្នកនៅទីនេះ
+    // === Supabase Config ===
+    const SUPABASE_URL = 'https://xzjbdwxgfkgosnfxakbh.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6amJkd3hnZmtnb3NuZnhha2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMzE3OTQsImV4cCI6MjA1NjgwNzc5NH0.G7tT_xxxxxx'; // សូមបិទភ្ជាប់ (Paste) Publishable/Anon key ពេញលេញរបស់អ្នកនៅទីនេះ
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -64,7 +63,7 @@
       const submitBtn = document.getElementById('submitBtn');
       
       statusDiv.className = 'mt-4 text-center font-medium text-blue-600';
-      statusDiv.innerText = '⏳ កំពុង Upload រូបភាព និងរក្សាទុក...';
+      statusDiv.innerText = '⏳ កំពុងដំណើរការបញ្ចូលស្តុក...';
       submitBtn.disabled = true;
 
       try {
@@ -83,31 +82,36 @@
         }
 
         const imageUrls = [];
+
+        // Upload រូបភាពនីមួយៗដោយប្រើប្រព័ន្ធ Safe Path Naming
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
-          // បង្កើតឈ្មោះ File ជាអក្សរ និងលេខអង់គ្លេសសុទ្ធ (ឧ. img_17000000_0.jpg)
-          const fileExt = file.name.split('.').pop().toLowerCase() || 'jpg';
-          const cleanPath = `img_${Date.now()}_${i}.${fileExt}`;
+          const timestamp = new Date().getTime();
+          const randomNum = Math.floor(Math.random() * 1000);
+          // បង្កើតឈ្មោះ Simple Path: item_12345678_0.jpg
+          const filePath = `item_${timestamp}_${i}_${randomNum}.jpg`;
 
           const { data, error: uploadError } = await supabaseClient.storage
             .from('product-images')
-            .upload(cleanPath, file, {
-              cacheControl: '3600',
+            .upload(filePath, file, {
+              contentType: file.type || 'image/jpeg',
               upsert: true
             });
 
           if (uploadError) {
-            console.error("Upload error:", uploadError);
-            throw uploadError;
+            console.error('Storage Upload Error:', uploadError);
+            throw new Error('Upload រូបភាពមិនបាន៖ ' + uploadError.message);
           }
 
+          // ទាញយក Public URL
           const { data: publicUrlData } = supabaseClient.storage
             .from('product-images')
-            .getPublicUrl(cleanPath);
+            .getPublicUrl(filePath);
 
           imageUrls.push(publicUrlData.publicUrl);
         }
 
+        // រក្សាទុកទិន្នន័យចូល Database
         const { error: dbError } = await supabaseClient
           .from('products')
           .insert([{
@@ -119,7 +123,10 @@
             stock_quantity: 1
           }]);
 
-        if (dbError) throw dbError;
+        if (dbError) {
+          console.error('Database Insert Error:', dbError);
+          throw new Error('រក្សាទុកទិន្នន័យមិនបាន៖ ' + dbError.message);
+        }
 
         statusDiv.className = 'mt-4 text-center font-medium text-green-600';
         statusDiv.innerText = '✅ បញ្ចូលស្តុកជោគជ័យ!';
@@ -127,7 +134,7 @@
       } catch (err) {
         console.error(err);
         statusDiv.className = 'mt-4 text-center font-medium text-red-600';
-        statusDiv.innerText = '❌ មានបញ្ហា៖ ' + (err.message || 'មិនអាចបញ្ចូលទិន្នន័យបាន');
+        statusDiv.innerText = '❌ ' + err.message;
       } finally {
         submitBtn.disabled = false;
       }
