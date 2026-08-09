@@ -89,17 +89,22 @@
               <p class="text-xs text-gray-500 truncate">${p.description || ''}</p>
               <div class="text-xs font-bold text-blue-600 mt-1">$${parseFloat(p.price).toFixed(2)}</div>
             </div>
-            <div class="flex flex-col gap-1">
+            
+            <div class="flex flex-col gap-1.5 flex-shrink-0">
               ${isSold ? 
                 `<span class="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs font-bold text-center">❌ លក់ដាច់</span>` : 
-                `<button onclick="markAsSold(${p.id}, '${p.description || ''}')" class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow transition">🛒 លក់ដាច់</button>`
+                `<button onclick="markAsSold(${p.id}, '${p.description || ''}')" class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1 rounded-lg text-xs font-bold shadow transition">🛒 លក់ដាច់</button>`
               }
+              <button onclick="deleteProduct(${p.id})" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1">
+                🗑️ លុប
+              </button>
             </div>
           </div>
         `;
       }).join('');
     }
 
+    // មុខងារ Mark ជា SOLD OUT
     async function markAsSold(id, currentDesc) {
       if(!confirm('តើអ្នកប្រាកដថាបានលក់ខោនេះដាច់ហើយមែនទេ?')) return;
       try {
@@ -114,6 +119,23 @@
         loadStock();
       } catch(err) {
         alert('❌ បរាជ័យ៖ ' + err.message);
+      }
+    }
+
+    // មុខងារ លុបទំនិញ
+    async function deleteProduct(id) {
+      if(!confirm('តើអ្នកប្រាកដជាចង់លុបទំនិញនេះចេញពី Database ដែរឬទេ?')) return;
+      try {
+        const { error } = await supabaseClient
+          .from('products')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        alert('✅ បានលុបទំនិញជោគជ័យ!');
+        loadStock();
+      } catch(err) {
+        alert('❌ មិនអាចលុបបានទេ៖ ' + err.message);
       }
     }
 
