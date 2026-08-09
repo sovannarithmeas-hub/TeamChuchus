@@ -9,15 +9,21 @@
 </head>
 <body class="bg-gray-100 p-4 font-sans">
   <div class="max-w-xl mx-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-xl font-bold text-gray-800">📦 បញ្ជីស្តុកទំនិញទាំងអស់</h1>
-      <a href="index.html" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-700">
-        ➕ បញ្ចូលស្តុកថ្មី
+    
+    <div class="flex justify-between items-center mb-4 bg-white p-2 rounded-xl shadow-sm border border-gray-200">
+      <a href="index.html" class="flex-1 py-1.5 text-center text-gray-600 hover:text-gray-800 rounded-lg font-medium text-xs transition">
+        ➕ បញ្ចូលស្តុក
+      </a>
+      <a href="stock.html" class="flex-1 py-1.5 text-center bg-blue-600 text-white rounded-lg font-bold text-xs shadow-sm">
+        📦 មើលស្តុក
+      </a>
+      <a href="sales.html" class="flex-1 py-1.5 text-center text-gray-600 hover:text-gray-800 rounded-lg font-medium text-xs transition">
+        📈 របាយការណ៍
       </a>
     </div>
 
     <div class="mb-3">
-      <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬប្រភេទខោ..." class="w-full p-2.5 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+      <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬប្រភេទខោ..." class="w-full p-2.5 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm">
     </div>
 
     <div class="flex bg-gray-200 p-1 rounded-xl mb-4 font-medium text-xs sm:text-sm">
@@ -47,9 +53,8 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let allProducts = [];
-    let currentTab = 'instock'; // ករណីដើមគឺបង្ហាញតែអីវ៉ាន់ក្នុងស្តុក
+    let currentTab = 'instock'; 
 
-    // ទាញយកទិន្នន័យពី Supabase
     async function loadProducts() {
       const container = document.getElementById('productList');
       try {
@@ -69,7 +74,6 @@
       }
     }
 
-    // គណនាចំនួនទំនិញតាម Tab នីមួយៗ
     function updateTabCounts() {
       const inStockCount = allProducts.filter(p => !(p.stock_quantity === 0 || (p.description && p.description.includes('[SOLD OUT]')))).length;
       const soldOutCount = allProducts.filter(p => p.stock_quantity === 0 || (p.description && p.description.includes('[SOLD OUT]'))).length;
@@ -79,7 +83,6 @@
       document.getElementById('cntAll').innerText = allProducts.length;
     }
 
-    // ប្តូរ Tab Active
     function switchTab(tab) {
       currentTab = tab;
       
@@ -100,7 +103,6 @@
       filterProducts();
     }
 
-    // តម្រៀប & Search ទិន្នន័យ
     function filterProducts() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       
@@ -108,7 +110,7 @@
         const isSoldOut = p.stock_quantity === 0 || (p.description && p.description.includes('[SOLD OUT]'));
         if (currentTab === 'instock') return !isSoldOut;
         if (currentTab === 'soldout') return isSoldOut;
-        return true; // tab 'all'
+        return true; 
       });
 
       if (query) {
@@ -121,7 +123,6 @@
       renderProducts(filtered);
     }
 
-    // បង្ហាញទិន្នន័យលើអេក្រង់
     function renderProducts(products) {
       const container = document.getElementById('productList');
       if (products.length === 0) {
@@ -179,9 +180,8 @@
       }).join('');
     }
 
-    // 📢 Post សារ លក់ដាច់ ទៅ Telegram
     async function sendSoldOutToTelegram(code, title) {
-      if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN_HERE') return;
+      if (!TELEGRAM_BOT_TOKEN) return;
 
       try {
         const soldText = `❌ <b>[ ទំនិញលក់ដាច់ហើយ / SOLD OUT ]</b> ❌\n\n` +
@@ -204,7 +204,6 @@
       }
     }
 
-    // 🛒 Mark as Sold
     async function markAsSold(id, currentDesc, code, title) {
       if (!confirm(`តើអ្នកប្រាកដថាខោលេខកូដ #${code} ត្រូវបានលក់ដាច់ហើយមែនទេ?`)) return;
 
@@ -226,11 +225,10 @@
         alert('✅ បានកត់ត្រាថា "លក់ដាច់" និង Post ទៅ Telegram រួចរាល់!');
         loadProducts();
       } catch (err) {
-        alert('❌ មិនអាចប្តូរ狀態បានទេ៖ ' + err.message);
+        alert('❌ មិនអាចប្តូរស្ថានភាពបានទេ៖ ' + err.message);
       }
     }
 
-    // Delete Product
     async function deleteProduct(id) {
       if (!confirm('តើអ្នកប្រាកដថាចង់លុបទំនិញនេះចេញពីស្តុកមែនទេ?')) return;
 
@@ -249,7 +247,6 @@
       }
     }
 
-    // ដំណើរការដំបូង
     loadProducts();
   </script>
 </body>
