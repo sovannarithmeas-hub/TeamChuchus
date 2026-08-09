@@ -9,6 +9,19 @@
 </head>
 <body class="bg-gray-100 p-4 font-sans">
   <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
+    
+    <div class="flex justify-between items-center mb-5 bg-gray-50 p-1.5 rounded-xl border border-gray-200">
+      <a href="index.html" class="flex-1 py-1.5 text-center bg-blue-600 text-white rounded-lg font-bold text-xs shadow-sm">
+        ➕ បញ្ចូលស្តុក
+      </a>
+      <a href="stock.html" class="flex-1 py-1.5 text-center text-gray-600 hover:text-gray-800 rounded-lg font-medium text-xs transition">
+        📦 មើលស្តុក
+      </a>
+      <a href="sales.html" class="flex-1 py-1.5 text-center text-gray-600 hover:text-gray-800 rounded-lg font-medium text-xs transition">
+        📈 របាយការណ៍
+      </a>
+    </div>
+
     <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">👖 បញ្ចូលស្តុកខោអាវ (Fast Mode)</h2>
     
     <form id="stockForm" class="space-y-3">
@@ -22,9 +35,15 @@
         <input type="text" id="title" required class="mt-1 w-full p-2 border rounded-md" placeholder="ឧ. ខោជើងវែង/ជើងកណ្តឹង">
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">តម្លៃ ($)</label>
-        <input type="number" step="0.01" id="price" required class="mt-1 w-full p-2 border rounded-md" placeholder="15.50">
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">ថ្លៃដើម ($)</label>
+          <input type="number" step="0.01" id="cost_price" class="mt-1 w-full p-2 border rounded-md" placeholder="5.00">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">តម្លៃលក់ ($)</label>
+          <input type="number" step="0.01" id="price" required class="mt-1 w-full p-2 border rounded-md" placeholder="15.50">
+        </div>
       </div>
 
       <div>
@@ -63,7 +82,7 @@
         <input type="file" id="images" multiple accept="image/*" class="mt-1 w-full p-2 border rounded-md">
       </div>
 
-      <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700">
+      <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-2.5 rounded-md font-semibold hover:bg-blue-700 shadow transition">
         📤 រក្សាទុក & បញ្ចូលស្តុក
       </button>
     </form>
@@ -74,13 +93,14 @@
     const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
     
+    // ⚙️ ព័ត៌មាន Telegram Bot
     const TELEGRAM_BOT_TOKEN = '8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA'; 
     const TELEGRAM_CHAT_ID = '@tobchuchusonline';       
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function sendToTelegramChannel(code, title, price, sizes, waist, length, leg, note, imageUrls) {
-      if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN_HERE') return;
+      if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN.includes('YOUR_')) return;
 
       try {
         let detailText = '';
@@ -134,6 +154,7 @@
       try {
         const code = document.getElementById('code').value.trim().toUpperCase();
         const title = document.getElementById('title').value;
+        const costPrice = parseFloat(document.getElementById('cost_price').value || 0);
         const price = parseFloat(document.getElementById('price').value);
         const waist = document.getElementById('waist').value.trim();
         const length = document.getElementById('length').value.trim();
@@ -203,6 +224,7 @@
           .insert([{
             title: title,
             price: price,
+            cost_price: costPrice,
             sizes: sizes,
             description: fullDescription,
             images: imageUrls,
