@@ -1,68 +1,52 @@
 <!DOCTYPE html>
 <html lang="km">
 <head>
-
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  body { font-family: 'Noto Sans Khmer', sans-serif !important; }
-</style>
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>តូបជជុស Online - បញ្ជីស្តុកទំនិញ</title>
+  <title>តូបជជុស Online - មើលស្តុក</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Kantumruy Pro', sans-serif !important; }
+  </style>
 </head>
-<body class="bg-gray-100 p-4 font-sans">
+<body class="bg-gray-100 p-4 font-sans text-gray-800">
   <div class="max-w-xl mx-auto">
     
-    <div class="flex justify-between items-center mb-4 bg-white p-2 rounded-xl shadow-sm border border-gray-200">
-      <a href="index.html" class="flex-1 py-1.5 text-center text-gray-600 hover:text-gray-800 rounded-lg font-medium text-xs transition">
+    <div class="flex justify-between items-center mb-5 bg-white p-2 rounded-xl shadow-sm border border-gray-200">
+      <a href="admin.html" class="flex-1 py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium text-xs transition">
         ➕ បញ្ចូលស្តុក
       </a>
       <a href="stock.html" class="flex-1 py-1.5 text-center bg-blue-600 text-white rounded-lg font-bold text-xs shadow-sm">
         📦 មើលស្តុក
       </a>
-      <a href="sales.html" class="flex-1 py-1.5 text-center text-gray-600 hover:text-gray-800 rounded-lg font-medium text-xs transition">
+      <a href="sales.html" class="flex-1 py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium text-xs transition">
         📈 របាយការណ៍
       </a>
     </div>
 
-    <div class="mb-3">
-      <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬប្រភេទខោ..." class="w-full p-2.5 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm">
+    <div class="mb-4">
+      <input type="text" id="searchInput" onkeyup="filterStock()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬប្រភេទខោ..." class="w-full p-2.5 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm">
     </div>
 
-    <div class="flex bg-gray-200 p-1 rounded-xl mb-4 font-medium text-xs sm:text-sm">
-      <button id="tabInStock" onclick="switchTab('instock')" class="flex-1 py-1.5 text-center rounded-lg bg-white text-blue-600 font-bold shadow-sm transition">
-        📦 ក្នុងស្តុក (<span id="cntInStock">0</span>)
-      </button>
-      <button id="tabSoldOut" onclick="switchTab('soldout')" class="flex-1 py-1.5 text-center rounded-lg text-gray-600 hover:text-gray-800 transition">
-        ❌ លក់ដាច់ (<span id="cntSoldOut">0</span>)
-      </button>
-      <button id="tabAll" onclick="switchTab('all')" class="flex-1 py-1.5 text-center rounded-lg text-gray-600 hover:text-gray-800 transition">
-        📋 ទាំងអស់ (<span id="cntAll">0</span>)
-      </button>
-    </div>
-
-    <div id="productList" class="space-y-3">
-      <p class="text-center text-gray-500 py-6">⏳ កំពុងទាញទិន្នន័យស្តុក...</p>
+    <div id="stockList" class="space-y-3">
+      <p class="text-center text-gray-500 py-8">⏳ កំពុងទាញទិន្នន័យស្តុក...</p>
     </div>
   </div>
 
   <script>
     const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
-    
-    // ⚙️ ព័ត៌មាន Telegram Bot
-    const TELEGRAM_BOT_TOKEN = '8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA'; 
-    const TELEGRAM_CHAT_ID = '@tobchuchusonline';       
-
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let allProducts = [];
-    let currentTab = 'instock'; 
 
-    async function loadProducts() {
-      const container = document.getElementById('productList');
+    let allProducts = [];
+
+    async function loadStock() {
       try {
         const { data, error } = await supabaseClient
           .from('products')
@@ -70,190 +54,70 @@
           .order('id', { ascending: false });
 
         if (error) throw error;
-
         allProducts = data || [];
-        updateTabCounts();
-        filterProducts();
+        filterStock();
       } catch (err) {
-        console.error(err);
-        container.innerHTML = `<p class="text-center text-red-500 py-6">❌ មិនអាចទាញទិន្នន័យបានទេ៖ ${err.message}</p>`;
+        document.getElementById('stockList').innerHTML = `<p class="text-center text-red-500 py-8">❌ មិនអាចទាញទិន្នន័យបានទេ៖ ${err.message}</p>`;
       }
     }
 
-    function updateTabCounts() {
-      const inStockCount = allProducts.filter(p => !(p.stock_quantity === 0 || (p.description && p.description.includes('[SOLD OUT]')))).length;
-      const soldOutCount = allProducts.filter(p => p.stock_quantity === 0 || (p.description && p.description.includes('[SOLD OUT]'))).length;
-
-      document.getElementById('cntInStock').innerText = inStockCount;
-      document.getElementById('cntSoldOut').innerText = soldOutCount;
-      document.getElementById('cntAll').innerText = allProducts.length;
+    function filterStock() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allProducts.filter(p => 
+        (p.title && p.title.toLowerCase().includes(q)) || 
+        (p.description && p.description.toLowerCase().includes(q))
+      );
+      renderStock(filtered);
     }
 
-    function switchTab(tab) {
-      currentTab = tab;
-      
-      const tabBtns = {
-        instock: document.getElementById('tabInStock'),
-        soldout: document.getElementById('tabSoldOut'),
-        all: document.getElementById('tabAll')
-      };
-
-      Object.keys(tabBtns).forEach(key => {
-        if (key === tab) {
-          tabBtns[key].className = 'flex-1 py-1.5 text-center rounded-lg bg-white text-blue-600 font-bold shadow-sm transition';
-        } else {
-          tabBtns[key].className = 'flex-1 py-1.5 text-center rounded-lg text-gray-600 hover:text-gray-800 transition';
-        }
-      });
-
-      filterProducts();
-    }
-
-    function filterProducts() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      
-      let filtered = allProducts.filter(p => {
-        const isSoldOut = p.stock_quantity === 0 || (p.description && p.description.includes('[SOLD OUT]'));
-        if (currentTab === 'instock') return !isSoldOut;
-        if (currentTab === 'soldout') return isSoldOut;
-        return true; 
-      });
-
-      if (query) {
-        filtered = filtered.filter(p => 
-          (p.title && p.title.toLowerCase().includes(query)) ||
-          (p.description && p.description.toLowerCase().includes(query))
-        );
-      }
-
-      renderProducts(filtered);
-    }
-
-    function renderProducts(products) {
-      const container = document.getElementById('productList');
+    function renderStock(products) {
+      const container = document.getElementById('stockList');
       if (products.length === 0) {
-        container.innerHTML = `<p class="text-center text-gray-500 py-6">📭 មិនមានទំនិញក្នុងផ្នែកនេះទេ</p>`;
+        container.innerHTML = `<p class="text-center text-gray-400 py-8">📭 គ្មានទិន្នន័យ</p>`;
         return;
       }
 
-      container.innerHTML = products.map(item => {
-        const firstImg = (item.images && item.images.length > 0) ? item.images[0] : 'https://via.placeholder.com/100';
-        const sizes = Array.isArray(item.sizes) ? item.sizes.join(', ') : (item.sizes || 'N/A');
-        
-        let code = 'N/A';
-        if (item.description) {
-          const match = item.description.match(/\[Code:\s*([^\]]+)\]/i);
-          if (match) code = match[1];
-        }
-
-        const isSoldOut = item.stock_quantity === 0 || (item.description && item.description.includes('[SOLD OUT]'));
+      container.innerHTML = products.map(p => {
+        const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/150';
+        const isSold = p.stock_quantity === 0 || (p.description && p.description.includes('[SOLD OUT]'));
 
         return `
-          <div class="bg-white p-3 rounded-xl shadow flex gap-3 items-center border ${isSoldOut ? 'border-red-300 bg-red-50/40' : 'border-gray-200'}">
-            <div class="relative">
-              <img src="${firstImg}" class="w-20 h-20 object-cover rounded-lg border">
-              ${isSoldOut ? '<span class="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-tl-lg rounded-br-lg">SOLD OUT</span>' : ''}
+          <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-between gap-3">
+            <img src="${img}" class="w-16 h-16 object-cover rounded-xl flex-shrink-0">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-gray-800 text-sm truncate">${p.title || 'ខោជជុស'}</h3>
+              <p class="text-xs text-gray-500 truncate">${p.description || ''}</p>
+              <div class="text-xs font-bold text-blue-600 mt-1">$${parseFloat(p.price).toFixed(2)}</div>
             </div>
-            
-            <div class="flex-1">
-              <h3 class="font-bold text-gray-800 text-base flex items-center gap-1">
-                ${item.title || 'ខោជជុស'}
-                ${isSoldOut ? '<span class="text-xs text-red-600 font-normal">(លក់ដាច់ហើយ)</span>' : ''}
-              </h3>
-              <p class="text-xs text-gray-500 mt-0.5">${item.description || ''}</p>
-              <div class="flex gap-2 items-center mt-1">
-                <span class="text-sm font-bold ${isSoldOut ? 'line-through text-gray-400' : 'text-blue-600'}">$${parseFloat(item.price).toFixed(2)}</span>
-                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded border">Size: ${sizes}</span>
-              </div>
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-              ${!isSoldOut ? `
-                <button onclick="markAsSold(${item.id}, '${item.description || ''}', '${code}', '${item.title || 'ខោជជុស'}')" class="bg-green-600 text-white px-2.5 py-1 rounded-lg hover:bg-green-700 text-xs font-semibold shadow-sm">
-                  🛒 លក់ដាច់
-                </button>
-              ` : `
-                <span class="text-xs text-center text-red-600 font-bold bg-red-100 px-2 py-1 rounded-lg">
-                  ❌ លក់រួច
-                </span>
-              `}
-              <button onclick="deleteProduct(${item.id})" class="bg-red-50 text-red-600 px-2.5 py-1 rounded-lg hover:bg-red-100 text-xs font-semibold border border-red-200">
-                🗑️ លុប
-              </button>
+            <div class="flex flex-col gap-1">
+              ${isSold ? 
+                `<span class="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs font-bold text-center">❌ លក់ដាច់</span>` : 
+                `<button onclick="markAsSold(${p.id}, '${p.description || ''}')" class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold shadow transition">🛒 លក់ដាច់</button>`
+              }
             </div>
           </div>
         `;
       }).join('');
     }
 
-    async function sendSoldOutToTelegram(code, title) {
-      if (!TELEGRAM_BOT_TOKEN) return;
-
+    async function markAsSold(id, currentDesc) {
+      if(!confirm('តើអ្នកប្រាកដថាបានលក់ខោនេះដាច់ហើយមែនទេ?')) return;
       try {
-        const soldText = `❌ <b>[ ទំនិញលក់ដាច់ហើយ / SOLD OUT ]</b> ❌\n\n` +
-                         `🏷️ លេខកូដទំនិញ៖ <b>#${code.toUpperCase()}</b>\n` +
-                         `👖 ប្រភេទម៉ូដ៖ <b>${title}</b>\n\n` +
-                         `សូមអរគុណអតិថិជនសម្រាប់ការគាំទ្រ! 🙏✨\n` +
-                         `ទំនិញលេខកូដនេះត្រូវបានលក់ដាច់ហើយ។`;
-
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: soldText,
-            parse_mode: 'HTML'
-          })
-        });
-      } catch (err) {
-        console.error('Telegram Sold Out Post Error:', err);
-      }
-    }
-
-    async function markAsSold(id, currentDesc, code, title) {
-      if (!confirm(`តើអ្នកប្រាកដថាខោលេខកូដ #${code} ត្រូវបានលក់ដាច់ហើយមែនទេ?`)) return;
-
-      try {
-        const updatedDesc = currentDesc ? `${currentDesc} [SOLD OUT]` : '[SOLD OUT]';
-
+        const updatedDesc = currentDesc + ' [SOLD OUT]';
         const { error } = await supabaseClient
           .from('products')
-          .update({ 
-            stock_quantity: 0,
-            description: updatedDesc
-          })
+          .update({ stock_quantity: 0, description: updatedDesc })
           .eq('id', id);
 
         if (error) throw error;
-
-        await sendSoldOutToTelegram(code, title);
-
-        alert('✅ បានកត់ត្រាថា "លក់ដាច់" និង Post ទៅ Telegram រួចរាល់!');
-        loadProducts();
-      } catch (err) {
-        alert('❌ មិនអាចប្តូរស្ថានភាពបានទេ៖ ' + err.message);
+        alert('✅ អាប់ដេតជា SOLD OUT រួចរាល់!');
+        loadStock();
+      } catch(err) {
+        alert('❌ បរាជ័យ៖ ' + err.message);
       }
     }
 
-    async function deleteProduct(id) {
-      if (!confirm('តើអ្នកប្រាកដថាចង់លុបទំនិញនេះចេញពីស្តុកមែនទេ?')) return;
-
-      try {
-        const { error } = await supabaseClient
-          .from('products')
-          .delete()
-          .eq('id', id);
-
-        if (error) throw error;
-
-        alert('✅ លុបទំនិញជោគជ័យ!');
-        loadProducts();
-      } catch (err) {
-        alert('❌ មិនអាចលុបបានទេ៖ ' + err.message);
-      }
-    }
-
-    loadProducts();
+    loadStock();
   </script>
 </body>
 </html>
