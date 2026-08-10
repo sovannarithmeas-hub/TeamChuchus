@@ -45,7 +45,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-700 mb-1">👖 ម៉ូដ/ប្រាក</label>
-            <input type="text" id="title" placeholder="Uniqlo / Levis" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="title" placeholder="Uniqlo / Levi's" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
         </div>
 
@@ -89,23 +89,27 @@
     const TELEGRAM_BOT_TOKEN = '8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA'; 
     const TELEGRAM_CHAT_ID = '@tobchuchusonline';
 
+    // ឈ្មោះ Bucket ក្នុង Supabase Storage
+    const BUCKET_NAME = 'product-images'; 
+
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // មុខងារ Upload រូបភាពទៅ Supabase Storage
+    // មុខងារ Upload រូបភាពទៅ Supabase Storage (product-images Bucket)
     async function uploadImages(files) {
       const imageUrls = [];
       for (const file of files) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const filePath = `product_images/${fileName}`;
 
+        // Upload ចូល Storage
         const { error: uploadError } = await supabaseClient.storage
-          .from('product-images')
-          .upload(filePath, file);
+          .from(BUCKET_NAME)
+          .upload(fileName, file);
 
         if (uploadError) throw uploadError;
 
-        const { data } = supabaseClient.storage.from('products').getPublicUrl(filePath);
+        // ទាញយក Public URL
+        const { data } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
         imageUrls.push(data.publicUrl);
       }
       return imageUrls;
@@ -162,12 +166,12 @@
 
         if (fileInput.files.length === 0) throw new Error('សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក!');
 
-        // 1. Upload រូបភាពទៅ Supabase Storage
+        // 1. Upload រូបភាពទៅ Supabase Storage (product-images Bucket)
         const imageUrls = await uploadImages(fileInput.files);
 
-        // 2. បញ្ចូលទិន្នន័យទៅ Database
+        // 2. បញ្ចូលទិន្នន័យទៅ Database (products Table)
         const fullDesc = `[Code: ${code}] ${details}`;
-        const { error: dbError } = await supabaseClient.from('product-images').insert([{
+        const { error: dbError } = await supabaseClient.from('products').insert([{
           title: title,
           price: price,
           cost_price: costPrice,
@@ -179,7 +183,7 @@
 
         if (dbError) throw dbError;
 
-        // 3. Post ទៅ Telegram
+        // 3. Post ទៅ Telegram Channel
         await postToTelegram(code, title, price, size, details, imageUrls);
 
         alert('✅ បញ្ចូលស្តុក និង Post ទៅ Telegram ជោគជ័យ!');
