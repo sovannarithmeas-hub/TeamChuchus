@@ -3,108 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>តូបជជុស Online - កត់ត្រាការដឹកជញ្ជូន</title>
+  <title>តូបជជុស Online - ទំព័រដើម</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Kantumruy Pro', sans-serif !important;
-    }
+    body { font-family: 'Kantumruy Pro', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-gray-100 p-4 font-sans text-gray-800">
-  <div class="max-w-2xl mx-auto">
-    
-    <div class="flex justify-between items-center mb-5 bg-white p-2 rounded-xl shadow-sm border border-gray-200 overflow-x-auto text-xs">
-      <a href="admin.html" class="flex-1 min-w-[70px] py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium">➕ បញ្ចូលស្តុក</a>
-      <a href="stock.html" class="flex-1 min-w-[70px] py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium">📦 មើលស្តុក</a>
-      <a href="delivery.html" class="flex-1 min-w-[70px] py-1.5 text-center bg-blue-600 text-white rounded-lg font-bold shadow-sm">🚚 ដឹកជញ្ជូន</a>
-      <a href="sales.html" class="flex-1 min-w-[70px] py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium">📈 របាយការណ៍</a>
+<body class="bg-gray-100 min-h-screen text-gray-800 flex flex-col">
+
+  <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-md mx-auto p-3">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
+            <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/logo.png" 
+                 onerror="this.src='https://via.placeholder.com/100?text=Logo';" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <h1 class="text-base font-bold text-gray-900">តូបជជុស Online</h1>
+            <p class="text-[11px] text-gray-500">ខោជជុសគុណភាពខ្ពស់ ស្អាតៗ</p>
+          </div>
+        </div>
+
+        <button onclick="openCartModal()" class="relative p-2 bg-blue-50 hover:bg-blue-100 rounded-xl transition text-blue-600">
+          <span class="text-xl">🛒</span>
+          <span id="cartBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+        </button>
+      </div>
+
+      <input type="text" id="searchInput" oninput="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬប្រភេទខោ..." class="w-full pl-3 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-md mx-auto w-full p-3 space-y-3">
+    <div class="flex justify-between items-center px-1">
+      <span class="text-xs font-bold text-gray-700">📦 ខោដែលមានក្នុងស្តុក</span>
+      <span id="stockCount" class="text-[11px] bg-blue-100 text-blue-700 font-bold px-2.5 py-0.5 rounded-full">0 មុខ</span>
     </div>
 
-    <div class="mb-4">
-      <h1 class="text-xl font-bold text-gray-800">🚚 កត់ត្រា & តាមដានការដឹកជញ្ជូន</h1>
-      <p class="text-xs text-gray-500">គ្រប់គ្រងការផ្ញើឥវ៉ាន់ជូនអតិថិជនតាមក្រុមហ៊ុនដឹក</p>
+    <div id="productList" class="space-y-3">
+      <div class="text-center py-10 text-xs text-gray-400">⏳ កំពុងទាញទិន្នន័យ...</div>
     </div>
+  </main>
 
-    <form id="deliveryForm" onsubmit="handleDeliverySubmit(event)" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3 mb-6">
-      <h2 class="font-bold text-sm text-gray-700 border-b pb-2">➕ បញ្ចូលការដឹកជញ្ជូនថ្មី</h2>
-      
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">👤 ឈ្មោះអតិថិជន</label>
-          <input type="text" id="customer_name" required placeholder="ឈ្មោះភ្ញៀវ" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">📞 លេខទូរស័ព្ទ</label>
-          <input type="text" id="customer_phone" required placeholder="012 345 678" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
-        </div>
+  <div id="cartModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[80vh] flex flex-col p-4">
+      <div class="flex justify-between items-center border-b pb-2 mb-2">
+        <h3 class="text-sm font-bold text-gray-800">🛒 កន្ត្រក់ទំនិញរបស់អ្នក</h3>
+        <button onclick="closeCartModal()" class="text-gray-400 hover:text-gray-600 font-bold px-2">✕</button>
       </div>
 
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">🏷️ លេខកូដទំនិញ/ខោ</label>
-          <input type="text" id="item_code" required placeholder="J-001, J-002" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
+      <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-2 py-2"></div>
+
+      <div class="border-t pt-3 mt-2 space-y-2">
+        <div class="flex justify-between items-center text-xs font-bold text-gray-800">
+          <span>សរុបថ្លៃទំនិញ៖</span>
+          <span id="cartTotalPrice" class="text-sm text-blue-600">$0.00</span>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">🏢 ក្រុមហ៊ុនដឹក</label>
-          <select id="courier_name" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none font-medium">
-            <option value="វីរៈប៊ុនថាំ (VET)">វីរៈប៊ុនថាំ (VET)</option>
-            <option value="J&T Express">J&T Express</option>
-            <option value="Capitol Express">Capitol Express</option>
-            <option value="ដឹកជញ្ជូនផ្ទាល់ (Delivery)">ដឹកជញ្ជូនផ្ទាល់ (Delivery)</option>
-            <option value="ផ្សេងៗ">ផ្សេងៗ</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-xs font-bold text-gray-700 mb-1">📍 អាសយដ្ឋាន/ខេត្ត-ក្រុង</label>
-        <input type="text" id="address" required placeholder="ឧ. ភ្នំពេញ, បាត់ដំបង..." class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
-      </div>
-
-      <button onclick="goToInvoice()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">
-  📄 មើលវិក្កយបត្រ (Invoice)
-      </button>
-
-<script>
-  function goToInvoice() {
-    // បញ្ជូនទៅទំព័រ invoice.html
-    window.location.href = 'invoice.html';
-  }
-</script>
-    </form>
-
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div class="p-3.5 border-b bg-gray-50 flex justify-between items-center">
-        <h3 class="font-bold text-gray-700 text-sm">📋 បញ្ជីកត់ត្រាការដឹកជញ្ជូន</h3>
-        <span class="text-xs text-gray-500" id="deliveryCount">0 ជើង</span>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs text-gray-600">
-          <thead class="bg-gray-100 text-gray-700 uppercase font-semibold border-b">
-            <tr>
-              <th class="p-3">អតិថិជន / កូដ</th>
-              <th class="p-3">អាសយដ្ឋាន / ក្រុមហ៊ុន</th>
-              <th class="p-3">ស្ថានភាព</th>
-              <th class="p-3 text-center">សកម្មភាព</th>
-            </tr>
-          </thead>
-          <tbody id="deliveryTableBody" class="divide-y divide-gray-100">
-            <tr>
-              <td colspan="4" class="text-center py-6 text-gray-400">⏳ កំពុងទាញទិន្នន័យ...</td>
-            </tr>
-          </tbody>
-        </table>
+        <button onclick="proceedToDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+          🚀 បន្តទៅការដឹកជញ្ជូន & ទូទាត់ប្រាក់
+        </button>
       </div>
     </div>
-
   </div>
 
   <script>
@@ -112,117 +76,130 @@
     const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let deliveries = [];
+    let allProducts = [];
+    let cart = JSON.parse(localStorage.getItem('cartData')) || [];
 
-    // ទាញយកទិន្នន័យដឹកជញ្ជូនពី Supabase (Table: deliveries)
-    async function loadDeliveries() {
-      const tableBody = document.getElementById('deliveryTableBody');
+    async function fetchProducts() {
       try {
-        const { data, error } = await supabaseClient
-          .from('deliveries')
-          .select('*')
-          .order('id', { ascending: false });
+        const { data, error } = await supabaseClient.from('products').select('*');
+        if (error) throw error;
+        allProducts = data || [];
+        renderProducts(allProducts);
+        updateCartUI();
+      } catch (err) {
+        document.getElementById('productList').innerHTML = `<div class="text-center py-5 text-xs text-red-500">❌ បរាជ័យទាញទិន្នន័យ</div>`;
+      }
+    }
 
-        if (error) {
-          // ប្រសិនបើមិនទាន់មាន Table វានឹងបង្ហាញសារប្រាប់ឱ្យបង្កើត Table
-          if (error.code === '42P01') {
-            tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-amber-600 font-medium">⚠️ សូមបង្កើត Table ឈ្មោះ "deliveries" ក្នុង Supabase ជាមុនសិន</td></tr>`;
-            return;
-          }
-          throw error;
-        }
+    function renderProducts(products) {
+      const listEl = document.getElementById('productList');
+      document.getElementById('stockCount').innerText = `${products.length} មុខ`;
 
-        deliveries = data || [];
-        document.getElementById('deliveryCount').innerText = `${deliveries.length} ជើង`;
+      if (products.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400">គ្មានទំនិញក្នុងស្តុកទេ</div>`;
+        return;
+      }
 
-        if (deliveries.length === 0) {
-          tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-gray-400">📭 មិនទាន់មានទិន្នន័យដឹកជញ្ជូននៅឡើយទេ</td></tr>`;
-          return;
-        }
+      listEl.innerHTML = products.map(p => {
+        const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/300';
+        const codeMatch = p.description ? p.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+        const codeText = codeMatch ? codeMatch[1] : (p.code || 'N/A');
 
-        tableBody.innerHTML = deliveries.map(item => {
-          let statusBadge = '';
-          if (item.status === ' pending') {
-            statusBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-bold">⏳ កំពុងរៀបចំ</span>`;
-          } else if (item.status === 'shipping') {
-            statusBadge = `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold">🚚 កំពុងដឹក</span>`;
-          } else {
-            statusBadge = `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">✅ រួចរាល់</span>`;
-          }
+        return `
+          <div class="bg-white rounded-2xl p-3 shadow-sm border space-y-2">
+            <div class="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden border">
+              <img src="${img}" class="w-full h-full object-cover">
+              <span class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">#${codeText}</span>
+            </div>
+            <div class="flex justify-between items-start">
+              <h3 class="font-bold text-gray-800 text-xs">${p.title || 'គ្មានចំណងជើង'}</h3>
+              <span class="font-extrabold text-blue-600 text-xs">$${parseFloat(p.price || 0).toFixed(2)}</span>
+            </div>
+            <p class="text-[10px] text-gray-500 line-clamp-2">${p.description || ''}</p>
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t">
+              <button onclick="addToCart('${p.id}')" class="bg-amber-50 text-amber-700 font-bold py-1.5 rounded-xl text-[11px] border border-amber-200">🛒 ចូលកន្ត្រក់</button>
+              <button onclick="buyNowDirect('${p.id}')" class="bg-blue-600 text-white font-bold py-1.5 rounded-xl text-[11px]">⚡ ទិញភ្លាមៗ</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
+    function addToCart(productId) {
+      const product = allProducts.find(p => p.id == productId);
+      if (!product) return;
+      if (!cart.some(item => item.id == productId)) {
+        cart.push(product);
+        saveCart();
+        alert('✅ បានបន្ថែមចូលក្នុងកន្ត្រក់!');
+      } else {
+        alert('⚠️ មានក្នុងកន្ត្រក់រួចហើយ!');
+      }
+    }
+
+    function saveCart() {
+      localStorage.setItem('cartData', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const badge = document.getElementById('cartBadge');
+      if (cart.length > 0) {
+        badge.innerText = cart.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function openCartModal() {
+      const container = document.getElementById('cartItemsList');
+      let total = 0;
+      if (cart.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-xs text-gray-400">គ្មានទំនិញក្នុងកន្ត្រក់ទេ</div>`;
+      } else {
+        container.innerHTML = cart.map((item, index) => {
+          total += parseFloat(item.price || 0);
           return `
-            <tr class="hover:bg-gray-50">
-              <td class="p-3">
-                <div class="font-bold text-gray-800">${item.customer_name}</div>
-                <div class="text-[11px] text-gray-500">${item.customer_phone} | <span class="text-blue-600 font-semibold">#${item.item_code}</span></div>
-              </td>
-              <td class="p-3">
-                <div class="font-medium text-gray-700">${item.address}</div>
-                <div class="text-[11px] text-gray-400">${item.courier_name}</div>
-              </td>
-              <td class="p-3">${statusBadge}</td>
-              <td class="p-3 text-center">
-                <select onchange="updateStatus(${item.id}, this.value)" class="text-[11px] border rounded p-1 bg-white focus:ring-1 focus:ring-blue-500">
-                  <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>⏳ កំពុងរៀបចំ</option>
-                  <option value="shipping" ${item.status === 'shipping' ? 'selected' : ''}>🚚 កំពុងដឹក</option>
-                  <option value="delivered" ${item.status === 'delivered' ? 'selected' : ''}>✅ រួចរាល់</option>
-                </select>
-              </td>
-            </tr>
+            <div class="flex justify-between items-center p-2 bg-gray-50 rounded-xl border text-xs">
+              <div>
+                <span class="font-bold text-blue-600">${item.title}</span>
+                <div class="text-[10px] text-gray-500">$${parseFloat(item.price || 0).toFixed(2)}</div>
+              </div>
+              <button onclick="removeFromCart(${index})" class="text-red-500 font-bold px-2">🗑️</button>
+            </div>
           `;
         }).join('');
+      }
+      document.getElementById('cartTotalPrice').innerText = `$${total.toFixed(2)}`;
+      document.getElementById('cartModal').classList.remove('hidden');
+    }
 
-      } catch (err) {
-        console.error(err);
-        tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-red-500">❌ មានបញ្ហា៖ ${err.message}</td></tr>`;
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      saveCart();
+      openCartModal();
+    }
+
+    function closeCartModal() {
+      document.getElementById('cartModal').classList.add('hidden');
+    }
+
+    function buyNowDirect(productId) {
+      const product = allProducts.find(p => p.id == productId);
+      if (product) {
+        cart = [product];
+        saveCart();
+        window.location.href = 'delivery.html';
       }
     }
 
-    // បញ្ចូលទិន្នន័យដឹកជញ្ជូនថ្មី
-    async function handleDeliverySubmit(e) {
-      e.preventDefault();
-      const btn = document.getElementById('deliveryBtn');
-      btn.disabled = true;
-
-      const payload = {
-        customer_name: document.getElementById('customer_name').value.trim(),
-        customer_phone: document.getElementById('customer_phone').value.trim(),
-        item_code: document.getElementById('item_code').value.trim(),
-        courier_name: document.getElementById('courier_name').value,
-        address: document.getElementById('address').value.trim(),
-        status: 'pending'
-      };
-
-      try {
-        const { error } = await supabaseClient.from('deliveries').insert([payload]);
-        if (error) throw error;
-
-        alert('✅ កត់ត្រាការដឹកជញ្ជូនជោគជ័យ!');
-        document.getElementById('deliveryForm').reset();
-        loadDeliveries();
-      } catch (err) {
-        alert('❌ បរាជ័យ៖ ' + err.message);
-      } finally {
-        btn.disabled = false;
-      }
+    function proceedToDelivery() {
+      if (cart.length === 0) return alert('សូមជ្រើសរើសខោជាមុនសិន!');
+      window.location.href = 'delivery.html';
     }
 
-    // អាប់ដេត status ដឹកជញ្ជូន
-    async function updateStatus(id, newStatus) {
-      try {
-        const { error } = await supabaseClient
-          .from('deliveries')
-          .update({ status: newStatus })
-          .eq('id', id);
-
-        if (error) throw error;
-        loadDeliveries();
-      } catch (err) {
-        alert('❌ មិនអាចអាប់ដេត status បានទេ៖ ' + err.message);
-      }
-    }
-
-    loadDeliveries();
+    fetchProducts();
   </script>
 </body>
 </html>
