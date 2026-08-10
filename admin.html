@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>តូបជជុស Online - បញ្ចូលស្តុក</title>
+  <title>តូបជជុស Online - បញ្ចូលស្តុកលឿន</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
@@ -32,9 +32,20 @@
 
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
       <h2 class="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
-        ➕ បញ្ចូលស្តុកទំនិញថ្មី
+        ➕ បញ្ចូលស្តុកទំនិញ (Fast Mode)
       </h2>
-      <p class="text-xs text-gray-500 mb-4">បញ្ចូលទិន្នន័យខោ និង Post ចូល Telegram Channel ស្វ័យប្រវត្តិ</p>
+      <p class="text-xs text-gray-500 mb-3">បញ្ចូលទិន្នន័យលឿនរហ័ស និង Post ចូល Telegram ស្វ័យប្រវត្តិ</p>
+
+      <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 mb-4">
+        <label class="block text-xs font-bold text-amber-900 mb-1">⚡ វាយ/Paste ទិន្នន័យ ១ជួរ (Shortcut)</label>
+        <div class="flex gap-2">
+          <input type="text" id="quickInput" placeholder="J-001 Levi's 18.80 10.00 L 33 106 17 សាច់ស្អាត" class="flex-1 p-2 border rounded-lg text-xs bg-white focus:ring-2 focus:ring-amber-500 outline-none">
+          <button type="button" onclick="parseQuickInput()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition">
+            បំពេញ
+          </button>
+        </div>
+        <p class="text-[10px] text-amber-700 mt-1">លំដាប់៖ កូដ ម៉ូដ ថ្លៃលក់ ថ្លៃដើម Size ចង្កេះ សម្រុង ចុងជើង ចំណាំ</p>
+      </div>
 
       <form id="productForm" class="space-y-3.5">
         
@@ -85,7 +96,7 @@
 
         <div>
           <label class="block text-xs font-semibold text-gray-700 mb-1">📝 ចំណាំបន្ថែម (សាច់ខោ/ពណ៌...)</label>
-          <textarea id="details" rows="2" placeholder="សាច់ទន់ ស្រួលស្លៀក ក្បាលប៊ូតុង..." class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+          <textarea id="details" rows="2" placeholder="សាច់ទន់ ស្រួលស្លៀក..." class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
         </div>
 
         <div>
@@ -94,7 +105,7 @@
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm mt-2">
-          🚀 រក្សាទុក និង Post ទៅ Telegram
+          🚀 រក្សាទុក និង Post ទៅ Telegram (Ctrl + Enter)
         </button>
 
       </form>
@@ -110,6 +121,42 @@
     const BUCKET_NAME = 'product-images'; 
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ⚡ FUNCTION: BATCH PARSER សម្រាប់បំពេញទិន្នន័យស្វ័យប្រវត្តិ
+    function parseQuickInput() {
+      const input = document.getElementById('quickInput').value.trim();
+      if (!input) return;
+
+      const parts = input.split(/\s+/); // បំបែកតាម Space
+
+      if (parts[0]) document.getElementById('code').value = parts[0];
+      if (parts[1]) document.getElementById('title').value = parts[1];
+      if (parts[2]) document.getElementById('price').value = parts[2];
+      if (parts[3]) document.getElementById('costPrice').value = parts[3];
+      if (parts[4]) document.getElementById('size').value = parts[4];
+      if (parts[5]) document.getElementById('waist').value = parts[5];
+      if (parts[6]) document.getElementById('length').value = parts[6];
+      if (parts[7]) document.getElementById('leg').value = parts[7];
+      if (parts.length > 8) {
+        document.getElementById('details').value = parts.slice(8).join(' ');
+      }
+    }
+
+    // 🎹 Keyboard Shortcuts
+    document.getElementById('quickInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        parseQuickInput();
+        document.getElementById('imageFiles').focus(); // រំលងទៅជ្រើសរូបភាពតែម្តង
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('productForm').requestSubmit();
+      }
+    });
 
     // Upload រូបភាពទៅ Supabase Storage
     async function uploadImages(files) {
@@ -181,7 +228,6 @@
         const costPrice = parseFloat(document.getElementById('costPrice').value);
         const size = document.getElementById('size').value.trim();
         
-        // ទាញតម្លៃ ចង្កេះ, សម្រុង, ចុងជើង
         const waist = document.getElementById('waist').value.trim();
         const length = document.getElementById('length').value.trim();
         const leg = document.getElementById('leg').value.trim();
@@ -191,10 +237,10 @@
 
         if (fileInput.files.length === 0) throw new Error('សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក!');
 
-        // 1. Upload រូបភាពទៅ Supabase Storage
+        // 1. Upload រូបភាព
         const imageUrls = await uploadImages(fileInput.files);
 
-        // 2. រៀបចំព័ត៌មានលម្អិត និងរក្សាទុកទៅ Database
+        // 2. រក្សាទុក Database
         const fullDesc = `[Code: ${code}] W:${waist} L:${length} Leg:${leg}${details ? ' ' + details : ''}`;
         
         const { error: dbError } = await supabaseClient.from('products').insert([{
@@ -214,11 +260,13 @@
 
         alert('✅ បញ្ចូលស្តុក និង Post ទៅ Telegram ជោគជ័យ!');
         document.getElementById('productForm').reset();
+        document.getElementById('quickInput').value = '';
+        document.getElementById('quickInput').focus();
       } catch (err) {
         alert('❌ បរាជ័យ៖ ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = '🚀 រក្សាទុក និង Post ទៅ Telegram';
+        btn.innerText = '🚀 រក្សាទុក និង Post ទៅ Telegram (Ctrl + Enter)';
       }
     });
   </script>
