@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>តូបជជុស Online - Admin បញ្ចូលស្តុក</title>
+  <title>តូបជជុស Online - បញ្ចូលស្តុក</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
@@ -12,12 +12,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 
   <style>
-    body {
-      font-family: 'Kantumruy Pro', sans-serif !important;
-    }
+    body { font-family: 'Kantumruy Pro', sans-serif !important; }
   </style>
 </head>
-<body class="bg-gray-100 p-4 font-sans text-gray-800">
+<body class="bg-gray-100 p-3 sm:p-4 font-sans text-gray-800">
   <div class="max-w-xl mx-auto">
     
     <div class="flex justify-between items-center mb-5 bg-white p-2 rounded-xl shadow-sm border border-gray-200">
@@ -32,54 +30,57 @@
       </a>
     </div>
 
-    <div class="mb-4">
-      <h1 class="text-xl font-bold text-gray-800">➕ បញ្ចូលស្តុកទំនិញថ្មី</h1>
-      <p class="text-xs text-gray-500">បញ្ចូលទិន្នន័យខោ និង Post ចូល Telegram Channel ស្វ័យប្រវត្តិ</p>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+      <h2 class="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
+        ➕ បញ្ចូលស្តុកទំនិញថ្មី
+      </h2>
+      <p class="text-xs text-gray-500 mb-4">បញ្ចូលទិន្នន័យខោ និង Post ចូល Telegram Channel ស្វ័យប្រវត្តិ</p>
+
+      <form id="productForm" class="space-y-3.5">
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">🏷️ លេខកូដ (#)</label>
+            <input type="text" id="code" placeholder="J-001" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">👖 ម៉ូដ/ប្រាក</label>
+            <input type="text" id="title" placeholder="Uniqlo / Levis" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">💵 ថ្លៃលក់ ($)</label>
+            <input type="number" step="0.01" id="price" placeholder="18.80" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">📉 ថ្លៃដើម ($)</label>
+            <input type="number" step="0.01" id="costPrice" placeholder="10.00" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">📏 ទំហំ (Size)</label>
+          <input type="text" id="size" placeholder="L, XL ឬ ចង្កេះ 32" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">📝 ព័ត៌មានបន្ថែម/ទំហំលម្អិត</label>
+          <textarea id="details" rows="2" placeholder="ចង្កេះ: 33, ប្រវែង: 106, ជើង: 17..." class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">🖼️ រូបភាពទំនិញ (ជ្រើសបានច្រើនរូប)</label>
+          <input type="file" id="imageFiles" accept="image/*" multiple required class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:outline-none file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm mt-2">
+          🚀 រក្សាទុក និង Post ទៅ Telegram
+        </button>
+
+      </form>
     </div>
-
-    <form id="productForm" onsubmit="handleSubmit(event)" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3">
-      
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">🏷️ លេខកូដ (#)</label>
-          <input type="text" id="code" required placeholder="J-001" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">👖 ម៉ូដ/ប្រាក</label>
-          <input type="text" id="title" required placeholder="Uniqlo / Levi's" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">💵 ថ្លៃលក់ ($)</label>
-          <input type="number" step="0.01" id="price" required placeholder="18.80" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">📉 ថ្លៃដើម ($)</label>
-          <input type="number" step="0.01" id="cost_price" required placeholder="10.00" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-xs font-bold text-gray-700 mb-1">📏 ទំហំ (Size)</label>
-        <input type="text" id="sizes" required placeholder="L, XL ឬ ចង្កេះ 32" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-      </div>
-
-      <div>
-        <label class="block text-xs font-bold text-gray-700 mb-1">📝 ព័ត៌មានបន្ថែម/ទំហំលម្អិត</label>
-        <textarea id="description" rows="3" placeholder="ចង្កេះ: 33, ប្រវែង: 106, ជើង: 17..." class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-      </div>
-
-      <div>
-        <label class="block text-xs font-bold text-gray-700 mb-1">🖼️ រូបភាព URL (បំបែកដោយសញ្ញាក្បៀស ,)</label>
-        <textarea id="images" rows="2" placeholder="https://link1.jpg, https://link2.jpg" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-      </div>
-
-      <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm shadow transition mt-2">
-        🚀 រក្សាទុក និង Post ទៅ Telegram
-      </button>
-    </form>
   </div>
 
   <script>
@@ -90,78 +91,106 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    async function handleSubmit(e) {
+    // មុខងារ Upload រូបភាពទៅ Supabase Storage
+    async function uploadImages(files) {
+      const imageUrls = [];
+      for (const file of files) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `product_images/${fileName}`;
+
+        const { error: uploadError } = await supabaseClient.storage
+          .from('products')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabaseClient.storage.from('products').getPublicUrl(filePath);
+        imageUrls.push(data.publicUrl);
+      }
+      return imageUrls;
+    }
+
+    // មុខងារ Post ទៅ Telegram
+    async function postToTelegram(code, title, price, size, details, imageUrls) {
+      const caption = `✨ <b>[ ផលិតផលថ្មីចូលស្តុក ]</b> ✨\n\n` +
+                      `🏷️ លេខកូដទំនិញ: <b>#${code.toUpperCase()}</b>\n` +
+                      `👖 ប្រភេទម៉ូដ: <b>${title}</b>\n` +
+                      `💵 តម្លៃ: <b>$${parseFloat(price).toFixed(2)}</b>\n` +
+                      `📏 Size / ទំហំ: <b>${size}</b>\n\n` +
+                      `📝 <b>ព័ត៌មានទំហំ & លក្ខណៈ:</b>\n${details || 'គ្មាន'}\n\n` +
+                      `🛍️ <b>កម៉្មង់ទិញតាមរយៈ Admin:</b> @YourAdminUsername\n` +
+                      `🚚 <b>សេវាកម្មដឹកជញ្ជូន:</b> 24 ខេត្ត/ក្រុង`;
+
+      if (imageUrls.length === 1) {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, photo: imageUrls[0], caption: caption, parse_mode: 'HTML' })
+        });
+      } else if (imageUrls.length > 1) {
+        const media = imageUrls.map((url, idx) => ({
+          type: 'photo',
+          media: url,
+          caption: idx === 0 ? caption : '',
+          parse_mode: 'HTML'
+        }));
+
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, media: media })
+        });
+      }
+    }
+
+    // Handle Form Submit
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
-      btn.innerText = '⏳ កំពុងរក្សាទុក...';
-
-      const code = document.getElementById('code').value.trim();
-      const title = document.getElementById('title').value.trim();
-      const price = parseFloat(document.getElementById('price').value);
-      const cost_price = parseFloat(document.getElementById('cost_price').value);
-      const sizes = document.getElementById('sizes').value.trim();
-      const userDesc = document.getElementById('description').value.trim();
-      const imagesInput = document.getElementById('images').value.trim();
-
-      const imgArray = imagesInput ? imagesInput.split(',').map(s => s.trim()) : [];
-      const fullDesc = `[Code: ${code}] ${userDesc}`;
+      btn.innerText = '⏳ កំពុង Upload រូបភាព និងបញ្ចូលទិន្នន័យ...';
 
       try {
-        // ១. រក្សាទុកក្នុង Supabase Database
-        const { data, error } = await supabaseClient
-          .from('products')
-          .insert([{
-            title: title,
-            price: price,
-            cost_price: cost_price,
-            sizes: [sizes],
-            description: fullDesc,
-            images: imgArray,
-            stock_quantity: 1
-          }]);
+        const code = document.getElementById('code').value.trim();
+        const title = document.getElementById('title').value.trim();
+        const price = parseFloat(document.getElementById('price').value);
+        const costPrice = parseFloat(document.getElementById('costPrice').value);
+        const size = document.getElementById('size').value.trim();
+        const details = document.getElementById('details').value.trim();
+        const fileInput = document.getElementById('imageFiles');
 
-        if (error) throw error;
+        if (fileInput.files.length === 0) throw new Error('សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក!');
 
-        // ២. Post ទៅ Telegram Channel
-        await sendToTelegram(code, title, price, sizes, userDesc);
+        // 1. Upload រូបភាពទៅ Supabase Storage
+        const imageUrls = await uploadImages(fileInput.files);
+
+        // 2. បញ្ចូលទិន្នន័យទៅ Database
+        const fullDesc = `[Code: ${code}] ${details}`;
+        const { error: dbError } = await supabaseClient.from('products').insert([{
+          title: title,
+          price: price,
+          cost_price: costPrice,
+          sizes: [size],
+          description: fullDesc,
+          images: imageUrls,
+          stock_quantity: 1
+        }]);
+
+        if (dbError) throw dbError;
+
+        // 3. Post ទៅ Telegram
+        await postToTelegram(code, title, price, size, details, imageUrls);
 
         alert('✅ បញ្ចូលស្តុក និង Post ទៅ Telegram ជោគជ័យ!');
         document.getElementById('productForm').reset();
       } catch (err) {
-        alert('❌ មានបញ្ហា៖ ' + err.message);
+        alert('❌ បរាជ័យ៖ ' + err.message);
       } finally {
         btn.disabled = false;
         btn.innerText = '🚀 រក្សាទុក និង Post ទៅ Telegram';
       }
-    }
-
-    async function sendToTelegram(code, title, price, sizes, desc) {
-      if (!TELEGRAM_BOT_TOKEN) return;
-
-      const postText = `✨ <b>[ ផលិតផលថ្មីចូលស្តុក ]</b> ✨\n\n` +
-                       `🏷️ លេខកូដទំនិញ៖ <b>#${code.toUpperCase()}</b>\n` +
-                       `👖 ប្រភេទម៉ូដ៖ <b>${title}</b>\n` +
-                       `💵 តម្លៃ៖ <b>$${price.toFixed(2)}</b>\n` +
-                       `📏 Size / ទំហំ៖ <b>${sizes}</b>\n\n` +
-                       `📝 <b>ព័ត៌មានទំហំ & លម្អិត៖</b>\n${desc}\n\n` +
-                       `🛍️ <b>កម្ម៉ង់ទិញតាមលោក Admin:</b> @Torp_jojus_online\n` +
-                       `🚚 <b>សេវាកម្មដឹកជញ្ជូន៖</b> ២៤ ខេត្ត/ក្រុង`;
-
-      try {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: postText,
-            parse_mode: 'HTML'
-          })
-        });
-      } catch (err) {
-        console.error('Telegram Post Error:', err);
-      }
-    }
+    });
   </script>
 </body>
 </html>
