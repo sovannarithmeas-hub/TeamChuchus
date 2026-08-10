@@ -68,9 +68,16 @@
         <input type="text" id="address" required placeholder="ឧ. ភ្នំពេញ, បាត់ដំបង..." class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
       </div>
 
-      <button type="submit" id="deliveryBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-sm shadow transition">
-        💾 រក្សាទុកទិន្នន័យដឹកជញ្ជូន
+      <button onclick="goToInvoice()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">
+  📄 មើលវិក្កយបត្រ (Invoice)
       </button>
+
+<script>
+  function goToInvoice() {
+    // បញ្ជូនទៅទំព័រ invoice.html
+    window.location.href = 'invoice.html';
+  }
+</script>
     </form>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
