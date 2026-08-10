@@ -131,26 +131,12 @@
 
   </div>
 
-  <script>
-    // កំណត់កាលបរិច្ឆេទបច្ចុប្បន្ន
-    const today = new Date().toLocaleDateString('km-KH', { year: 'numeric', month: 'short', day: 'numeric' });
-    document.getElementById('inv_date').innerText = `កាលបរិច្ឆេទ: ${today}`;
-
-    function updateInvoice() {
-      const name = document.getElementById('in_name').value.trim() || '---';
-      const phone = document.getElementById('in_phone').value.trim() || '---';
-      const code = document.getElementById('in_code').value.trim() || '---';
-      const price = parseFloat(document.getElementById('in_price').value) || 0;
-      const shipping = parseFloat(document.getElementById('in_shipping').value) || 0;
-      const total = price + shipping;
-
-      document.getElementById('out_name').innerText = `ឈ្មោះ៖ ${name}`;
-      document.getElementById('out_phone').innerText = `ទូរស័ព្ទ៖ ${phone}`;
-      document.getElementById('out_item').innerText = `ខោជជុស (កូដ: #${code})`;
-      document.getElementById('out_price').innerText = `$${price.toFixed(2)}`;
-      document.getElementById('out_shipping').innerText = `$${shipping.toFixed(2)}`;
-      document.getElementById('out_total').innerText = `$${total.toFixed(2)}`;
-    }
-  </script>
+ <script>
+  // ទាញយកទិន្នន័យដែលរក្សាទុកពី index.html
+  const savedCart = JSON.parse(localStorage.getItem('cartData')) || [];
+  
+  console.log("ទិន្នន័យខោដែលភ្ញៀវទិញ៖", savedCart);
+  // បងអាចយក savedCart នេះទៅបង្ហាញឈ្មោះខោ និងតម្លៃក្នុងវិក្កយបត្របាន!
+</script>
 </body>
 </html>
