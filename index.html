@@ -3,120 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>តូបជជុស Online - ទំព័រដើម</title>
+  <title>តូបជជុស Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-
-  <style>
-    body { font-family: 'Kantumruy Pro', sans-serif !important; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Kantumruy Pro', sans-serif; }</style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800 flex flex-col">
 
   <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
     <div class="max-w-md mx-auto p-3">
-      
       <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-3">
-          
-          <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
+        <div class="flex items-center gap-2.5">
+          <div class="w-11 h-11 rounded-full border border-blue-400 overflow-hidden bg-white flex-shrink-0">
             <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/logo.png" 
-                 onerror="this.style.display='none'" 
-                 alt="តូបជជុស ONLINE Logo" 
-                 class="w-full h-full object-cover rounded-full">
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/100?text=Logo';" 
+                 alt="Logo" class="w-full h-full object-cover">
           </div>
-
           <div>
-            <h1 class="text-base font-bold text-gray-900 leading-tight">តូបជជុស Online</h1>
-            <p class="text-[11px] text-gray-500">ជ្រើសរើសខោជជុសគុណភាពខ្ពស់ ស្អាតៗ និងមានក្នុងស្តុកស្រាប់</p>
+            <h1 class="text-sm font-bold text-gray-900 leading-tight">តូបជជុស Online</h1>
+            <p class="text-[10px] text-gray-500">ខោជជុសគុណភាពខ្ពស់ ស្អាតៗ</p>
           </div>
         </div>
 
-        <button onclick="openCartModal()" class="relative p-2 bg-blue-50 hover:bg-blue-100 rounded-xl transition text-blue-600">
-          <span class="text-xl">🛒</span>
-          <span id="cartBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+        <button onclick="openCartModal()" class="relative p-2 bg-blue-50 text-blue-600 rounded-xl">
+          <span class="text-lg">🛒</span>
+          <span id="cartBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
         </button>
       </div>
 
-      <div class="relative">
-        <input type="text" id="searchInput" oninput="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ (ឧ. J-001) ឬប្រភេទខោ..." class="w-full pl-3 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
-      </div>
-
+      <input type="text" id="searchInput" oninput="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬម៉ូដ..." class="w-full px-3 py-1.5 bg-gray-50 border rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
     </div>
   </header>
 
   <main class="flex-1 max-w-md mx-auto w-full p-3 space-y-3">
-    
     <div class="flex justify-between items-center px-1">
-      <span class="text-xs font-bold text-gray-700 flex items-center gap-1">
-        📦 ខោដែលមានក្នុងស្តុក
-      </span>
-      <span id="stockCount" class="text-[11px] bg-blue-100 text-blue-700 font-bold px-2.5 py-0.5 rounded-full">
-        0 មុខ
-      </span>
+      <span class="text-xs font-bold text-gray-700">📦 ខោក្នុងស្តុក</span>
+      <span id="stockCount" class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">0 មុខ</span>
     </div>
 
     <div id="productList" class="space-y-3">
-      <div class="text-center py-10 text-xs text-gray-400">
-        ⏳ កំពុងទាញទិន្នន័យទំនិញ...
-      </div>
+      <div class="text-center py-8 text-xs text-gray-400">⏳ កំពុងទាញទិន្នន័យ...</div>
     </div>
-
   </main>
 
-  <div id="productModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm transition-opacity">
+  <div id="productModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-y-auto p-4 space-y-3">
       <div class="flex justify-between items-center border-b pb-2">
-        <h3 id="modalCode" class="text-sm font-bold text-blue-600"></h3>
-        <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600 text-lg font-bold px-2">✕</button>
+        <h3 id="modalCode" class="text-xs font-bold text-blue-600"></h3>
+        <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600 text-base font-bold px-2">✕</button>
       </div>
       
       <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border">
-        <img id="modalImage" src="" alt="Product Image" class="w-full h-full object-cover">
+        <img id="modalImage" src="" class="w-full h-full object-cover">
       </div>
 
       <div>
         <div class="flex justify-between items-start mb-1">
-          <h2 id="modalTitle" class="text-base font-bold text-gray-800"></h2>
-          <span id="modalPrice" class="text-base font-extrabold text-blue-600"></span>
+          <h2 id="modalTitle" class="text-sm font-bold text-gray-800"></h2>
+          <span id="modalPrice" class="text-sm font-extrabold text-blue-600"></span>
         </div>
-        <div id="modalSize" class="text-xs text-gray-500 mb-2"></div>
-        <div id="modalDetails" class="text-xs bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1 text-gray-700 leading-relaxed font-mono whitespace-pre-line"></div>
+        <div id="modalSize" class="text-xs text-gray-500 mb-1"></div>
+        <div id="modalDetails" class="text-xs bg-gray-50 p-2 rounded-lg border text-gray-700 whitespace-pre-line font-mono"></div>
       </div>
 
       <div class="grid grid-cols-2 gap-2 pt-2 border-t">
-        <button id="modalAddToCartBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
-          🛒 បញ្ចូលកន្ត្រក់
-        </button>
-        <button id="modalBuyNowBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
-          ⚡ ទិញឥឡូវនេះ
-        </button>
+        <button id="modalAddToCartBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs">🛒 ចូលកន្ត្រក់</button>
+        <button id="modalBuyNowBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs">⚡ ទិញឥឡូវនេះ</button>
       </div>
     </div>
   </div>
 
-  <div id="cartModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+  <div id="cartModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[80vh] flex flex-col p-4">
       <div class="flex justify-between items-center border-b pb-2 mb-2">
-        <h3 class="text-sm font-bold text-gray-800 flex items-center gap-1">🛒 កន្ត្រក់ទំនិញរបស់អ្នក</h3>
-        <button onclick="closeCartModal()" class="text-gray-400 hover:text-gray-600 text-lg font-bold px-2">✕</button>
+        <h3 class="text-xs font-bold text-gray-800">🛒 កន្ត្រក់ទំនិញ</h3>
+        <button onclick="closeCartModal()" class="text-gray-400 text-base font-bold px-2">✕</button>
       </div>
 
-      <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-2 py-2">
-        </div>
+      <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-2 py-2"></div>
 
       <div class="border-t pt-3 mt-2 space-y-2">
-        <div class="flex justify-between items-center text-xs font-bold text-gray-800">
+        <div class="flex justify-between items-center text-xs font-bold">
           <span>សរុប៖</span>
-          <span id="cartTotalPrice" class="text-sm text-blue-600">$0.00</span>
+          <span id="cartTotalPrice" class="text-blue-600">$0.00</span>
         </div>
-        <button onclick="checkoutCartTelegram()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
-          💬 ផ្ញើការកុម្ម៉ង់ទាំងអស់ទៅ Telegram
-        </button>
+        <button onclick="checkoutCartTelegram()" class="w-full bg-blue-600 text-white font-bold py-2 rounded-xl text-xs">💬 កុម្ម៉ង់តាម Telegram</button>
       </div>
     </div>
   </div>
@@ -124,74 +96,119 @@
   <script>
     const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
-    const TELEGRAM_USERNAME = 'Torp_jojus_online'; // Telegram Admin Username
+    const TELEGRAM_USERNAME = 'Torp_jojus_online';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let allProducts = [], cart = [];
 
-    let allProducts = [];
-    let cart = [];
-
-    // ទាញទិន្នន័យពី Supabase ពេលបើក Page
     async function fetchProducts() {
       try {
         const { data, error } = await supabaseClient
           .from('products')
           .select('*')
-          .eq('stock_quantity', 1) // យកតែខោដែលមានក្នុងស្តុក
+          .eq('stock_quantity', 1)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-
         allProducts = data || [];
         renderProducts(allProducts);
       } catch (err) {
-        document.getElementById('productList').innerHTML = `<div class="text-center py-5 text-xs text-red-500">❌ បរាជ័យទាញទិន្នន័យ៖ ${err.message}</div>`;
+        document.getElementById('productList').innerHTML = `<div class="text-center py-5 text-xs text-red-500">❌ បរាជ័យ៖ ${err.message}</div>`;
       }
     }
 
-    // បង្ហាញបញ្ជីខោ
     function renderProducts(products) {
       const listEl = document.getElementById('productList');
       document.getElementById('stockCount').innerText = `${products.length} មុខ`;
 
       if (products.length === 0) {
-        listEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400">មិនមានខោក្នុងស្តុកទេ</div>`;
+        listEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400">គ្មានខោក្នុងស្តុកទេ</div>`;
         return;
       }
 
       listEl.innerHTML = products.map(p => {
         const imgUrl = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/300';
-        
-        // ស្រង់ Code ពី Description
         const codeMatch = p.description ? p.description.match(/\[Code:\s*([^\]]+)\]/) : null;
         const codeText = codeMatch ? codeMatch[1] : (p.code || 'N/A');
 
         return `
-          <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-200/80 hover:shadow-md transition flex flex-col justify-between">
-            
-            <div onclick="openProductModal('${p.id}')" class="cursor-pointer space-y-2">
-              <div class="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                <img src="${imgUrl}" alt="${p.title}" class="w-full h-full object-cover">
-                <span class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                  #${codeText}
-                </span>
+          <div class="bg-white rounded-xl p-2.5 shadow-sm border border-gray-200">
+            <div onclick="openProductModal('${p.id}')" class="cursor-pointer space-y-1.5">
+              <div class="relative aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden border">
+                <img src="${imgUrl}" class="w-full h-full object-cover">
+                <span class="absolute top-1.5 left-1.5 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">#${codeText}</span>
               </div>
-
-              <div>
-                <div class="flex justify-between items-start">
-                  <h3 class="font-bold text-gray-800 text-sm hover:text-blue-600 transition">${p.title}</h3>                   <span class="font-extrabold text-blue-600 text-sm">$${parseFloat(p.price).toFixed(2)}</span>
-                </div>
-                <p class="text-[11px] text-gray-500 line-clamp-2 mt-0.5">${p.description || ''}</p>
-                <div class="mt-1">
-                  <span class="inline-block bg-gray-100 text-gray-600 text-[10px] font-medium px-2 py-0.5 rounded border">
-                    Size: ${p.sizes ? p.sizes.join(', ') : 'N/A'}
-                  </span>
-                </div>
+              <div class="flex justify-between items-start">
+                <h3 class="font-bold text-xs text-gray-800">${p.title}</h3>
+                <span class="font-extrabold text-blue-600 text-xs">$${parseFloat(p.price).toFixed(2)}</span>
               </div>
             </div>
+            <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t">
+              <button onclick="addToCart('${p.id}')" class="bg-amber-50 text-amber-700 font-bold py-1 rounded-lg text-[10px] border border-amber-200">🛒 ចូលកន្ត្រក់</button>
+              <button onclick="buyNowDirect('#${codeText}', '${p.title}', '${p.price}')" class="bg-blue-600 text-white font-bold py-1 rounded-lg text-[10px]">⚡ ទិញឥឡូវនេះ</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
-            <div class="grid grid-cols-2 gap-2 mt-3 pt-2 border-t border-gray-100">
-              <button onclick="addToCart('${p.id}')" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold py-1.5 rounded-xl text-[11px] border border-amber-200 transition flex items-center justify-center gap-1">
-                🛒 ចូលកន្ត្រក់
-              </button>
-              <button onclick="buyNowDirect('#${codeText}', '${p.title}', '${p.price}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font
+    function filterProducts() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      renderProducts(allProducts.filter(p => p.title.toLowerCase().includes(q) || (p.description && p.description.toLowerCase().includes(q))));
+    }
+
+    function openProductModal(id) {
+      const p = allProducts.find(x => x.id == id);
+      if (!p) return;
+      const codeMatch = p.description ? p.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+      const codeText = codeMatch ? codeMatch[1] : 'N/A';
+
+      document.getElementById('modalCode').innerText = `#${codeText}`;
+      document.getElementById('modalTitle').innerText = p.title;
+      document.getElementById('modalPrice').innerText = `$${parseFloat(p.price).toFixed(2)}`;
+      document.getElementById('modalSize').innerText = `Size: ${p.sizes ? p.sizes.join(', ') : 'N/A'}`;
+      document.getElementById('modalDetails').innerText = p.description || '';
+      document.getElementById('modalImage').src = (p.images && p.images.length > 0) ? p.images[0] : '';
+
+      document.getElementById('modalAddToCartBtn').onclick = () => { addToCart(p.id); closeProductModal(); };
+      document.getElementById('modalBuyNowBtn').onclick = () => { buyNowDirect(`#${codeText}`, p.title, p.price); };
+      document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
+
+    function addToCart(id) {
+      const p = allProducts.find(x => x.id == id);
+      if (p && !cart.some(x => x.id == id)) {
+        cart.push(p);
+        updateCartUI();
+        alert('✅ បានថែមចូលកន្ត្រក់!');
+      }
+    }
+
+    function updateCartUI() {
+      const b = document.getElementById('cartBadge');
+      if (cart.length > 0) { b.innerText = cart.length; b.classList.remove('hidden'); } 
+      else { b.classList.add('hidden'); }
+    }
+
+    function openCartModal() {
+      const list = document.getElementById('cartItemsList');
+      let total = 0;
+      if (cart.length === 0) {
+        list.innerHTML = `<div class="text-center py-4 text-xs text-gray-400">គ្មានទំនិញទេ</div>`;
+      } else {
+        list.innerHTML = cart.map((item, i) => {
+          total += parseFloat(item.price);
+          return `<div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg text-xs">
+            <div><b>#${item.title}</b> - $${parseFloat(item.price).toFixed(2)}</div>
+            <button onclick="removeFromCart(${i})" class="text-red-500 font-bold">🗑️</button>
+          </div>`;
+        }).join('');
+      }
+      document.getElementById('cartTotalPrice').innerText = `$${total.toFixed(2)}`;
+      document.getElementById('cartModal').classList.remove('hidden');
+    }
+
+    function removeFromCart(i) { cart.splice(i, 1); updateCartUI(); openCartModal(); }
+    function closeCartModal() { document.getElementById('cartModal').classList.add('hidden');
