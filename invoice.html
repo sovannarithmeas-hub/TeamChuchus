@@ -3,140 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>តូបជជុស Online - ចេញវិក្កយបត្រ</title>
+  <title>វិក្កយបត្រ - តូបជជុស Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Kantumruy Pro', sans-serif !important;
-    }
-    @media print {
-      .no-print {
-        display: none !important;
-      }
-      body {
-        background-color: white !important;
-        padding: 0 !important;
-      }
-      .invoice-card {
-        box-shadow: none !important;
-        border: none !important;
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-    }
+    body { font-family: 'Kantumruy Pro', sans-serif; }
+    @media print { .no-print { display: none !important; } }
   </style>
 </head>
-<body class="bg-gray-100 p-4 font-sans text-gray-800">
-  <div class="max-w-xl mx-auto">
-    
-    <div class="no-print flex justify-between items-center mb-5 bg-white p-2 rounded-xl shadow-sm border border-gray-200 overflow-x-auto text-xs">
-      <a href="admin.html" class="flex-1 min-w-[60px] py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium">➕ បញ្ចូលស្តុក</a>
-      <a href="stock.html" class="flex-1 min-w-[60px] py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium">📦 មើលស្តុក</a>
-      <a href="delivery.html" class="flex-1 min-w-[60px] py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium">🚚 ដឹកជញ្ជូន</a>
-      <a href="invoice.html" class="flex-1 min-w-[60px] py-1.5 text-center bg-blue-600 text-white rounded-lg font-bold shadow-sm">🧾 វិក្កយបត្រ</a>
-      <a href="sales.html" class="flex-1 min-w-[60px] py-1.5 text-center text-gray-600 hover:text-gray-800 font-medium">📈 របាយការណ៍</a>
+<body class="bg-gray-100 min-h-screen p-3 flex flex-col items-center justify-center">
+
+  <div id="invoiceCard" class="bg-white w-full max-w-md p-5 rounded-2xl shadow-sm border space-y-4">
+    <div class="flex justify-between items-start border-b pb-3">
+      <div class="flex items-center gap-2">
+        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/logo.png" 
+             onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-full border">
+        <div>
+          <h1 class="font-bold text-sm">តូបជជុស Online</h1>
+          <p class="text-[10px] text-gray-500">វិក្កយបត្រ / Invoice</p>
+        </div>
+      </div>
+      <div class="text-right">
+        <span class="text-xs font-bold text-blue-600 block" id="invNum">#INV-001</span>
+        <span class="text-[10px] text-gray-400" id="invDate">--/--/----</span>
+      </div>
     </div>
 
-    <div class="no-print bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3 mb-6">
-      <h2 class="font-bold text-sm text-gray-700 border-b pb-2">🧾 បង្កើតវិក្កយបត្រ / Invoice ថ្មី</h2>
-      
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">👤 ឈ្មោះអតិថិជន</label>
-          <input type="text" id="in_name" oninput="updateInvoice()" placeholder="ឈ្មោះអតិថិជន" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">📞 លេខទូរស័ព្ទ</label>
-          <input type="text" id="in_phone" oninput="updateInvoice()" placeholder="012 345 678" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
-        </div>
-      </div>
-
-      <div class="grid grid-cols-3 gap-2">
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">🏷️ លេខកូដខោ</label>
-          <input type="text" id="in_code" oninput="updateInvoice()" placeholder="J-001" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">💵 តម្លៃខោ ($)</label>
-          <input type="number" step="0.01" id="in_price" oninput="updateInvoice()" placeholder="18.80" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">🚚 ថ្លៃដឹក ($)</label>
-          <input type="number" step="0.01" id="in_shipping" oninput="updateInvoice()" placeholder="1.50" class="w-full p-2 border rounded-lg text-sm bg-gray-50 focus:bg-white outline-none">
-        </div>
-      </div>
-
-      <button onclick="window.print()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-sm shadow transition">
-        🖨️ បោះពុម្ព / រក្សាទុកជា PDF
-      </button>
+    <div class="bg-gray-50 p-2.5 rounded-xl text-xs space-y-0.5">
+      <p class="font-bold text-gray-700">👤 ព័ត៌មានអតិថិជន៖</p>
+      <p class="text-gray-600" id="custNameText">ឈ្មោះ៖ --</p>
+      <p class="text-gray-600" id="custPhoneText">លេខទូរស័ព្ទ៖ --</p>
+      <p class="text-gray-600" id="custAddressText">អាសយដ្ឋាន៖ --</p>
     </div>
 
-    <div class="invoice-card bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-      
-      <div class="flex justify-between items-start border-b pb-4 mb-4">
-        <div>
-          <h1 class="text-xl font-bold text-gray-800">តូបជជុស Online</h1>
-          <p class="text-xs text-gray-500 mt-0.5">លក់ខោជជុសគុណភាពខ្ពស់ & ស្អាតៗ</p>
-          <p class="text-xs text-gray-500">Telegram: @Torp_jojus_online</p>
-        </div>
-        <div class="text-right">
-          <span class="bg-blue-100 text-blue-700 font-bold text-xs px-2.5 py-1 rounded-md">INVOICE</span>
-          <p class="text-[11px] text-gray-400 mt-2" id="inv_date">កាលបរិច្ឆេទ: -</p>
-        </div>
-      </div>
-
-      <div class="bg-gray-50 p-3 rounded-xl mb-4 border border-gray-100">
-        <p class="text-xs text-gray-500 font-medium">អតិថិជន / Customer:</p>
-        <h3 class="font-bold text-gray-800 text-sm mt-0.5" id="out_name">ឈ្មោះ៖ ---</h3>
-        <p class="text-xs text-gray-600" id="out_phone">ទូរស័ព្ទ៖ ---</p>
-      </div>
-
-      <table class="w-full text-left text-xs text-gray-600 mb-4">
-        <thead class="bg-gray-100 text-gray-700 font-bold border-b">
-          <tr>
-            <th class="p-2">បរិយាយ / កូដ</th>
-            <th class="p-2 text-right">តម្លៃ</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr>
-            <td class="p-2">
-              <span class="font-bold text-gray-800" id="out_item">ខោជជុស (កូដ: #---)</span>
-            </td>
-            <td class="p-2 text-right font-semibold" id="out_price">$0.00</td>
-          </tr>
-          <tr>
-            <td class="p-2 text-gray-500">សេវាដឹកជញ្ជូន (Shipping Fee)</td>
-            <td class="p-2 text-right font-semibold text-gray-500" id="out_shipping">$0.00</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="border-t pt-3 flex justify-between items-center mb-6">
-        <span class="font-bold text-gray-800 text-sm">ប្រាក់សរុប (Total Amount):</span>
-        <span class="font-extrabold text-blue-600 text-lg" id="out_total">$0.00</span>
-      </div>
-
-      <div class="border-t border-dashed pt-4 text-center">
-        <p class="text-xs font-bold text-gray-700 mb-1">🙏 សូមអរគុណសម្រាប់ការគាំទ្រ តូបជជុស Online!</p>
-        <p class="text-[11px] text-gray-400">ទំនិញទិញហើយមិនអាចប្តូរវិញបានទេ</p>
-      </div>
-
+    <div class="space-y-2">
+      <p class="text-xs font-bold text-gray-700">👖 ទំនិញដែលបានទិញ៖</p>
+      <div id="invoiceItems" class="space-y-1.5 text-xs"></div>
     </div>
 
+    <div class="border-t pt-2 space-y-1 text-xs">
+      <div class="flex justify-between text-gray-500">
+        <span>ថ្លៃទំនិញសរុប៖</span>
+        <span id="subTotal">$0.00</span>
+      </div>
+      <div class="flex justify-between text-gray-500">
+        <span>ថ្លៃដឹកជញ្ជូន៖</span>
+        <span id="deliveryFee">$0.00</span>
+      </div>
+      <div class="flex justify-between font-bold text-sm pt-2 border-t text-gray-900">
+        <span>សរុបចុងក្រោយ៖</span>
+        <span class="text-blue-600" id="grandTotal">$0.00</span>
+      </div>
+    </div>
+
+    <div class="text-center pt-2 border-t text-[10px] text-gray-400">
+      🙏 អរគុណសម្រាប់ការគាំទ្រ តូបជជុស Online!
+    </div>
   </div>
 
- <script>
-  // ទាញយកទិន្នន័យដែលរក្សាទុកពី index.html
-  const savedCart = JSON.parse(localStorage.getItem('cartData')) || [];
-  
-  console.log("ទិន្នន័យខោដែលភ្ញៀវទិញ៖", savedCart);
-  // បងអាចយក savedCart នេះទៅបង្ហាញឈ្មោះខោ និងតម្លៃក្នុងវិក្កយបត្របាន!
-</script>
+  <div class="w-full max-w-md mt-3 space-y-2 no-print">
+    <button onclick="sendToTelegram()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+      💬 ផ្ញើវិក្កយបត្រនេះទៅ Telegram Admin
+    </button>
+    <div class="flex gap-2">
+      <button onclick="window.print()" class="w-1/2 bg-gray-800 text-white font-bold py-2 rounded-xl text-xs">🖨️ Print / Save PDF</button>
+      <a href="index.html" onclick="localStorage.clear()" class="w-1/2 bg-gray-200 text-gray-700 font-bold py-2 rounded-xl text-xs text-center">🏠 ទំព័រដើម</a>
+    </div>
+  </div>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem('cartData')) || [];
+    const details = JSON.parse(localStorage.getItem('orderDetails')) || { customer: {}, deliveryFee: 0, itemsTotal: 0, grandTotal: 0 };
+
+    document.getElementById('invDate').innerText = new Date().toLocaleDateString('km-KH');
+    document.getElementById('invNum').innerText = `#INV-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    document.getElementById('custNameText').innerText = `ឈ្មោះ៖ ${details.customer.name || 'ភ្ញៀវទូទៅ'}`;
+    document.getElementById('custPhoneText').innerText = `លេខទូរស័ព្ទ៖ ${details.customer.phone || '--'}`;
+    document.getElementById('custAddressText').innerText = `អាសយដ្ឋាន៖ ${details.customer.address || '--'}`;
+
+    const itemsContainer = document.getElementById('invoiceItems');
+    itemsContainer.innerHTML = cart.map(item => {
+      const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+      const codeText = codeMatch ? codeMatch[1] : 'N/A';
+      return `
+        <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg border">
+          <span><b>#${codeText}</b> - ${item.title}</span>
+          <span class="font-bold text-blue-600">$${parseFloat(item.price || 0).toFixed(2)}</span>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('subTotal').innerText = `$${details.itemsTotal.toFixed(2)}`;
+    document.getElementById('deliveryFee').innerText = `$${details.deliveryFee.toFixed(2)}`;
+    document.getElementById('grandTotal').innerText = `$${details.grandTotal.toFixed(2)}`;
+
+    function sendToTelegram() {
+      let msg = `🧾 *វិក្កយបត្រថ្មីពី Web - តូបជជុស Online*\n\n`;
+      msg += `👤 *អតិថិជន:* ${details.customer.name}\n`;
+      msg += `📞 *ទូរស័ព្ទ:* ${details.customer.phone}\n`;
+      msg += `📍 *អាសយដ្ឋាន:* ${details.customer.address}\n\n`;
+      msg += `👖 *បញ្ជីទំនិញ (${cart.length} មុខ):*\n`;
+
+      cart.forEach((item, idx) => {
+        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+        const codeText = codeMatch ? codeMatch[1] : 'N/A';
+        msg += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
+      });
+
+      msg += `\n🚚 *ថ្លៃដឹក:* $${details.deliveryFee.toFixed(2)}`;
+      msg += `\n💰 *សរុបចុងក្រោយ:* $${details.grandTotal.toFixed(2)}`;
+
+      window.open(`https://t.me/Torp_jojus_online?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+  </script>
 </body>
 </html>
