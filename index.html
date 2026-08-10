@@ -21,6 +21,7 @@
 
   <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
     <div class="max-w-md mx-auto p-3">
+      
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
@@ -29,6 +30,7 @@
                  alt="តូបជជុស ONLINE Logo" 
                  class="w-full h-full object-cover rounded-full">
           </div>
+
           <div>
             <h1 class="text-base font-bold text-gray-900 leading-tight">តូបជជុស Online</h1>
             <p class="text-[11px] text-gray-500">ជ្រើសរើសខោជជុសគុណភាពខ្ពស់ ស្អាតៗ និងមានក្នុងស្តុកស្រាប់</p>
@@ -44,6 +46,7 @@
       <div class="relative">
         <input type="text" id="searchInput" oninput="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ (ឧ. J-001) ឬប្រភេទខោ..." class="w-full pl-3 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
       </div>
+
     </div>
   </header>
 
@@ -127,33 +130,16 @@
     let allProducts = [];
     let cart = [];
 
-    // ⚡ ទាញទិន្នន័យបែប Fast & Optimized
     async function fetchProducts() {
       try {
-        const fetchPromise = supabaseClient
-          .from('products')
-          .select('id, title, price, description, sizes, images, stock_quantity, created_at')
-          .order('created_at', { ascending: false });
-
-        // បន្ថែម Timeout 5 វិនាទី បើយូរពេកឱ្យវាប្រាប់ភ្លាម
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('ការតភ្ជាប់អ៊ីនធឺណិតយឺត ឬដាច់ Connection')), 6000)
-        );
-
-        const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+        const { data, error } = await supabaseClient.from('products').select('*');
 
         if (error) throw error;
 
-        // តម្រងយកតែខោដែលមានក្នុងស្តុក (stock_quantity > 0)
-        allProducts = (data || []).filter(p => p.stock_quantity === 1 || p.stock_quantity > 0);
+        allProducts = data || [];
         renderProducts(allProducts);
       } catch (err) {
-        document.getElementById('productList').innerHTML = `
-          <div class="text-center py-8 px-4 bg-white rounded-2xl border border-red-100 shadow-sm">
-            <p class="text-xs text-red-500 font-bold mb-2">❌ បរាជ័យទាញទិន្នន័យ</p>
-            <p class="text-[10px] text-gray-400 mb-3">${err.message}</p>
-            <button onclick="fetchProducts()" class="bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-xl">🔄 ព្យាយាមម្តងទៀត</button>
-          </div>`;
+        document.getElementById('productList').innerHTML = `<div class="text-center py-5 text-xs text-red-500">❌ បរាជ័យទាញទិន្នន័យ៖ ${err.message}</div>`;
       }
     }
 
@@ -162,7 +148,7 @@
       document.getElementById('stockCount').innerText = `${products.length} មុខ`;
 
       if (products.length === 0) {
-        listEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400 bg-white rounded-2xl border p-4">មិនមានខោក្នុងស្តុកទេ</div>`;
+        listEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400">មិនមានខោក្នុងស្តុកទេ</div>`;
         return;
       }
 
@@ -178,7 +164,7 @@
           <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-200/80 hover:shadow-md transition flex flex-col justify-between">
             <div onclick="openProductModal('${p.id}')" class="cursor-pointer space-y-2">
               <div class="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                <img src="${mainImg}" alt="${p.title}" class="w-full h-full object-cover" loading="lazy">
+                <img src="${mainImg}" alt="${p.title}" class="w-full h-full object-cover">
                 <span class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
                   #${codeText}
                 </span>
@@ -187,7 +173,7 @@
 
               <div>
                 <div class="flex justify-between items-start">
-                  <h3 class="font-bold text-gray-800 text-sm hover:text-blue-600 transition">${p.title}</h3>
+                  <h3 class="font-bold text-gray-800 text-sm hover:text-blue-600 transition">${p.title || 'គ្មានចំណងជើង'}</h3>
                   <span class="font-extrabold text-blue-600 text-sm">$${parseFloat(p.price || 0).toFixed(2)}</span>
                 </div>
                 <p class="text-[11px] text-gray-500 line-clamp-2 mt-0.5">${p.description || ''}</p>
@@ -215,7 +201,7 @@
     function filterProducts() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
       const filtered = allProducts.filter(p => 
-        p.title.toLowerCase().includes(query) || 
+        (p.title && p.title.toLowerCase().includes(query)) || 
         (p.description && p.description.toLowerCase().includes(query))
       );
       renderProducts(filtered);
@@ -229,7 +215,7 @@
       const codeText = codeMatch ? codeMatch[1] : (product.code || 'N/A');
 
       document.getElementById('modalCode').innerText = `#${codeText}`;
-      document.getElementById('modalTitle').innerText = product.title;
+      document.getElementById('modalTitle').innerText = product.title || '';
       document.getElementById('modalPrice').innerText = `$${parseFloat(product.price || 0).toFixed(2)}`;
       document.getElementById('modalSize').innerText = `Size: ${product.sizes ? (Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes) : 'N/A'}`;
       document.getElementById('modalDetails').innerText = product.description || 'គ្មានព័ត៌មានបន្ថែម';
@@ -339,12 +325,11 @@
         msg += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
       });
 
-      msg += `\n💰 <b>សរុបទាំងអស់៖ $${total.toFixed(2)}</b>`;
+      msg += `\n💰 សរុបទាំងអស់៖ $${total.toFixed(2)}`;
       window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    // Load ភ្លាមៗពេលបើក Page
-    document.addEventListener('DOMContentLoaded', fetchProducts);
+    fetchProducts();
   </script>
 </body>
 </html>
