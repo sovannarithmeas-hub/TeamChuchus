@@ -100,7 +100,7 @@
         const filePath = `product_images/${fileName}`;
 
         const { error: uploadError } = await supabaseClient.storage
-          .from('products')
+          .from('product-images')
           .upload(filePath, file);
 
         if (uploadError) throw uploadError;
@@ -167,7 +167,7 @@
 
         // 2. បញ្ចូលទិន្នន័យទៅ Database
         const fullDesc = `[Code: ${code}] ${details}`;
-        const { error: dbError } = await supabaseClient.from('products').insert([{
+        const { error: dbError } = await supabaseClient.from('product-images').insert([{
           title: title,
           price: price,
           cost_price: costPrice,
