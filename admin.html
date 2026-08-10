@@ -95,33 +95,37 @@
         </div>
 
         <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="block text-xs font-semibold text-gray-700">📝 ចំណាំបន្ថែម (ជ្រើសរើស Quick Template)</label>
-            <button type="button" onclick="clearDetails()" class="text-[10px] text-red-500 hover:underline">លុបសម្អាត</button>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="block text-xs font-bold text-gray-800">📝 ចំណាំ / Caption Template</label>
+            <button type="button" onclick="clearDetails()" class="text-[10px] text-red-500 font-medium hover:underline">🗑️ លុបចេញ</button>
           </div>
           
-          <div class="flex flex-wrap gap-1.5 mb-2">
-            <button type="button" onclick="addNote('សាច់ស្អាត 98%')" class="text-[11px] bg-gray-100 hover:bg-blue-100 hover:text-blue-700 text-gray-600 px-2.5 py-1 rounded-lg border border-gray-200 transition">
-              ✨ សាច់ស្អាត 98%
-            </button>
-            <button type="button" onclick="addNote('សាច់ទន់ ស្រួលស្លៀក')" class="text-[11px] bg-gray-100 hover:bg-blue-100 hover:text-blue-700 text-gray-600 px-2.5 py-1 rounded-lg border border-gray-200 transition">
-              ☁️ សាច់ទន់ ងាយស្រួលស្លៀក
-            </button>
-            <button type="button" onclick="addNote('សាច់​​យឺតទន់')" class="text-[11px] bg-gray-100 hover:bg-blue-100 hover:text-blue-700 text-gray-600 px-2.5 py-1 rounded-lg border border-gray-200 transition">
-              🧵 សាច់​​យឺតទន់
-            </button>
-            <button type="button" onclick="addNote('ក្បាលឡេវ')" class="text-[11px] bg-gray-100 hover:bg-blue-100 hover:text-blue-700 text-gray-600 px-2.5 py-1 rounded-lg border border-gray-200 transition">
-              🔘 ក្បាលឡេវ
-            </button>
-            <button type="button" onclick="addNote('ក្បាលរ៉ូត')" class="text-[11px] bg-gray-100 hover:bg-blue-100 hover:text-blue-700 text-gray-600 px-2.5 py-1 rounded-lg border border-gray-200 transition">
-              🤐 ក្បាលរ៉ូត
-            </button>
-            <button type="button" onclick="addNote('ពណ៌នៅជ្រះស្អាតថ្មី​ 97%')" class="text-[11px] bg-gray-100 hover:bg-blue-100 hover:text-blue-700 text-gray-600 px-2.5 py-1 rounded-lg border border-gray-200 transition">
-              🎨 ពណ៌នៅជ្រះស្អាតថ្មី​ 97%
-            </button>
+          <div class="mb-2">
+            <span class="text-[10px] text-gray-500 block mb-1">ទម្រង់ Caption៖</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="applyCaptionTemplate(1)" class="text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg border border-blue-200 font-medium transition">
+                📋 Form ស្ដង់ដារ
+              </button>
+              <button type="button" onclick="applyCaptionTemplate(2)" class="text-[11px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-lg border border-indigo-200 font-medium transition">
+                ✨ សាច់យឺត/ស្ទ្រីច
+              </button>
+              <button type="button" onclick="applyCaptionTemplate(3)" class="text-[11px] bg-purple-50 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg border border-purple-200 font-medium transition">
+                🔥 ទំនិញ Grade A (99%)
+              </button>
+            </div>
           </div>
 
-          <textarea id="details" rows="2" placeholder="សាច់ទន់ ស្រួលស្លៀក..." class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+          <div class="mb-2">
+            <span class="text-[10px] text-gray-500 block mb-1">ថែមពាក្យរហ័ស៖</span>
+            <div class="flex flex-wrap gap-1">
+              <button type="button" onclick="addTag('• សាច់ទន់ ស្រួលស្លៀក')" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-0.5 rounded border border-gray-300">☁️ សាច់ទន់</button>
+              <button type="button" onclick="addTag('• ក្បាលប៊ូតុង')" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-0.5 rounded border border-gray-300">🔘 ក្បាលប៊ូតុង</button>
+              <button type="button" onclick="addTag('• ក្បាលរ៉ូត')" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-0.5 rounded border border-gray-300">🤐 ក្បាលរ៉ូត</button>
+              <button type="button" onclick="addTag('• ពណ៌នៅជ្រះស្អាត')" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-0.5 rounded border border-gray-300">🎨 ពណ៌ជ្រះស្អាត</button>
+            </div>
+          </div>
+
+          <textarea id="details" rows="4" placeholder="ជ្រើសរើស Caption Template ឬវាយបញ្ចូលនៅទីនេះ..." class="w-full p-2.5 border rounded-lg text-xs leading-relaxed focus:ring-2 focus:ring-blue-500 outline-none font-mono bg-gray-50"></textarea>
         </div>
 
         <div>
@@ -147,13 +151,24 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 🏷️ FUNCTION: បន្ថែម Text ពី Template ចូលក្នុង Textarea ស្វ័យប្រវត្តិ
-    function addNote(text) {
-      const detailsField = document.getElementById('details');
-      if (detailsField.value.trim() === '') {
-        detailsField.value = text;
+    // 📋 TEMPLATES CAPTION
+    function applyCaptionTemplate(type) {
+      const details = document.getElementById('details');
+      if (type === 1) {
+        details.value = `• ស្ថានភាព៖ នៅស្អាត 90%+\n• ប្រភេទសាច់៖ សាច់ខោឃាវប៊យស្អាត\n• ម៉ូដ៖ ជើងត្រង់/ស្ដង់ដារ`;
+      } else if (type === 2) {
+        details.value = `• ស្ថានភាព៖ នៅស្អាត 95%\n• ប្រភេទសាច់៖ សាច់ស្ទ្រីច (យឺតស្រួលស្លៀក)\n• លក្ខណៈពិសេស៖ មិនតឹងជើង ស្រួលផ្លាស់ប្តូរទីតាំង`;
+      } else if (type === 3) {
+        details.value = `• ស្ថានភាព៖ Grade A+ (ស្អាត 99% ដូចថ្មី)\n• ប្រភេទសាច់៖ សាច់ក្រាស់ស្អាត ពណ៌មិនទាន់ស្លេក\n• ក្បាលប៊ូតុង/រ៉ូត៖ នៅមាំទាំងអស់`;
+      }
+    }
+
+    function addTag(tag) {
+      const details = document.getElementById('details');
+      if (details.value.trim() === '') {
+        details.value = tag;
       } else {
-        detailsField.value += ' ' + text; // ថែម Space បញ្ជូលគ្នាប្រសិនបើមាន Text ស្រាប់
+        details.value += '\n' + tag;
       }
     }
 
@@ -161,7 +176,7 @@
       document.getElementById('details').value = '';
     }
 
-    // FUNCTION: BATCH PARSER សម្រាប់បំពេញទិន្នន័យស្វ័យប្រវត្តិ
+    // FUNCTION: BATCH PARSER
     function parseQuickInput() {
       const input = document.getElementById('quickInput').value.trim();
       if (!input) return;
@@ -197,7 +212,7 @@
       }
     });
 
-    // Upload រូបភាពទៅ Supabase Storage
+    // Upload រូបភាព
     async function uploadImages(files) {
       const imageUrls = [];
       for (const file of files) {
@@ -227,7 +242,7 @@
                       `• ចង្កេះ (Waist): <b>${waist}</b>\n` +
                       `• ប្រវែង (Length): <b>${length}</b>\n` +
                       `• ចុងជើង: <b>${leg}</b>\n` +
-                      (details ? `• ចំណាំ: ${details}\n\n` : `\n`) +
+                      (details ? `\n${details}\n\n` : `\n`) +
                       `🛍️ <b>កម៉្មង់ទិញតាមរយៈ Admin:</b> @YourAdminUsername\n` +
                       `🚚 <b>សេវាកម្មដឹកជញ្ជូន:</b> 24 ខេត្ត/ក្រុង`;
 
@@ -280,7 +295,7 @@
         const imageUrls = await uploadImages(fileInput.files);
 
         // 2. រក្សាទុក Database
-        const fullDesc = `[Code: ${code}] W:${waist} L:${length} Leg:${leg}${details ? ' ' + details : ''}`;
+        const fullDesc = `[Code: ${code}] W:${waist} L:${length} Leg:${leg}${details ? '\n' + details : ''}`;
         
         const { error: dbError } = await supabaseClient.from('products').insert([{
           title: title,
