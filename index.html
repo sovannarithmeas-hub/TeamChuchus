@@ -15,12 +15,6 @@
     body { font-family: 'Kantumruy Pro', sans-serif !important; }
   </style>
 </head>
-</div>
-  <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
-  <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/logo.png" 
-       alt="តូបជជុស ONLINE Logo" 
-       class="w-full h-full object-cover rounded-full">
-</div>
 <body class="bg-gray-100 min-h-screen text-gray-800 flex flex-col">
 
   <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
@@ -28,9 +22,14 @@
       
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-blue-50 flex items-center justify-center">
-            <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/logo.png" alt="តូបជជុស ONLINE Logo" class="w-full h-full object-cover rounded-full">
+          
+          <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
+            <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/logo.png" 
+                 onerror="this.style.display='none'" 
+                 alt="តូបជជុស ONLINE Logo" 
+                 class="w-full h-full object-cover rounded-full">
           </div>
+
           <div>
             <h1 class="text-base font-bold text-gray-900 leading-tight">តូបជជុស Online</h1>
             <p class="text-[11px] text-gray-500">ជ្រើសរើសខោជជុសគុណភាពខ្ពស់ ស្អាតៗ និងមានក្នុងស្តុកស្រាប់</p>
@@ -180,8 +179,7 @@
 
               <div>
                 <div class="flex justify-between items-start">
-                  <h3 class="font-bold text-gray-800 text-sm hover:text-blue-600 transition">${p.title}</h3>
-                  <span class="font-extrabold text-blue-600 text-sm">$${parseFloat(p.price).toFixed(2)}</span>
+                  <h3 class="font-bold text-gray-800 text-sm hover:text-blue-600 transition">${p.title}</h3>                   <span class="font-extrabold text-blue-600 text-sm">$${parseFloat(p.price).toFixed(2)}</span>
                 </div>
                 <p class="text-[11px] text-gray-500 line-clamp-2 mt-0.5">${p.description || ''}</p>
                 <div class="mt-1">
@@ -196,139 +194,4 @@
               <button onclick="addToCart('${p.id}')" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold py-1.5 rounded-xl text-[11px] border border-amber-200 transition flex items-center justify-center gap-1">
                 🛒 ចូលកន្ត្រក់
               </button>
-              <button onclick="buyNowDirect('#${codeText}', '${p.title}', '${p.price}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-xl text-[11px] shadow-sm transition flex items-center justify-center gap-1">
-                ⚡ ទិញឥឡូវនេះ
-              </button>
-            </div>
-
-          </div>
-        `;
-      }).join('');
-    }
-
-    // Search Filter
-    function filterProducts() {
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      const filtered = allProducts.filter(p => 
-        p.title.toLowerCase().includes(query) || 
-        (p.description && p.description.toLowerCase().includes(query))
-      );
-      renderProducts(filtered);
-    }
-
-    // 🔍 OPEN PRODUCT DETAIL MODAL
-    function openProductModal(productId) {
-      const product = allProducts.find(p => p.id == productId);
-      if (!product) return;
-
-      const codeMatch = product.description ? product.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-      const codeText = codeMatch ? codeMatch[1] : (product.code || 'N/A');
-
-      document.getElementById('modalCode').innerText = `#${codeText}`;
-      document.getElementById('modalTitle').innerText = product.title;
-      document.getElementById('modalPrice').innerText = `$${parseFloat(product.price).toFixed(2)}`;
-      document.getElementById('modalSize').innerText = `Size: ${product.sizes ? product.sizes.join(', ') : 'N/A'}`;
-      document.getElementById('modalDetails').innerText = product.description || 'គ្មានព័ត៌មានបន្ថែម';
-      document.getElementById('modalImage').src = (product.images && product.images.length > 0) ? product.images[0] : 'https://via.placeholder.com/300';
-
-      document.getElementById('modalAddToCartBtn').onclick = () => { addToCart(product.id); closeProductModal(); };
-      document.getElementById('modalBuyNowBtn').onclick = () => { buyNowDirect(`#${codeText}`, product.title, product.price); };
-
-      document.getElementById('productModal').classList.remove('hidden');
-    }
-
-    function closeProductModal() {
-      document.getElementById('productModal').classList.add('hidden');
-    }
-
-    // 🛒 CART FUNCTIONS
-    function addToCart(productId) {
-      const product = allProducts.find(p => p.id == productId);
-      if (!product) return;
-
-      if (!cart.some(item => item.id == productId)) {
-        cart.push(product);
-        updateCartUI();
-        alert('✅ បានបន្ថែមចូលក្នុងកន្ត្រក់!');
-      } else {
-        alert('⚠️ ខោមួយនេះមាននៅក្នុងកន្ត្រក់រួចហើយ!');
-      }
-    }
-
-    function updateCartUI() {
-      const badge = document.getElementById('cartBadge');
-      if (cart.length > 0) {
-        badge.innerText = cart.length;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-    }
-
-    function openCartModal() {
-      const container = document.getElementById('cartItemsList');
-      let total = 0;
-
-      if (cart.length === 0) {
-        container.innerHTML = `<div class="text-center py-6 text-xs text-gray-400">គ្មានទំនិញក្នុងកន្ត្រក់ទេ</div>`;
-      } else {
-        container.innerHTML = cart.map((item, index) => {
-          total += parseFloat(item.price);
-          const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-          const codeText = codeMatch ? codeMatch[1] : 'N/A';
-
-          return `
-            <div class="flex justify-between items-center p-2 bg-gray-50 rounded-xl border text-xs">
-              <div>
-                <span class="font-bold text-blue-600">#${codeText}</span> - ${item.title}
-                <div class="text-[10px] text-gray-500">$${parseFloat(item.price).toFixed(2)}</div>
-              </div>
-              <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 font-bold px-2">🗑️</button>
-            </div>
-          `;
-        }).join('');
-      }
-
-      document.getElementById('cartTotalPrice').innerText = `$${total.toFixed(2)}`;
-      document.getElementById('cartModal').classList.remove('hidden');
-    }
-
-    function removeFromCart(index) {
-      cart.splice(index, 1);
-      updateCartUI();
-      openCartModal();
-    }
-
-    function closeCartModal() {
-      document.getElementById('cartModal').classList.add('hidden');
-    }
-
-    // ⚡ DIRECT BUY VIA TELEGRAM
-    function buyNowDirect(code, title, price) {
-      const msg = `ជម្រាបសួរ តូបជជុស Online! ខ្ញុំចង់កុម្ម៉ង់ទិញខោ៖\n\n🏷️ លេខកូដ៖ ${code}\n👖 ម៉ូដ៖ ${title}\n💵 តម្លៃ៖ $${parseFloat(price).toFixed(2)}`;
-      window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    // 💬 CHECKOUT ENTIRE CART TO TELEGRAM
-    function checkoutCartTelegram() {
-      if (cart.length === 0) return;
-
-      let msg = `ជម្រាបសួរ តូបជជុស Online! ខ្ញុំចង់កុម្ម៉ង់ទិញខោចំនួន (${cart.length} មុខ)៖\n\n`;
-      let total = 0;
-
-      cart.forEach((item, idx) => {
-        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-        const codeText = codeMatch ? codeMatch[1] : 'N/A';
-        total += parseFloat(item.price);
-        msg += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price).toFixed(2)})\n`;
-      });
-
-      msg += `\n💰 <b>សរុបទាំងអស់៖ $${total.toFixed(2)}</b>`;
-      window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    // Load ទិន្នន័យដំបូង
-    fetchProducts();
-  </script>
-</body>
-</html>
+              <button onclick="buyNowDirect('#${codeText}', '${p.title}', '${p.price}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font
