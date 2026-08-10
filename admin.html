@@ -61,13 +61,31 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">📏 ទំហំ (Size)</label>
-          <input type="text" id="size" placeholder="L, XL ឬ ចង្កេះ 32" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">📏 ទំហំទូទៅ (Size)</label>
+          <input type="text" id="size" placeholder="S, M, L, XL..." required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+
+        <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+          <label class="block text-xs font-bold text-blue-800 mb-2">📐 ទំហំលម្អិតខោ (រង្វាស់)</label>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[11px] font-medium text-gray-600 mb-1">ចង្កេះ (W)</label>
+              <input type="text" id="waist" placeholder="33" required class="w-full p-2 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium text-gray-600 mb-1">សម្រុង (L)</label>
+              <input type="text" id="length" placeholder="106" required class="w-full p-2 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium text-gray-600 mb-1">ចុងជើង (Leg)</label>
+              <input type="text" id="leg" placeholder="17" required class="w-full p-2 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+          </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">📝 ព័ត៌មានបន្ថែម/ទំហំលម្អិត</label>
-          <textarea id="details" rows="2" placeholder="ចង្កេះ: 33, ប្រវែង: 106, ជើង: 17..." class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">📝 ចំណាំបន្ថែម (សាច់ខោ/ពណ៌...)</label>
+          <textarea id="details" rows="2" placeholder="សាច់ទន់ ស្រួលស្លៀក ក្បាលប៊ូតុង..." class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
         </div>
 
         <div>
@@ -89,40 +107,41 @@
     const TELEGRAM_BOT_TOKEN = '8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA'; 
     const TELEGRAM_CHAT_ID = '@tobchuchusonline';
 
-    // ឈ្មោះ Bucket ក្នុង Supabase Storage
     const BUCKET_NAME = 'product-images'; 
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // មុខងារ Upload រូបភាពទៅ Supabase Storage (product-images Bucket)
+    // Upload រូបភាពទៅ Supabase Storage
     async function uploadImages(files) {
       const imageUrls = [];
       for (const file of files) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-        // Upload ចូល Storage
         const { error: uploadError } = await supabaseClient.storage
           .from(BUCKET_NAME)
           .upload(fileName, file);
 
         if (uploadError) throw uploadError;
 
-        // ទាញយក Public URL
         const { data } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
         imageUrls.push(data.publicUrl);
       }
       return imageUrls;
     }
 
-    // មុខងារ Post ទៅ Telegram
-    async function postToTelegram(code, title, price, size, details, imageUrls) {
+    // Post ទៅ Telegram
+    async function postToTelegram(code, title, price, size, waist, length, leg, details, imageUrls) {
       const caption = `✨ <b>[ ផលិតផលថ្មីចូលស្តុក ]</b> ✨\n\n` +
                       `🏷️ លេខកូដទំនិញ: <b>#${code.toUpperCase()}</b>\n` +
                       `👖 ប្រភេទម៉ូដ: <b>${title}</b>\n` +
                       `💵 តម្លៃ: <b>$${parseFloat(price).toFixed(2)}</b>\n` +
                       `📏 Size / ទំហំ: <b>${size}</b>\n\n` +
-                      `📝 <b>ព័ត៌មានទំហំ & លក្ខណៈ:</b>\n${details || 'គ្មាន'}\n\n` +
+                      `📝 <b>ព័ត៌មានទំហំ & លក្ខណៈ:</b>\n` +
+                      `• ចង្កេះ (Waist): <b>${waist}</b>\n` +
+                      `• ប្រវែង (Length): <b>${length}</b>\n` +
+                      `• ចុងជើង: <b>${leg}</b>\n` +
+                      (details ? `• ចំណាំ: ${details}\n\n` : `\n`) +
                       `🛍️ <b>កម៉្មង់ទិញតាមរយៈ Admin:</b> @YourAdminUsername\n` +
                       `🚚 <b>សេវាកម្មដឹកជញ្ជូន:</b> 24 ខេត្ត/ក្រុង`;
 
@@ -161,16 +180,23 @@
         const price = parseFloat(document.getElementById('price').value);
         const costPrice = parseFloat(document.getElementById('costPrice').value);
         const size = document.getElementById('size').value.trim();
+        
+        // ទាញតម្លៃ ចង្កេះ, សម្រុង, ចុងជើង
+        const waist = document.getElementById('waist').value.trim();
+        const length = document.getElementById('length').value.trim();
+        const leg = document.getElementById('leg').value.trim();
         const details = document.getElementById('details').value.trim();
+
         const fileInput = document.getElementById('imageFiles');
 
         if (fileInput.files.length === 0) throw new Error('សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក!');
 
-        // 1. Upload រូបភាពទៅ Supabase Storage (product-images Bucket)
+        // 1. Upload រូបភាពទៅ Supabase Storage
         const imageUrls = await uploadImages(fileInput.files);
 
-        // 2. បញ្ចូលទិន្នន័យទៅ Database (products Table)
-        const fullDesc = `[Code: ${code}] ${details}`;
+        // 2. រៀបចំព័ត៌មានលម្អិត និងរក្សាទុកទៅ Database
+        const fullDesc = `[Code: ${code}] W:${waist} L:${length} Leg:${leg}${details ? ' ' + details : ''}`;
+        
         const { error: dbError } = await supabaseClient.from('products').insert([{
           title: title,
           price: price,
@@ -183,8 +209,8 @@
 
         if (dbError) throw dbError;
 
-        // 3. Post ទៅ Telegram Channel
-        await postToTelegram(code, title, price, size, details, imageUrls);
+        // 3. Post ទៅ Telegram
+        await postToTelegram(code, title, price, size, waist, length, leg, details, imageUrls);
 
         alert('✅ បញ្ចូលស្តុក និង Post ទៅ Telegram ជោគជ័យ!');
         document.getElementById('productForm').reset();
