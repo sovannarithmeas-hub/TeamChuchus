@@ -113,9 +113,21 @@
           <span>សរុប៖</span>
           <span id="cartTotalPrice" class="text-sm text-blue-600">$0.00</span>
         </div>
-        <button onclick="checkoutCartTelegram()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
-          💬 ផ្ញើការកុម្ម៉ង់ទាំងអស់ទៅ Telegram
-        </button>
+        <button onclick="goToDelivery()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">
+  🚀 បន្តទៅការដឹកជញ្ជូន & ទូទាត់ប្រាក់
+</button>
+
+<script>
+  function goToDelivery() {
+    if (cart.length === 0) return alert('សូមជ្រើសរើសខោជាមុនសិន!');
+    
+    // រក្សាទុកទិន្នន័យខោដែលភ្ញៀវរើសចូលក្នុងម៉ាស៊ីន
+    localStorage.setItem('cartData', JSON.stringify(cart));
+    
+    // បញ្ជូនទៅទំព័រ delivery.html
+    window.location.href = 'delivery.html';
+  }
+</script>
       </div>
     </div>
   </div>
