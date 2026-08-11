@@ -16,7 +16,7 @@
   <div id="invoiceCard" class="bg-white w-full max-w-md p-5 rounded-2xl shadow-sm border space-y-4">
     <div class="flex justify-between items-start border-b pb-3">
       <div class="flex items-center gap-2">
-        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/logo.png" 
+        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
              onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-full border">
         <div>
           <h1 class="font-bold text-sm">តូបជជុស Online</h1>
@@ -94,15 +94,15 @@
       `;
     }).join('');
 
-    document.getElementById('subTotal').innerText = `$${details.itemsTotal.toFixed(2)}`;
-    document.getElementById('deliveryFee').innerText = `$${details.deliveryFee.toFixed(2)}`;
-    document.getElementById('grandTotal').innerText = `$${details.grandTotal.toFixed(2)}`;
+    document.getElementById('subTotal').innerText = `$${(details.itemsTotal || 0).toFixed(2)}`;
+    document.getElementById('deliveryFee').innerText = `$${(details.deliveryFee || 0).toFixed(2)}`;
+    document.getElementById('grandTotal').innerText = `$${(details.grandTotal || 0).toFixed(2)}`;
 
     function sendToTelegram() {
       let msg = `🧾 *វិក្កយបត្រថ្មីពី Web - តូបជជុស Online*\n\n`;
-      msg += `👤 *អតិថិជន:* ${details.customer.name}\n`;
-      msg += `📞 *ទូរស័ព្ទ:* ${details.customer.phone}\n`;
-      msg += `📍 *អាសយដ្ឋាន:* ${details.customer.address}\n\n`;
+      msg += `👤 *អតិថិជន:* ${details.customer.name || 'N/A'}\n`;
+      msg += `📞 *ទូរស័ព្ទ:* ${details.customer.phone || 'N/A'}\n`;
+      msg += `📍 *អាសយដ្ឋាន:* ${details.customer.address || 'N/A'}\n\n`;
       msg += `👖 *បញ្ជីទំនិញ (${cart.length} មុខ):*\n`;
 
       cart.forEach((item, idx) => {
@@ -111,8 +111,8 @@
         msg += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
       });
 
-      msg += `\n🚚 *ថ្លៃដឹក:* $${details.deliveryFee.toFixed(2)}`;
-      msg += `\n💰 *សរុបចុងក្រោយ:* $${details.grandTotal.toFixed(2)}`;
+      msg += `\n🚚 *ថ្លៃដឹក:* $${(details.deliveryFee || 0).toFixed(2)}`;
+      msg += `\n💰 *សរុបចុងក្រោយ:* $${(details.grandTotal || 0).toFixed(2)}`;
 
       window.open(`https://t.me/Torp_jojus_online?text=${encodeURIComponent(msg)}`, '_blank');
     }
