@@ -21,7 +21,7 @@
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
             <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-                 onerror="this.src='https://via.placeholder.com/100?text=Logo';" class="w-full h-full object-cover">
+                 onerror="this.src='logo.png';" class="w-full h-full object-cover">
           </div>
           <div>
             <h1 class="text-base font-bold text-gray-900">តូបជជុស Online</h1>
@@ -273,6 +273,7 @@
       document.getElementById('cartModal').classList.add('hidden');
     }
 
+    // កែសម្រួលមុខងារទិញភ្លាមៗ និងទិញច្រើនមុខក្នុងកន្ត្រក់ឱ្យលោតរលូន
     function buyNowDirect(productId) {
       const product = allProducts.find(p => p.id == productId);
       if (product) {
@@ -283,7 +284,11 @@
     }
 
     function proceedToDelivery() {
-      if (cart.length === 0) return alert('សូមជ្រើសរើសខោជាមុនសិន!');
+      if (cart.length === 0) {
+        alert('សូមជ្រើសរើសខោជាមុនសិន!');
+        return;
+      }
+      saveCart();
       window.location.href = 'delivery.html';
     }
 
