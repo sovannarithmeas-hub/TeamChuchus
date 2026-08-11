@@ -19,10 +19,9 @@
     <div class="max-w-md mx-auto p-3">
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-full border-2 border-blue-600 bg-blue-50 flex items-center justify-center flex-shrink-0 shadow-sm">
-            <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-            </svg>
+          <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
+            <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
+                 onerror="this.src='https://via.placeholder.com/100?text=Logo';" class="w-full h-full object-cover">
           </div>
           <div>
             <h1 class="text-base font-bold text-gray-900">តូបជជុស Online</h1>
@@ -98,7 +97,7 @@
           <span id="cartTotalPrice" class="text-sm text-blue-600">$0.00</span>
         </div>
         <button onclick="proceedToDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
-          🚀 បន្តទៅការដឹកជញ្ជូន & ទូទាត់ប្រាក់
+          🚀 បន្តទៅការដឹកជញ្ជូន
         </button>
       </div>
     </div>
@@ -110,12 +109,7 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let allProducts = [];
-    let cart = [];
-
-    // លុប Cache កាតចាស់ដើម្បីការពារកំហុស Data
-    try {
-      cart = JSON.parse(localStorage.getItem('cartData')) || [];
-    } catch(e) { cart = []; }
+    let cart = JSON.parse(localStorage.getItem('cartData')) || [];
 
     async function fetchProducts() {
       try {
@@ -163,8 +157,8 @@
             </div>
 
             <div class="grid grid-cols-2 gap-2 pt-2 border-t">
-              <button onclick="addToCart('${p.id}')" class="bg-amber-50 text-amber-700 font-bold py-2 rounded-xl text-[11px] border border-amber-200 active:scale-95 transition">🛒 ចូលកន្ត្រក់</button>
-              <button onclick="buyNowDirect('${p.id}')" class="bg-blue-600 text-white font-bold py-2 rounded-xl text-[11px] active:scale-95 transition">⚡ ទិញភ្លាមៗ</button>
+              <button onclick="addToCart('${p.id}')" class="bg-amber-50 text-amber-700 font-bold py-1.5 rounded-xl text-[11px] border border-amber-200">🛒 ចូលកន្ត្រក់</button>
+              <button onclick="buyNowDirect('${p.id}')" class="bg-blue-600 text-white font-bold py-1.5 rounded-xl text-[11px]">⚡ ទិញភ្លាមៗ</button>
             </div>
           </div>
         `;
@@ -279,13 +273,12 @@
       document.getElementById('cartModal').classList.add('hidden');
     }
 
-    // Direct Navigation ធានាការរត់ទៅ delivery.html 100%
     function buyNowDirect(productId) {
       const product = allProducts.find(p => p.id == productId);
       if (product) {
         cart = [product];
-        localStorage.setItem('cartData', JSON.stringify(cart));
-        redirectToPage('delivery.html');
+        saveCart();
+        window.location.href = 'delivery.html';
       }
     }
 
@@ -294,13 +287,8 @@
         alert('សូមជ្រើសរើសខោជាមុនសិន!');
         return;
       }
-      localStorage.setItem('cartData', JSON.stringify(cart));
-      redirectToPage('delivery.html');
-    }
-
-    function redirectToPage(url) {
-      // ធានាថាការ Redirect ដើរគ្រប់ Browser / Live Server / Tablet
-      window.location.assign(url);
+      saveCart();
+      window.location.href = 'delivery.html';
     }
 
     fetchProducts();
