@@ -20,7 +20,7 @@
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
-            <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/logo.png" 
+            <img src="https://https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
                  onerror="this.src='https://via.placeholder.com/100?text=Logo';" class="w-full h-full object-cover">
           </div>
           <div>
@@ -49,6 +49,38 @@
       <div class="text-center py-10 text-xs text-gray-400">⏳ កំពុងទាញទិន្នន័យ...</div>
     </div>
   </main>
+
+  <div id="productModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm transition-opacity">
+    <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-y-auto p-4 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 id="modalCode" class="text-sm font-bold text-blue-600"></h3>
+        <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600 text-lg font-bold px-2">✕</button>
+      </div>
+      
+      <div class="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border">
+        <div id="modalImageSlider" class="flex w-full h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"></div>
+        <span id="imageCounter" class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full font-mono">1/1</span>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-start mb-1">
+          <h2 id="modalTitle" class="text-base font-bold text-gray-800"></h2>
+          <span id="modalPrice" class="text-base font-extrabold text-blue-600"></span>
+        </div>
+        <div id="modalSize" class="text-xs text-gray-500 mb-2"></div>
+        <div id="modalDetails" class="text-xs bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1 text-gray-700 leading-relaxed font-mono whitespace-pre-line"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 pt-2 border-t">
+        <button id="modalAddToCartBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+          🛒 បញ្ចូលកន្ត្រក់
+        </button>
+        <button id="modalBuyNowBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+          ⚡ ទិញឥឡូវនេះ
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div id="cartModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
     <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[80vh] flex flex-col p-4">
@@ -101,21 +133,29 @@
       }
 
       listEl.innerHTML = products.map(p => {
-        const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/300';
+        const images = (p.images && Array.isArray(p.images) && p.images.length > 0) ? p.images : ['https://via.placeholder.com/300'];
+        const mainImg = images[0];
+        const imgCount = images.length;
+
         const codeMatch = p.description ? p.description.match(/\[Code:\s*([^\]]+)\]/) : null;
         const codeText = codeMatch ? codeMatch[1] : (p.code || 'N/A');
 
         return `
           <div class="bg-white rounded-2xl p-3 shadow-sm border space-y-2">
-            <div class="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden border">
-              <img src="${img}" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">#${codeText}</span>
+            <div onclick="openProductModal('${p.id}')" class="cursor-pointer space-y-2">
+              <div class="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden border">
+                <img src="${mainImg}" class="w-full h-full object-cover">
+                <span class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">#${codeText}</span>
+                ${imgCount > 1 ? `<span class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">📸 ${imgCount} រូប</span>` : ''}
+              </div>
+              
+              <div class="flex justify-between items-start">
+                <h3 class="font-bold text-gray-800 text-xs">${p.title || 'គ្មានចំណងជើង'}</h3>
+                <span class="font-extrabold text-blue-600 text-xs">$${parseFloat(p.price || 0).toFixed(2)}</span>
+              </div>
+              <p class="text-[10px] text-gray-500 line-clamp-2">${p.description || ''}</p>
             </div>
-            <div class="flex justify-between items-start">
-              <h3 class="font-bold text-gray-800 text-xs">${p.title || 'គ្មានចំណងជើង'}</h3>
-              <span class="font-extrabold text-blue-600 text-xs">$${parseFloat(p.price || 0).toFixed(2)}</span>
-            </div>
-            <p class="text-[10px] text-gray-500 line-clamp-2">${p.description || ''}</p>
+
             <div class="grid grid-cols-2 gap-2 pt-2 border-t">
               <button onclick="addToCart('${p.id}')" class="bg-amber-50 text-amber-700 font-bold py-1.5 rounded-xl text-[11px] border border-amber-200">🛒 ចូលកន្ត្រក់</button>
               <button onclick="buyNowDirect('${p.id}')" class="bg-blue-600 text-white font-bold py-1.5 rounded-xl text-[11px]">⚡ ទិញភ្លាមៗ</button>
@@ -123,6 +163,54 @@
           </div>
         `;
       }).join('');
+    }
+
+    function openProductModal(productId) {
+      const product = allProducts.find(p => p.id == productId);
+      if (!product) return;
+
+      const codeMatch = product.description ? product.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+      const codeText = codeMatch ? codeMatch[1] : (product.code || 'N/A');
+
+      document.getElementById('modalCode').innerText = `#${codeText}`;
+      document.getElementById('modalTitle').innerText = product.title || '';
+      document.getElementById('modalPrice').innerText = `$${parseFloat(product.price || 0).toFixed(2)}`;
+      document.getElementById('modalSize').innerText = `Size: ${product.sizes ? (Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes) : 'N/A'}`;
+      document.getElementById('modalDetails').innerText = product.description || 'គ្មានព័ត៌មានបន្ថែម';
+
+      const images = (product.images && Array.isArray(product.images) && product.images.length > 0) ? product.images : ['https://via.placeholder.com/300'];
+      const sliderEl = document.getElementById('modalImageSlider');
+      
+      sliderEl.innerHTML = images.map((imgUrl) => `
+        <div class="w-full h-full flex-shrink-0 snap-center">
+          <img src="${imgUrl}" class="w-full h-full object-cover">
+        </div>
+      `).join('');
+
+      document.getElementById('imageCounter').innerText = `1/${images.length}`;
+
+      sliderEl.onscroll = () => {
+        const index = Math.round(sliderEl.scrollLeft / sliderEl.clientWidth) + 1;
+        document.getElementById('imageCounter').innerText = `${index}/${images.length}`;
+      };
+
+      document.getElementById('modalAddToCartBtn').onclick = () => { addToCart(product.id); closeProductModal(); };
+      document.getElementById('modalBuyNowBtn').onclick = () => { buyNowDirect(product.id); };
+
+      document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.add('hidden');
+    }
+
+    function filterProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const filtered = allProducts.filter(p => 
+        (p.title && p.title.toLowerCase().includes(query)) || 
+        (p.description && p.description.toLowerCase().includes(query))
+      );
+      renderProducts(filtered);
     }
 
     function addToCart(productId) {
