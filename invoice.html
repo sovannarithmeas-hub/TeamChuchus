@@ -8,7 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Kantumruy Pro', sans-serif; }
-    @media print { .no-print { display: none !important; } }
+    @media print {
+      body { background-color: white !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+      #invoiceCard { border: none !important; shadow: none !important; width: 100% !important; max-width: 100% !important; }
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-3 flex flex-col items-center justify-center">
@@ -29,8 +33,11 @@
       </div>
     </div>
 
-    <div class="bg-gray-50 p-2.5 rounded-xl text-xs space-y-0.5">
-      <p class="font-bold text-gray-700">👤 ព័ត៌មានអតិថិជន៖</p>
+    <div class="bg-gray-50 p-2.5 rounded-xl text-xs space-y-0.5 relative">
+      <div class="flex justify-between items-center mb-1">
+        <p class="font-bold text-gray-700">👤 ព័ត៌មានអតិថិជន៖</p>
+        <a href="delivery.html" class="no-print text-[11px] text-blue-600 underline font-bold">✏️ កែប្រែ</a>
+      </div>
       <p class="text-gray-600" id="custNameText">ឈ្មោះ៖ --</p>
       <p class="text-gray-600" id="custPhoneText">លេខទូរស័ព្ទ៖ --</p>
       <p class="text-gray-600" id="custAddressText">អាសយដ្ឋាន៖ --</p>
@@ -56,19 +63,34 @@
       </div>
     </div>
 
+    <div class="border-t pt-3 text-center space-y-2">
+      <p class="text-xs font-bold text-gray-800">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
+      <div class="flex justify-center">
+        <img id="abaQrCode" src="https://via.placeholder.com/200?text=ABA+KHQR" class="w-40 h-40 object-contain border rounded-xl p-1 bg-white shadow-sm">
+      </div>
+      <p class="text-[11px] text-gray-600 font-bold">ឈ្មោះគណនី៖ TORP JOJUS ONLINE</p>
+    </div>
+
     <div class="text-center pt-2 border-t text-[10px] text-gray-400">
       🙏 អរគុណសម្រាប់ការគាំទ្រ តូបជជុស Online!
     </div>
   </div>
 
   <div class="w-full max-w-md mt-3 space-y-2 no-print">
-    <button onclick="sendToTelegram()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+    <button onclick="sendToTelegram()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition">
       💬 ផ្ញើវិក្កយបត្រនេះទៅ Telegram Admin
     </button>
     <div class="flex gap-2">
-      <button onclick="window.print()" class="w-1/2 bg-gray-800 text-white font-bold py-2 rounded-xl text-xs">🖨️ Print / Save PDF</button>
-      <a href="index.html" onclick="localStorage.clear()" class="w-1/2 bg-gray-200 text-gray-700 font-bold py-2 rounded-xl text-xs text-center">🏠 ទំព័រដើម</a>
+      <button onclick="triggerPrint()" class="w-1/2 bg-gray-800 hover:bg-gray-900 text-white font-bold py-2.5 rounded-xl text-xs active:scale-95 transition flex items-center justify-center gap-1">
+        🖨️ Print / Save PDF
+      </button>
+      <a href="delivery.html" class="w-1/2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs text-center flex items-center justify-center gap-1">
+        ✏️ កែប្រែព័ត៌មាន
+      </a>
     </div>
+    <a href="index.html" onclick="localStorage.removeItem('cartData'); localStorage.removeItem('orderDetails');" class="block w-full bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs text-center">
+      🏠 ត្រឡប់ទៅទំព័រដើម (បញ្ចប់)
+    </a>
   </div>
 
   <script>
@@ -85,7 +107,7 @@
     const itemsContainer = document.getElementById('invoiceItems');
     itemsContainer.innerHTML = cart.map(item => {
       const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-      const codeText = codeMatch ? codeMatch[1] : 'N/A';
+      const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
       return `
         <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg border">
           <span><b>#${codeText}</b> - ${item.title}</span>
@@ -98,6 +120,14 @@
     document.getElementById('deliveryFee').innerText = `$${(details.deliveryFee || 0).toFixed(2)}`;
     document.getElementById('grandTotal').innerText = `$${(details.grandTotal || 0).toFixed(2)}`;
 
+    // មុខងារ Print ធានាការដើរគ្រប់ទូរស័ព្ទ/កុំព្យូទ័រ
+    function triggerPrint() {
+      setTimeout(() => {
+        window.print();
+      }, 200);
+    }
+
+    // មុខងារផ្ញើទៅ Telegram ធានាការបើក Link ដើរ ១០០%
     function sendToTelegram() {
       let msg = `🧾 *វិក្កយបត្រថ្មីពី Web - តូបជជុស Online*\n\n`;
       msg += `👤 *អតិថិជន:* ${details.customer.name || 'N/A'}\n`;
@@ -107,14 +137,15 @@
 
       cart.forEach((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-        const codeText = codeMatch ? codeMatch[1] : 'N/A';
+        const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
         msg += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
       });
 
       msg += `\n🚚 *ថ្លៃដឹក:* $${(details.deliveryFee || 0).toFixed(2)}`;
       msg += `\n💰 *សរុបចុងក្រោយ:* $${(details.grandTotal || 0).toFixed(2)}`;
 
-      window.open(`https://t.me/Torp_jojus_online?text=${encodeURIComponent(msg)}`, '_blank');
+      const telegramUrl = `https://t.me/Torp_jojus_online?text=${encodeURIComponent(msg)}`;
+      window.location.href = telegramUrl;
     }
   </script>
 </body>
