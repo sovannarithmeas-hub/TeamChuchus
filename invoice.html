@@ -3,38 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ការបញ្ជាទិញ - តូបជជុស Online</title>
+  <title>រង់ចាំការទូទាត់ - តូបជជុស Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Kantumruy Pro', sans-serif; }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-3 flex flex-col items-center justify-center">
+<body class="bg-gray-50 min-h-screen p-3 flex flex-col items-center justify-center">
 
-  <div class="bg-white w-full max-w-md p-5 rounded-3xl shadow-sm border space-y-4">
+  <div class="bg-white w-full max-w-md p-5 rounded-3xl shadow-sm border border-gray-100 space-y-4">
     
-    <div class="flex justify-between items-center border-b pb-3">
-      <div class="flex items-center gap-2.5">
-        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-             onerror="this.src='https://via.placeholder.com/50';" class="w-11 h-11 rounded-full border shadow-sm">
-        <div>
-          <h1 class="font-bold text-sm text-gray-800">តូបជជុស Online</h1>
-          <p class="text-[10px] text-gray-500" id="invNum">#INV-0001</p>
-        </div>
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-center space-y-1">
+      <div class="inline-flex p-2 bg-amber-100 rounded-full text-amber-600 mb-1">
+        ⏳
       </div>
-      <div class="text-right">
-        <span class="inline-block bg-amber-100 text-amber-700 font-bold text-[10px] px-2.5 py-1 rounded-full border border-amber-200">
-          ⏳ រង់ចាំការទូទាត់
-        </span>
-        <span class="text-[10px] text-gray-400 block mt-0.5" id="invDate">--/--/----</span>
-      </div>
+      <h2 class="font-bold text-sm text-amber-800">រង់ចាំការទូទាត់ប្រាក់ (Waiting for Payment)</h2>
+      <p class="text-[11px] text-amber-700">សូមស្កែនទូទាត់ប្រាក់ រួចផ្ញើប្រវត្តិ/ស្លីបបង់ប្រាក់មកកាន់ Admin ដើម្បី Confirm Order</p>
     </div>
 
     <div class="bg-gray-50 p-3 rounded-2xl text-xs space-y-1 border border-gray-100">
       <div class="flex justify-between items-center border-b pb-1.5 mb-1">
-        <span class="font-bold text-gray-800 flex items-center gap-1">📍 ព័ត៌មានដឹកជញ្ជូន</span>
+        <span class="font-bold text-gray-800">📍 ព័ត៌មានដឹកជញ្ជូន</span>
         <a href="delivery.html" class="text-[11px] text-blue-600 font-bold hover:underline">✏️ កែប្រែ</a>
       </div>
       <p class="text-gray-600" id="custNameText"><b>ឈ្មោះ៖</b> --</p>
@@ -43,80 +34,68 @@
     </div>
 
     <div class="space-y-2">
-      <span class="text-xs font-bold text-gray-800">👖 ទំនិញបានជ្រើសរើស</span>
-      <div id="invoiceItems" class="space-y-1.5 text-xs"></div>
+      <p class="text-xs font-bold text-gray-800">🛍️ ទំនិញដែលបានកុម្ម៉ង់</p>
+      <div id="orderItems" class="space-y-1.5 text-xs"></div>
     </div>
 
-    <div class="border-t pt-2.5 space-y-1 text-xs">
-      <div class="flex justify-between text-gray-500">
+    <div class="bg-blue-50/50 p-3 rounded-2xl border border-blue-100 space-y-1.5 text-xs">
+      <div class="flex justify-between text-gray-600">
         <span>ថ្លៃទំនិញសរុប៖</span>
         <span id="subTotal">$0.00</span>
       </div>
-      <div class="flex justify-between text-gray-500">
+      <div class="flex justify-between text-gray-600">
         <span>ថ្លៃដឹកជញ្ជូន៖</span>
         <span id="deliveryFee">$0.00</span>
       </div>
-      <div class="flex justify-between font-bold text-base pt-2 border-t text-gray-900">
-        <span>ប្រាក់ត្រូវទូទាត់សរុប៖</span>
-        <span class="text-blue-600" id="grandTotal">$0.00</span>
+      <div class="flex justify-between font-bold text-sm text-blue-900 border-t border-blue-200 pt-1.5">
+        <span>ទឹកប្រាក់ត្រូវទូទាត់សរុប៖</span>
+        <span class="text-blue-600 text-base" id="grandTotal">$0.00</span>
       </div>
     </div>
 
-    <div class="border-t pt-3 text-center space-y-2.5">
-      <div class="bg-blue-50/60 p-3 rounded-2xl border border-blue-100">
-        <p class="text-xs font-bold text-blue-900 mb-1">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
-        <p class="text-[10px] text-gray-500 mb-2">ចុចលើរូប QR ដើម្បីពង្រីកធំ ឬចុចជាប់លើរូបដើម្បី Save ទុកស្កែន</p>
-        
-        <div class="flex justify-center cursor-pointer" onclick="openQrModal()">
-          <img id="abaQrCode" src="https://via.placeholder.com/250?text=ABA+KHQR" 
-               class="w-44 h-44 object-contain border-2 border-blue-200 rounded-2xl p-1.5 bg-white shadow-sm hover:scale-105 transition">
-        </div>
+    <div class="border-t pt-3 text-center space-y-2">
+      <p class="text-xs font-bold text-gray-800">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
+      
+      <div class="flex justify-center cursor-pointer" onclick="openQrModal()">
+        <img id="abaQrCode" src="https://via.placeholder.com/250?text=ABA+KHQR" class="w-44 h-44 object-contain border-2 border-blue-500/20 rounded-2xl p-1 bg-white shadow-sm">
+      </div>
+      <p class="text-[10px] text-gray-400">💡 ចុចលើរូប QR ដើម្បីពង្រីកធំ ឬសង្កត់លើរូបដើម្បី Save ទុកស្កែន</p>
 
-        <div class="mt-2.5 pt-2 border-t border-blue-100/80 flex items-center justify-between px-2">
-          <div class="text-left">
-            <p class="text-[9px] text-gray-400">ឈ្មោះគណនី</p>
-            <p class="text-[11px] font-bold text-gray-800">TORP JOJUS ONLINE</p>
-          </div>
-          <button type="button" onclick="copyABA()" class="bg-white hover:bg-gray-50 text-blue-600 font-bold text-[11px] px-2.5 py-1 rounded-lg border border-blue-200 shadow-sm active:scale-95 transition">
-            📋 Copy លេខ ABA
+      <div class="bg-gray-50 p-2.5 rounded-xl text-center space-y-1 border border-gray-100">
+        <p class="text-[11px] text-gray-500">ឈ្មោះគណនី៖ <b class="text-gray-800">TORP JOJUS ONLINE</b></p>
+        <div class="flex items-center justify-center gap-2">
+          <span class="font-bold text-xs text-blue-900">000 123 456</span>
+          <button type="button" onclick="copyABA()" class="bg-blue-100 text-blue-700 text-[10px] px-2.5 py-0.5 rounded-md font-bold active:scale-95 transition">
+            📋 Copy
           </button>
         </div>
       </div>
     </div>
 
-    <p class="text-center text-[10px] text-gray-400 italic">
-      បើសិនទូទាត់រួចរាល់ សូមចុចប៊ូតុងខាងក្រោមដើម្បីផ្ញើប្រតិបត្តិការទៅកាន់ Admin
-    </p>
   </div>
 
   <div class="w-full max-w-md mt-3 space-y-2">
-    <button type="button" onclick="sendTransactionToAdmin()" 
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition">
-      <span>💬</span> ផ្ញើប្រតិបត្តិការទូទាត់ប្រាក់ទៅ Telegram Admin
+    <button type="button" onclick="sendTransactionToAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition">
+      📲 ផ្ញើប្រតិបត្តិការទូទាត់ប្រាក់ (Send Slip) ទៅ Admin
     </button>
-
-    <div class="flex gap-2">
-      <a href="delivery.html" class="w-1/2 bg-amber-50 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-xs text-center flex items-center justify-center gap-1 active:scale-95 transition">
-        ✏️ កែព័ត៌មានដឹក
-      </a>
-      <a href="index.html" onclick="finishOrder()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-xl text-xs text-center flex items-center justify-center transition">
-        🏠 ត្រឡប់ទៅទំព័រដើម
-      </a>
-    </div>
+    
+    <a href="index.html" onclick="clearCart()" class="block w-full bg-gray-200 text-gray-700 font-bold py-2.5 rounded-2xl text-xs text-center active:scale-95 transition">
+      🏠 ត្រឡប់ទៅទំព័រដើម
+    </a>
   </div>
 
   <div id="qrModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50" onclick="closeQrModal()">
-    <div class="bg-white p-4 rounded-3xl text-center space-y-3 max-w-xs w-full" onclick="event.stopPropagation()">
-      <h3 class="font-bold text-xs text-gray-700">ស្កែនទូទាត់ ឬចុចជាប់លើរូបដើម្បី Save</h3>
-      <img id="modalQrImg" src="" class="w-full h-auto rounded-xl border p-1">
-      <button onclick="closeQrModal()" class="w-full bg-gray-100 text-gray-700 font-bold py-2 rounded-xl text-xs">
+    <div class="bg-white p-4 rounded-2xl text-center space-y-3 max-w-xs w-full" onclick="event.stopPropagation()">
+      <h3 class="font-bold text-sm">ស្កែន ឬសង្កត់លើរូបដើម្បី Save ទុកស្កែន</h3>
+      <img id="modalQrImg" src="" class="w-full h-auto rounded-lg border">
+      <button onclick="closeQrModal()" class="w-full bg-gray-200 text-gray-800 font-bold py-2 rounded-xl text-xs">
         បិទវិញ
       </button>
     </div>
   </div>
 
   <script>
-    // ១. កំណត់ Telegram WebApp SDK ឱ្យដើរលើទូរស័ព្ទស្ទាត់
+    // 1. Telegram WebApp Initialization
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
@@ -126,23 +105,11 @@
     const cart = JSON.parse(localStorage.getItem('cartData')) || [];
     let details = JSON.parse(localStorage.getItem('orderDetails')) || { customer: {}, deliveryFee: 0, itemsTotal: 0, grandTotal: 0 };
 
-    // ២. បង្កើតលេខ Order លំដាប់រៀង (#INV-0001, #INV-0002...)
-    if (!details.invNum) {
-      let lastNum = parseInt(localStorage.getItem('lastInvoiceNum') || '0', 10) + 1;
-      localStorage.setItem('lastInvoiceNum', lastNum);
-      details.invNum = '#INV-' + String(lastNum).padStart(4, '0');
-      localStorage.setItem('orderDetails', JSON.stringify(details));
-    }
-
-    document.getElementById('invNum').innerText = details.invNum;
-    document.getElementById('invDate').innerText = new Date().toLocaleDateString('km-KH');
-
     document.getElementById('custNameText').innerHTML = `<b>ឈ្មោះ៖</b> ${details.customer.name || 'ភ្ញៀវទូទៅ'}`;
     document.getElementById('custPhoneText').innerHTML = `<b>លេខទូរស័ព្ទ៖</b> ${details.customer.phone || '--'}`;
     document.getElementById('custAddressText').innerHTML = `<b>អាសយដ្ឋាន៖</b> ${details.customer.address || '--'}`;
 
-    // បង្ហាញបញ្ជីទំនិញ
-    const itemsContainer = document.getElementById('invoiceItems');
+    const itemsContainer = document.getElementById('orderItems');
     if (cart.length > 0) {
       itemsContainer.innerHTML = cart.map(item => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
@@ -155,16 +122,16 @@
         `;
       }).join('');
     } else {
-      itemsContainer.innerHTML = `<p class="text-gray-400 italic">គ្មានទំនិញនៅក្នុងកន្ត្រក់ទេ</p>`;
+      itemsContainer.innerHTML = `<p class="text-gray-400 italic text-center">គ្មានទំនិញត្រូវបានជ្រើសរើសទេ</p>`;
     }
 
     document.getElementById('subTotal').innerText = `$${(details.itemsTotal || 0).toFixed(2)}`;
     document.getElementById('deliveryFee').innerText = `$${(details.deliveryFee || 0).toFixed(2)}`;
     document.getElementById('grandTotal').innerText = `$${(details.grandTotal || 0).toFixed(2)}`;
 
-    // Modal QR
     function openQrModal() {
-      document.getElementById('modalQrImg').src = document.getElementById('abaQrCode').src;
+      const qrSrc = document.getElementById('abaQrCode').src;
+      document.getElementById('modalQrImg').src = qrSrc;
       document.getElementById('qrModal').classList.remove('hidden');
       document.getElementById('qrModal').classList.add('flex');
     }
@@ -174,9 +141,8 @@
       document.getElementById('qrModal').classList.remove('flex');
     }
 
-    // Copy លេខ ABA
     function copyABA() {
-      const accNum = "017666209"; // ដាក់លេខ ABA ពិតប្រាកដរបស់បង
+      const accNum = "017666209"; // ដាក់លេខ ABA ពិតប្រាកដ
       navigator.clipboard.writeText(accNum);
       if (tg && tg.showAlert) {
         tg.showAlert("បានចម្លងលេខគណនី ABA៖ " + accNum);
@@ -185,13 +151,12 @@
       }
     }
 
-    // ៣. មុខងារផ្ញើប្រតិបត្តិការទូទាត់ប្រាក់ទៅ Telegram Admin (គាំទ្រ ១០០% លើ Mini App)
+    // 2. មុខងារផ្ញើព័ត៌មាន Order ទៅកាន់ Telegram Admin (ដើរ ១០០% លើ Mobile / Mini App)
     function sendTransactionToAdmin() {
-      let msg = `🛒 *ការបញ្ជាទិញថ្មី (រង់ចាំការពិនិត្យទូទាត់)*\n`;
-      msg += `🧾 *លេខវិក្កយបត្រ:* \`${details.invNum}\`\n`;
-      msg += `🏪 *ហាង:* តូបជជុស Online\n\n`;
+      let msg = `🛒 *ការកុម្ម៉ង់ថ្មី (រង់ចាំការទូទាត់ប្រាក់)*\n`;
+      msg += `🏪 *តូបជជុស Online*\n\n`;
       msg += `👤 *អតិថិជន:* ${details.customer.name || 'N/A'}\n`;
-      msg += `📞 *លេខទូរស័ព្ទ:* ${details.customer.phone || 'N/A'}\n`;
+      msg += `📞 *ទូរស័ព្ទ:* ${details.customer.phone || 'N/A'}\n`;
       msg += `📍 *អាសយដ្ឋាន:* ${details.customer.address || 'N/A'}\n\n`;
       msg += `👖 *បញ្ជីទំនិញ (${cart.length} មុខ):*\n`;
 
@@ -202,22 +167,21 @@
       });
 
       msg += `\n🚚 *ថ្លៃដឹក:* $${(details.deliveryFee || 0).toFixed(2)}`;
-      msg += `\n💰 *ប្រាក់សរុបរួម:* *$${(details.grandTotal || 0).toFixed(2)}*`;
-      msg += `\n\n📌 *សេចក្តីជូនដំណឹង:* អតិថិជនបានផ្ញើប្រតិបត្តិការទូទាត់ប្រាក់ខាងលើ។ សូម Admin ពិនិត្យមើលលុយចូលក្នុងគណនី ABA រួច Confirm Order ជូនភ្ញៀវ!`;
+      msg += `\n💰 *ទឹកប្រាក់ត្រូវបង់សរុប:* $${(details.grandTotal || 0).toFixed(2)}\n\n`;
+      msg += `👉 *សូមភ្ញៀវផ្ញើស្លីប/Transaction បង់ប្រាក់មកកាន់ទីនេះ!*`;
 
-      // Username Admin Telegram របស់បង
-      const adminUsername = "@Sovannarithz"; 
-      const shareUrl = `https://t.me/${adminUsername}?text=${encodeURIComponent(msg)}`;
+      const username = "Sovannarithz"; // តួអក្សរ Username Telegram Admin
+      const textEncoded = encodeURIComponent(msg);
 
-      // វិធីសាស្ត្របើក Link សុវត្ថិភាពខ្ពស់លើ Telegram Mini App
+      // វិធីបើក Link សកល ធានាដើរលើ Mini App គ្រប់ Device
       if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(shareUrl);
+        tg.openTelegramLink(`https://t.me/${username}?text=${textEncoded}`);
       } else {
-        window.open(shareUrl, '_blank');
+        window.location.href = `https://t.me/${username}?text=${textEncoded}`;
       }
     }
 
-    function finishOrder() {
+    function clearCart() {
       localStorage.removeItem('cartData');
       localStorage.removeItem('orderDetails');
     }
