@@ -20,16 +20,13 @@
         <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
              onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-full border">
         <div>
-          <h1 class="font-bold text-sm">🚚 ព័ត៌មានដឹកជញ្ជូន & PO</h1>
-          <p class="text-[10px] text-gray-500">បង្កើតការបញ្ជាទិញ (Order Batch)</p>
+          <h1 class="font-bold text-sm">🚚 ព័ត៌មានដឹកជញ្ជូន (Order PO)</h1>
+          <p class="text-[10px] text-gray-500">បំពេញព័ត៌មានដើម្បីបង្កើត Order រង់ចាំទូទាត់</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-gray-50 p-3 rounded-xl border space-y-1 text-xs">
-      <p class="font-bold text-gray-700 border-b pb-1 mb-1">🛒 ទំនិញក្នុង Order ថ្មីនេះ៖</p>
-      <div id="selectedItems" class="space-y-1"></div>
-    </div>
+    <div id="selectedItems" class="bg-gray-50 p-2.5 rounded-xl space-y-1 text-xs border"></div>
 
     <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-3 text-xs">
       <div>
@@ -57,7 +54,7 @@
 
       <div class="border-t pt-3 space-y-1 font-bold">
         <div class="flex justify-between text-gray-600">
-          <span>ថ្លៃទំនិញសរុប (Order នេះ)៖</span>
+          <span>ថ្លៃទំនិញសរុប៖</span>
           <span id="itemsTotalText">$0.00</span>
         </div>
         <div class="flex justify-between text-gray-600">
@@ -74,16 +71,20 @@
         <a href="index.html" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl text-xs text-center flex items-center justify-center">
           ⬅️ ថយក្រោយ
         </a>
-        <button type="submit" class="w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition">
-          📄 បង្កើត Order / បន្តទៅទូទាត់
+        <button type="submit" class="w-2/3 bg-blue-600 hover:bg-blue-700 active:scale-95 transition text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+          📄 បង្កើត Order & ទៅទូទាត់
         </button>
       </div>
     </form>
   </div>
 
   <script>
+    // Initialize Telegram WebApp
     const tg = window.Telegram?.WebApp;
-    if (tg) tg.ready();
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
 
     const cart = JSON.parse(localStorage.getItem('cartData')) || [];
     let itemsTotal = 0;
@@ -93,22 +94,24 @@
       window.location.href = 'index.html';
     }
 
-    // ចងចាំទិន្នន័យអតិថិជនដែលធ្លាប់បំពេញមុន
-    const pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
-    const lastOrder = pendingOrdersList[pendingOrdersList.length - 1];
-    if (lastOrder && lastOrder.details && lastOrder.details.customer) {
-      document.getElementById('custName').value = lastOrder.details.customer.name || '';
-      document.getElementById('custPhone').value = lastOrder.details.customer.phone || '';
-      document.getElementById('custAddress').value = lastOrder.details.customer.address || '';
-    }
+    // ចងចាំព័ត៌មានអតិថិជនដែលធ្លាប់បំពេញមុន (ដើម្បីកុំឱ្យគាត់វាយបញ្ចូលឡើងវិញច្រើនដង)
+    const savedDetails = JSON.parse(localStorage.getItem('lastCustomerInfo')) || {};
+    if (savedDetails.name) document.getElementById('custName').value = savedDetails.name;
+    if (savedDetails.phone) document.getElementById('custPhone').value = savedDetails.phone;
+    if (savedDetails.address) document.getElementById('custAddress').value = savedDetails.address;
 
-    // បង្ហាញបញ្ជីទំនិញ Order ថ្មីនេះ
+    // បង្ហាញបញ្ជីទំនិញក្នុងកន្ត្រក់បច្ចុប្បន្ន
     const itemsContainer = document.getElementById('selectedItems');
     itemsContainer.innerHTML = cart.map((item, idx) => {
-      itemsTotal += parseFloat(item.price || 0);
       const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
       const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
-      return `<div class="flex justify-between text-gray-700"><span>${idx + 1}. <b>#${codeText}</b> ${item.title}</span><span class="font-bold">$${parseFloat(item.price || 0).toFixed(2)}</span></div>`;
+      itemsTotal += parseFloat(item.price || 0);
+      return `
+        <div class="flex justify-between items-center">
+          <span>${idx + 1}. <b>#${codeText}</b> - ${item.title}</span>
+          <span class="font-bold text-gray-800">$${parseFloat(item.price || 0).toFixed(2)}</span>
+        </div>
+      `;
     }).join('');
 
     function calculateTotal() {
@@ -122,20 +125,26 @@
       return { fee, grandTotal };
     }
 
+    // មុខងារបង្កើត Order ថ្មី (Multi-Orders System)
     function submitOrder(e) {
       e.preventDefault();
       const totals = calculateTotal();
       
-      // ១. បង្កើត PO / Order Object ថ្មី
+      const customerInfo = {
+        name: document.getElementById('custName').value,
+        phone: document.getElementById('custPhone').value,
+        address: document.getElementById('custAddress').value
+      };
+
+      // រក្សាទុកព័ត៌មានអតិថិជនសម្រាប់ Order លើកក្រោយៗ
+      localStorage.setItem('lastCustomerInfo', JSON.stringify(customerInfo));
+
+      // រៀបចំ Structure នៃ Order (PO) ថ្មី
       const newOrder = {
-        orderId: "PO-" + Math.floor(1000 + Math.random() * 9000), // Bounded ID e.g., PO-4821
+        orderId: "PO-" + Date.now().toString().slice(-6), // បង្កើតលេខ PO ឧទាហរណ៍៖ PO-345678
         cart: [...cart],
         details: {
-          customer: {
-            name: document.getElementById('custName').value,
-            phone: document.getElementById('custPhone').value,
-            address: document.getElementById('custAddress').value
-          },
+          customer: customerInfo,
           deliveryFee: totals.fee,
           itemsTotal: itemsTotal,
           grandTotal: totals.grandTotal
@@ -144,15 +153,20 @@
         createdAt: new Date().toISOString()
       };
 
-      // ២. ទាញយក Order ចាស់ៗ រួចបន្ថែម Order ថ្មីនេះចូល (Multi-Orders)
-      let existingOrders = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
-      existingOrders.push(newOrder);
+      // 1. ទាញយក List នៃ Pending Orders ចាស់ៗដែលមានស្រាប់
+      let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
 
-      // រក្សាទុកក្នុង LocalStorage
-      localStorage.setItem('pendingOrdersList', JSON.stringify(existingOrders));
+      // 2. បញ្ចូល Order (PO) ថ្មីនេះទៅក្នុង List (មិនលុប Order ចាស់)
+      pendingOrdersList.push(newOrder);
 
-      // ៣. Clear កន្ត្រក់ចាស់ និងបញ្ជូនទៅទំព័រ Waiting Payment
+      // 3. Save ចូល LocalStorage វិញ
+      localStorage.setItem('pendingOrdersList', JSON.stringify(pendingOrdersList));
+      localStorage.setItem('pendingOrder', JSON.stringify(newOrder)); // រក្សាទុក Order ចុងក្រោយសម្រាប់ Backup
+
+      // 4. Clear កន្ត្រក់ទំនិញបច្ចុប្បន្ន ដើម្បីឱ្យភ្ញៀវអាចកុម្ម៉ង់អីផ្សេងទៀតបាន
       localStorage.removeItem('cartData');
+
+      // 5. បញ្ជូនភ្ញៀវទៅកាន់ទំព័ររង់ចាំទូទាត់ប្រាក់
       window.location.href = 'waiting-payment.html';
     }
 
