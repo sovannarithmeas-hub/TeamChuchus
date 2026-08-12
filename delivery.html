@@ -1,43 +1,178 @@
-// ត្រង់មុខងារ Confirm Place Order ក្នុង delivery.html
-function confirmPlaceOrder() {
-  const cart = JSON.parse(localStorage.getItem('cartData')) || [];
-  const customerName = document.getElementById('custName').value;
-  const customerPhone = document.getElementById('custPhone').value;
-  const customerAddress = document.getElementById('custAddress').value;
-  const deliveryFee = parseFloat(document.getElementById('shippingFee').value || 0);
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ព័ត៌មានដឹកជញ្ជូន - តូបជជុស Online</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Kantumruy Pro', sans-serif; } </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-3 flex flex-col items-center justify-center">
 
-  if (!customerName || !customerPhone || !customerAddress) {
-    alert('សូមបំពេញព័ត៌មានអតិថិជនឱ្យបានគ្រប់គ្រាន់!');
-    return;
-  }
+  <div class="bg-white w-full max-w-md p-5 rounded-2xl shadow-sm border space-y-4">
+    <div class="flex items-center justify-between border-b pb-3">
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition flex items-center justify-center">
+          ⬅️
+        </a>
+        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
+             onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-full border">
+        <div>
+          <h1 class="font-bold text-sm">🚚 ព័ត៌មានដឹកជញ្ជូន</h1>
+          <p class="text-[10px] text-gray-500">បំពេញព័ត៌មានដើម្បីបន្តការបញ្ជាទិញ</p>
+        </div>
+      </div>
+    </div>
 
-  let itemsTotal = 0;
-  cart.forEach(item => itemsTotal += parseFloat(item.price || 0));
+    <div id="selectedItems" class="bg-gray-50 p-2.5 rounded-xl space-y-1 text-xs max-h-40 overflow-y-auto"></div>
 
-  const newOrder = {
-    orderId: "ORD-" + Date.now(),
-    cart: cart,
-    details: {
-      customer: { name: customerName, phone: customerPhone, address: customerAddress },
-      itemsTotal: itemsTotal,
-      deliveryFee: deliveryFee,
-      grandTotal: itemsTotal + deliveryFee
-    },
-    status: 'PENDING_PAYMENT',
-    createdAt: new Date().toISOString()
-  };
+    <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-3 text-xs">
+      <div>
+        <label class="font-bold block mb-1">👤 ឈ្មោះអតិថិជន *</label>
+        <input type="text" id="custName" required placeholder="ឧទាហរណ៍៖ សុខ ជា" class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
 
-  // ទាញយក បញ្ជី Pending Orders ចាស់ៗមកបូកបញ្ចូលគ្នា (Multi-Orders Support)
-  let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
-  pendingOrdersList.push(newOrder);
+      <div>
+        <label class="font-bold block mb-1">📞 លេខទូរស័ព្ទ *</label>
+        <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012 345 678" class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
 
-  // រក្សាទុកក្នុង LocalStorage
-  localStorage.setItem('pendingOrdersList', JSON.stringify(pendingOrdersList));
-  localStorage.setItem('pendingOrder', JSON.stringify(newOrder)); // សម្រាប់ Backup
+      <div>
+        <label class="font-bold block mb-1">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង *</label>
+        <textarea id="custAddress" required rows="2" placeholder="ឧទាហរណ៍៖ ភ្នំពេញ, ផ្ទះលេខ..., ផ្លូវ..." class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      </div>
 
-  // Clear Cart ចាស់
-  localStorage.removeItem('cartData');
+      <div>
+        <label class="font-bold block mb-1">🚚 តំបន់ដឹកជញ្ជូន</label>
+        <select id="deliveryLocation" onchange="calculateTotal()" class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="1.5">ភ្នំពេញ ($1.50)</option>
+          <option value="2.5">តាមខេត្ត ($2.50)</option>
+        </select>
+      </div>
 
-  // បញ្ជូនភ្ញៀវទៅទំព័ររង់ចាំទូទាត់ប្រាក់
-  window.location.href = 'waiting-payment.html';
-}
+      <div class="border-t pt-3 space-y-1 font-bold">
+        <div class="flex justify-between text-gray-600">
+          <span>ថ្លៃទំនិញសរុប៖</span>
+          <span id="itemsTotalText">$0.00</span>
+        </div>
+        <div class="flex justify-between text-gray-600">
+          <span>ថ្លៃដឹកជញ្ជូន៖</span>
+          <span id="deliveryFeeText">$1.50</span>
+        </div>
+        <div class="flex justify-between text-base text-blue-600 pt-1 border-t">
+          <span>សរុបរួមលើកនេះ៖</span>
+          <span id="grandTotalText">$0.00</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <a href="index.html" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl text-xs text-center flex items-center justify-center">
+          ⬅️ ថយក្រោយ
+        </a>
+        <button type="submit" class="w-2/3 bg-blue-600 hover:bg-blue-700 active:scale-95 transition text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+          💳 បន្តទៅទូទាត់ប្រាក់
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Initialize Telegram WebApp
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    const cart = JSON.parse(localStorage.getItem('cartData')) || [];
+    let itemsTotal = 0;
+
+    // ប្រសិនបើគ្មានទំនិញក្នុង Cart ទេ ឱ្យត្រឡប់ទៅ Index វិញ
+    if (cart.length === 0) {
+      alert('គ្មានទំនិញក្នុងកន្ត្រក់ទេ!');
+      window.location.href = 'index.html';
+    }
+
+    // ចងចាំព័ត៌មានអតិថិជនដែលធ្លាប់បំពេញមុន (ប្រសិនបើមាន)
+    const savedDetails = JSON.parse(localStorage.getItem('orderDetails')) || {};
+    if (savedDetails.customer) {
+      if (savedDetails.customer.name) document.getElementById('custName').value = savedDetails.customer.name;
+      if (savedDetails.customer.phone) document.getElementById('custPhone').value = savedDetails.customer.phone;
+      if (savedDetails.customer.address) document.getElementById('custAddress').value = savedDetails.customer.address;
+    }
+
+    // បង្ហាញបញ្ជីទំនិញក្នុង Cart
+    const itemsContainer = document.getElementById('selectedItems');
+    itemsContainer.innerHTML = cart.map((item, idx) => {
+      const price = parseFloat(item.price || 0);
+      itemsTotal += price;
+      const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+      const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
+
+      return `
+        <div class="flex justify-between items-center py-0.5">
+          <span>👖 ${idx + 1}. <b>#${codeText}</b> - ${item.title}</span>
+          <span class="font-bold text-gray-800">$${price.toFixed(2)}</span>
+        </div>
+      `;
+    }).join('');
+
+    // គណនាតម្លៃសរុប
+    function calculateTotal() {
+      const fee = parseFloat(document.getElementById('deliveryLocation').value);
+      const grandTotal = itemsTotal + fee;
+
+      document.getElementById('itemsTotalText').innerText = `$${itemsTotal.toFixed(2)}`;
+      document.getElementById('deliveryFeeText').innerText = `$${fee.toFixed(2)}`;
+      document.getElementById('grandTotalText').innerText = `$${grandTotal.toFixed(2)}`;
+
+      return { fee, grandTotal };
+    }
+
+    // មុខងារ Submit Order និងរក្សាទុក Multi-Orders ចូល Storage
+    function submitOrder(e) {
+      e.preventDefault();
+      const totals = calculateTotal();
+
+      const custName = document.getElementById('custName').value.trim();
+      const custPhone = document.getElementById('custPhone').value.trim();
+      const custAddress = document.getElementById('custAddress').value.trim();
+
+      const orderDetails = {
+        customer: { name: custName, phone: custPhone, address: custAddress },
+        deliveryFee: totals.fee,
+        itemsTotal: itemsTotal,
+        grandTotal: totals.grandTotal
+      };
+
+      // ១. បង្កើត Objekt Order ថ្មី
+      const newOrder = {
+        orderId: "ORD-" + Date.now(),
+        cart: [...cart],
+        details: orderDetails,
+        status: 'PENDING_PAYMENT',
+        createdAt: new Date().toISOString()
+      };
+
+      // ២. ទាញយក pendingOrdersList ចាស់ រួច Push Order ថ្មីចូល (Multi-Orders Support)
+      let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
+      pendingOrdersList.push(newOrder);
+
+      // ៣. រក្សាទុកចូល LocalStorage
+      localStorage.setItem('pendingOrdersList', JSON.stringify(pendingOrdersList));
+      localStorage.setItem('pendingOrder', JSON.stringify(newOrder)); // Backup
+      localStorage.setItem('orderDetails', JSON.stringify(orderDetails)); // រក្សាទុកព័ត៌មានអតិថិជនប្រើលើកក្រោយ
+
+      // ៤. Clear Cart បច្ចុប្បន្ន
+      localStorage.removeItem('cartData');
+
+      // ៥. បញ្ជូនទៅទំព័រទូទាត់ប្រាក់
+      window.location.href = 'waiting-payment.html';
+    }
+
+    calculateTotal();
+  </script>
+</body>
+</html>
