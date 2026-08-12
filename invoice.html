@@ -5,21 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>វិក្កយបត្រ - តូបជជុស Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Kantumruy Pro', sans-serif; }
-    
-    /* ការកំណត់សម្រាប់ពេល Print / Save ជា PDF */
     @media print {
       body { background-color: white !important; padding: 0 !important; margin: 0 !important; }
       .no-print { display: none !important; }
-      #invoiceCard { 
-        border: none !important; 
-        box-shadow: none !important; 
-        width: 100% !important; 
-        max-width: 100% !important; 
-        padding: 10px !important;
-      }
+      #invoiceCard { border: none !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
     }
   </style>
 </head>
@@ -42,14 +35,14 @@
       </div>
     </div>
 
-    <div class="bg-gray-50 p-3 rounded-xl text-xs space-y-1 relative border">
+    <div class="bg-gray-50 p-3 rounded-xl text-xs space-y-1 border">
       <div class="flex justify-between items-center mb-1 border-b pb-1">
-        <p class="font-bold text-gray-800 flex items-center gap-1">🚚 ព័ត៌មានដឹកជញ្ជូន និងអតិថិជន៖</p>
-        <a href="delivery.html" class="no-print text-[11px] text-blue-600 font-bold hover:underline">✏️ កែប្រែ</a>
+        <p class="font-bold text-gray-800">🚚 ព័ត៌មានដឹកជញ្ជូន៖</p>
+        <a href="delivery.html" class="no-print text-[11px] text-blue-600 font-bold underline">✏️ កែប្រែ</a>
       </div>
-      <p class="text-gray-700" id="custNameText"><b>ឈ្មោះអតិថិជន៖</b> --</p>
+      <p class="text-gray-700" id="custNameText"><b>ឈ្មោះ៖</b> --</p>
       <p class="text-gray-700" id="custPhoneText"><b>លេខទូរស័ព្ទ៖</b> --</p>
-      <p class="text-gray-700" id="custAddressText"><b>អាសយដ្ឋានដឹក៖</b> --</p>
+      <p class="text-gray-700" id="custAddressText"><b>អាសយដ្ឋាន៖</b> --</p>
     </div>
 
     <div class="space-y-2">
@@ -75,19 +68,16 @@
     <div class="border-t pt-3 text-center space-y-2">
       <p class="text-xs font-bold text-gray-800">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
       
-      <div class="flex justify-center">
-        <img id="abaQrCode" src="https://via.placeholder.com/200?text=ABA+KHQR" class="w-40 h-40 object-contain border rounded-xl p-1 bg-white shadow-sm">
+      <div class="flex justify-center cursor-pointer" onclick="openQrModal()">
+        <img id="abaQrCode" src="https://via.placeholder.com/250?text=ABA+KHQR" class="w-44 h-44 object-contain border rounded-xl p-1 bg-white shadow-sm">
       </div>
-
-      <button type="button" onclick="downloadQR()" class="no-print bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-3 py-1.5 rounded-lg text-xs inline-flex items-center gap-1 border border-blue-200 transition active:scale-95">
-        📥 ទាញយករូប QR ទុកស្កែន
-      </button>
+      <p class="text-[10px] text-gray-400">💡 ចុចលើរូប QR ដើម្បីមើលធំ ឬសង្កត់លើរូបដើម្បី Save</p>
 
       <div class="bg-gray-50 p-2 rounded-xl text-center space-y-1 border">
         <p class="text-[11px] text-gray-500">ឈ្មោះគណនី៖ <b>TORP JOJUS ONLINE</b></p>
         <div class="flex items-center justify-center gap-2">
-          <span class="font-bold text-xs text-blue-900" id="abaAccDisplay">000 123 456</span>
-          <button type="button" onclick="copyABA()" class="no-print bg-gray-200 hover:bg-gray-300 text-gray-700 text-[10px] px-2 py-0.5 rounded font-bold transition active:scale-95">
+          <span class="font-bold text-xs text-blue-900">000 123 456</span>
+          <button type="button" onclick="copyABA()" class="no-print bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold active:scale-95">
             📋 Copy
           </button>
         </div>
@@ -111,17 +101,31 @@
         ✏️ កែប្រែព័ត៌មាន
       </a>
     </div>
-    <a href="index.html" onclick="finishOrder()" class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-xl text-xs text-center transition">
+    <a href="index.html" onclick="finishOrder()" class="block w-full bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs text-center">
       🏠 ត្រឡប់ទៅទំព័រដើម (បញ្ចប់)
     </a>
   </div>
 
+  <div id="qrModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 no-print" onclick="closeQrModal()">
+    <div class="bg-white p-4 rounded-2xl text-center space-y-3 max-w-xs w-full" onclick="event.stopPropagation()">
+      <h3 class="font-bold text-sm">ស្កែន ឬសង្កត់លើរូបដើម្បីរក្សាទុក</h3>
+      <img id="modalQrImg" src="" class="w-full h-auto rounded-lg border">
+      <p class="text-[11px] text-gray-500">ចុចជាប់លើរូបភាពរួចជ្រើសរើស "Save Image" ដើម្បីរក្សាទុកក្នុង Gallery</p>
+      <button onclick="closeQrModal()" class="w-full bg-gray-200 text-gray-800 font-bold py-2 rounded-xl text-xs">
+        បិទវិញ
+      </button>
+    </div>
+  </div>
+
   <script>
-    // ១. ទាញយកទិន្នន័យកន្ត្រក់ និងព័ត៌មានការកុម្ម៉ង់
+    // Initialize Telegram WebApp
+    const tg = window.Telegram?.WebApp;
+    if (tg) tg.expand();
+
     const cart = JSON.parse(localStorage.getItem('cartData')) || [];
     let details = JSON.parse(localStorage.getItem('orderDetails')) || { customer: {}, deliveryFee: 0, itemsTotal: 0, grandTotal: 0 };
 
-    // ២. ប្រព័ន្ធបង្កើតលេខវិក្កយបត្ររត់តាមលំដាប់លេខរៀង (#INV-0001, #INV-0002...)
+    // ប្រព័ន្ធបង្កើតលេខវិក្កយបត្ររត់តាមលំដាប់រៀង
     if (!details.invNum) {
       let lastNum = parseInt(localStorage.getItem('lastInvoiceNum') || '0', 10) + 1;
       localStorage.setItem('lastInvoiceNum', lastNum);
@@ -129,16 +133,13 @@
       localStorage.setItem('orderDetails', JSON.stringify(details));
     }
 
-    // បង្ហាញលេខវិក្កយបត្រ និងកាលបរិច្ឆេទ
     document.getElementById('invNum').innerText = details.invNum;
     document.getElementById('invDate').innerText = new Date().toLocaleDateString('km-KH');
 
-    // បង្ហាញព័ត៌មានអតិថិជន
-    document.getElementById('custNameText').innerHTML = `<b>ឈ្មោះអតិថិជន៖</b> ${details.customer.name || 'ភ្ញៀវទូទៅ'}`;
+    document.getElementById('custNameText').innerHTML = `<b>ឈ្មោះ៖</b> ${details.customer.name || 'ភ្ញៀវទូទៅ'}`;
     document.getElementById('custPhoneText').innerHTML = `<b>លេខទូរស័ព្ទ៖</b> ${details.customer.phone || '--'}`;
-    document.getElementById('custAddressText').innerHTML = `<b>អាសយដ្ឋានដឹក៖</b> ${details.customer.address || '--'}`;
+    document.getElementById('custAddressText').innerHTML = `<b>អាសយដ្ឋាន៖</b> ${details.customer.address || '--'}`;
 
-    // បង្ហាញបញ្ជីទំនិញ
     const itemsContainer = document.getElementById('invoiceItems');
     if (cart.length > 0) {
       itemsContainer.innerHTML = cart.map(item => {
@@ -155,38 +156,40 @@
       itemsContainer.innerHTML = `<p class="text-gray-400 italic">គ្មានទំនិញនៅក្នុងវិក្កយបត្រទេ</p>`;
     }
 
-    // បង្ហាញតម្លៃ
     document.getElementById('subTotal').innerText = `$${(details.itemsTotal || 0).toFixed(2)}`;
     document.getElementById('deliveryFee').innerText = `$${(details.deliveryFee || 0).toFixed(2)}`;
     document.getElementById('grandTotal').innerText = `$${(details.grandTotal || 0).toFixed(2)}`;
 
-    // ៣. មុខងារ Download រូប QR Code
-    function downloadQR() {
-      const qrImage = document.getElementById('abaQrCode').src;
-      const link = document.createElement('a');
-      link.href = qrImage;
-      link.download = `ABA-KHQR-${details.invNum}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      alert('បានទាញយករូប QR Code រួចរាល់! សូមបើក ABA App រួចជ្រើសរើសរូបនេះពី Gallery ដើម្បីស្កែនទូទាត់។');
+    // Modal QR Code
+    function openQrModal() {
+      const qrSrc = document.getElementById('abaQrCode').src;
+      document.getElementById('modalQrImg').src = qrSrc;
+      document.getElementById('qrModal').classList.remove('hidden');
+      document.getElementById('qrModal').classList.add('flex');
     }
 
-    // ៤. មុខងារ Copy លេខ ABA
+    function closeQrModal() {
+      document.getElementById('qrModal').classList.add('hidden');
+      document.getElementById('qrModal').classList.remove('flex');
+    }
+
+    // មុខងារ Copy
     function copyABA() {
-      const accNum = "000123456"; // ដាក់លេខ ABA ពិតប្រាកដរបស់បងត្រង់នេះ
+      const accNum = "000123456";
       navigator.clipboard.writeText(accNum);
-      alert("បានចម្លងលេខគណនី ABA៖ " + accNum);
+      if (tg && tg.showAlert) {
+        tg.showAlert("បានចម្លងលេខគណនី ABA៖ " + accNum);
+      } else {
+        alert("បានចម្លងលេខគណនី ABA៖ " + accNum);
+      }
     }
 
-    // ៥. មុខងារ Print / Save PDF ដើរលើ Mobile
+    // មុខងារ Print PDF
     function triggerPrint() {
-      setTimeout(() => {
-        window.print();
-      }, 300);
+      window.print();
     }
 
-    // ៦. មុខងារផ្ញើទៅ Telegram Admin (ដើរ ១០០%)
+    // មុខងារ ផ្ញើទៅ Telegram Admin ដោយប្រើ Telegram WebApp Link
     function sendToTelegram() {
       let msg = `🧾 *វិក្កយបត្រ ${details.invNum}*\n`;
       msg += `🏪 *តូបជជុស Online*\n\n`;
@@ -204,18 +207,15 @@
       msg += `\n🚚 *ថ្លៃដឹក:* $${(details.deliveryFee || 0).toFixed(2)}`;
       msg += `\n💰 *សរុបរួម:* $${(details.grandTotal || 0).toFixed(2)}`;
 
-      const telegramUrl = `https://t.me/Torp_jojus_online?text=${encodeURIComponent(msg)}`;
-      
-      const link = document.createElement('a');
-      link.href = telegramUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const shareUrl = `https://t.me/Torp_jojus_online?text=${encodeURIComponent(msg)}`;
+
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(shareUrl);
+      } else {
+        window.open(shareUrl, '_blank');
+      }
     }
 
-    // ៧. សម្អាតទិន្នន័យពេលបញ្ចប់
     function finishOrder() {
       localStorage.removeItem('cartData');
       localStorage.removeItem('orderDetails');
