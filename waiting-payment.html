@@ -28,12 +28,9 @@
       <p class="text-xs font-semibold text-blue-200">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
       
       <div class="flex flex-col items-center justify-center">
-        <div onclick="openQrModal()" class="bg-white p-2 rounded-2xl shadow-inner border border-blue-200 cursor-pointer hover:scale-105 transition-transform group relative">
+        <div onclick="openQrModal()" class="bg-white p-2 rounded-2xl shadow-inner border border-blue-200 cursor-pointer hover:scale-105 transition-transform">
           <img id="abaQrCode" src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/IMG_20260812_155656.jpg" 
                class="w-48 h-48 object-contain rounded-xl">
-          <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 rounded-xl transition flex items-center justify-center">
-            <span class="bg-black/60 text-white text-[10px] px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">🔍 ចុចដើម្បីពង្រីក</span>
-          </div>
         </div>
         <span class="text-[10px] text-blue-200 mt-1 cursor-pointer underline" onclick="openQrModal()">🔍 ចុចលើរូប QR ដើម្បីបង្រីកធំ</span>
       </div>
@@ -52,8 +49,12 @@
     </div>
 
     <div class="bg-gray-50 p-3 rounded-2xl space-y-2 text-xs border">
-      <p class="font-bold text-gray-800 border-b pb-1">📦 សង្ខេបការបញ្ជាទិញ៖</p>
-      <div id="orderItemsSummary" class="space-y-1 text-gray-600"></div>
+      <div class="flex justify-between items-center border-b pb-1">
+        <p class="font-bold text-gray-800">📦 ទំនិញរង់ចាំទូទាត់៖</p>
+        <span id="orderCountBadge" class="bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px]">1 Order</span>
+      </div>
+
+      <div id="orderItemsSummary" class="space-y-1 text-gray-600 max-h-40 overflow-y-auto pr-1"></div>
       
       <div class="border-t pt-2 space-y-1">
         <div class="flex justify-between text-gray-500">
@@ -61,11 +62,11 @@
           <span id="subTotal">$0.00</span>
         </div>
         <div class="flex justify-between text-gray-500">
-          <span>ថ្លៃដឹកជញ្ជូន៖</span>
+          <span>ថ្លៃដឹកជញ្ជូនសរុប៖</span>
           <span id="deliveryFee">$0.00</span>
         </div>
         <div class="flex justify-between font-bold text-sm text-gray-900 pt-1 border-t">
-          <span>ទឹកប្រាក់ត្រូវទូទាត់៖</span>
+          <span>ទឹកប្រាក់ត្រូវទូទាត់សរុប៖</span>
           <span class="text-blue-600 text-base font-bold" id="grandTotal">$0.00</span>
         </div>
       </div>
@@ -75,15 +76,15 @@
       <p class="font-bold">💡 ជំហានបន្ទាប់៖</p>
       <ol class="list-decimal list-inside space-y-0.5 text-[10px]">
         <li>ទូទាត់ប្រាក់តាម ABA KHQR ខាងលើ</li>
-        <li>ថតរូបបង្កាន់ដៃទូទាត់ (Transaction Screenshot)</li>
-        <li>ចុចប៊ូតុងខាងក្រោមដើម្បីផ្ញើទៅកាន់ Telegram Admin</li>
+        <li>ចុចប៊ូតុង "ផ្ញើប្រតិបត្តិការទូទាត់" ខាងក្រោម</li>
+        <li>ផ្ញើរូបភាពបង្កាន់ដៃ (Transaction) ចូលក្នុង Telegram Admin</li>
       </ol>
     </div>
 
   </div>
 
   <div class="w-full max-w-md mt-3 space-y-2">
-    <button type="button" onclick="submitPayment()" 
+    <button type="button" onclick="submitPaymentAndClear()" 
             class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-95 transition">
       <span>💬</span>
       <span>ផ្ញើប្រតិបត្តិការទូទាត់ប្រាក់ទៅ Telegram Admin</span>
@@ -116,19 +117,45 @@
       tg.expand();
     }
 
-    // ទាញយកទិន្នន័យពី LocalStorage ( pendingOrder ឬ cartData )
-    const pendingData = JSON.parse(localStorage.getItem('pendingOrder')) || {};
-    const cart = pendingData.cart || JSON.parse(localStorage.getItem('cartData')) || [];
-    const details = pendingData.details || JSON.parse(localStorage.getItem('orderDetails')) || { customer: {}, deliveryFee: 0, itemsTotal: 0, grandTotal: 0 };
+    // ទាញយក Pending Orders (អាចជា Order ច្រើនបញ្ចូលគ្នា)
+    let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
+    
+    // បើគ្មានក្នុង List ទេ ទាញពី pendingOrder ចាស់មក Convert
+    const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
+    if (pendingOrdersList.length === 0 && singlePending) {
+      pendingOrdersList.push(singlePending);
+    }
 
-    // បង្ហាញបញ្ជីទំនិញ
+    let allCartItems = [];
+    let totalSub = 0;
+    let totalDelivery = 0;
+    let totalGrand = 0;
+    let customerInfo = { name: 'N/A', phone: 'N/A', address: 'N/A' };
+
+    if (pendingOrdersList.length > 0) {
+      document.getElementById('orderCountBadge').innerText = `${pendingOrdersList.length} Order(s)`;
+
+      pendingOrdersList.forEach(order => {
+        if (order.cart) allCartItems.push(...order.cart);
+        if (order.details) {
+          totalSub += parseFloat(order.details.itemsTotal || 0);
+          totalDelivery += parseFloat(order.details.deliveryFee || 0);
+          totalGrand += parseFloat(order.details.grandTotal || 0);
+          if (order.details.customer && order.details.customer.name) {
+            customerInfo = order.details.customer;
+          }
+        }
+      });
+    }
+
+    // បង្ហាញបញ្ជីទំនិញទាំងអស់
     const itemsSummaryDiv = document.getElementById('orderItemsSummary');
-    if (cart.length > 0) {
-      itemsSummaryDiv.innerHTML = cart.map((item, idx) => {
+    if (allCartItems.length > 0) {
+      itemsSummaryDiv.innerHTML = allCartItems.map((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
         const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
         return `
-          <div class="flex justify-between items-center">
+          <div class="flex justify-between items-center py-1 border-b border-gray-100 last:border-none">
             <span>${idx + 1}. <b>#${codeText}</b> - ${item.title}</span>
             <span class="font-semibold text-gray-800">$${parseFloat(item.price || 0).toFixed(2)}</span>
           </div>
@@ -138,20 +165,18 @@
       itemsSummaryDiv.innerHTML = `<p class="text-gray-400 italic">គ្មានទំនិញរង់ចាំទូទាត់ទេ</p>`;
     }
 
-    document.getElementById('subTotal').innerText = `$${(details.itemsTotal || 0).toFixed(2)}`;
-    document.getElementById('deliveryFee').innerText = `$${(details.deliveryFee || 0).toFixed(2)}`;
-    document.getElementById('grandTotal').innerText = `$${(details.grandTotal || 0).toFixed(2)}`;
+    document.getElementById('subTotal').innerText = `$${totalSub.toFixed(2)}`;
+    document.getElementById('deliveryFee').innerText = `$${totalDelivery.toFixed(2)}`;
+    document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
 
     function openQrModal() {
-      const modal = document.getElementById('qrModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      document.getElementById('qrModal').classList.remove('hidden');
+      document.getElementById('qrModal').classList.add('flex');
     }
 
     function closeQrModal() {
-      const modal = document.getElementById('qrModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      document.getElementById('qrModal').classList.add('hidden');
+      document.getElementById('qrModal').classList.remove('flex');
     }
 
     function copyABA() {
@@ -164,30 +189,40 @@
       }
     }
 
-    function submitPayment() {
-      let msg = `🛒 *ការបញ្ជាទិញ (Waiting for Payment)*\n`;
-      msg += `🏪 *តូបជជុស Online*\n\n`;
-      msg += `👤 *អតិថិជន:* ${details.customer.name || 'N/A'}\n`;
-      msg += `📞 *ទូរស័ព្ទ:* ${details.customer.phone || 'N/A'}\n`;
-      msg += `📍 *អាសយដ្ឋាន:* ${details.customer.address || 'N/A'}\n\n`;
-      msg += `👖 *ទំនិញ (${cart.length} មុខ):*\n`;
+    // មុខងារ ផ្ញើសារទៅ Admin រួច Clear Order ភ្លាមៗ (ការពារ Scam)
+    function submitPaymentAndClear() {
+      if (allCartItems.length === 0) {
+        alert('គ្មានទំនិញត្រូវទូទាត់ទេ!');
+        return;
+      }
 
-      cart.forEach((item, idx) => {
+      let msg = `🛒 *ប្រតិបត្តិការទូទាត់ប្រាក់ (Payment Order)*\n`;
+      msg += `🏪 *តូបជជុស Online*\n\n`;
+      msg += `👤 *អតិថិជន:* ${customerInfo.name || 'N/A'}\n`;
+      msg += `📞 *ទូរស័ព្ទ:* ${customerInfo.phone || 'N/A'}\n`;
+      msg += `📍 *អាសយដ្ឋាន:* ${customerInfo.address || 'N/A'}\n\n`;
+      msg += `👖 *បញ្ជីទំនិញសរុប (${allCartItems.length} មុខ):*\n`;
+
+      allCartItems.forEach((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
         const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
         msg += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
       });
 
-      msg += `\n🚚 *ថ្លៃដឹក:* $${(details.deliveryFee || 0).toFixed(2)}`;
-      msg += `\n💰 *ទឹកប្រាក់ត្រូវទូទាត់សរុប:* $${(details.grandTotal || 0).toFixed(2)}\n\n`;
-      msg += `📌 *ខ្ញុំបានទូទាត់រួចរាល់ហើយ សូមផ្ញើបង្កាន់ដៃទូទាត់ (Transaction) ជូន Admin!*`;
+      msg += `\n🚚 *ថ្លៃដឹកសរុប:* $${totalDelivery.toFixed(2)}`;
+      msg += `\n💰 *ទឹកប្រាក់បានទូទាត់សរុប:* $${totalGrand.toFixed(2)}\n\n`;
+      msg += `📌 *ខ្ញុំបានទូទាត់រួចរាល់ហើយ! (សូមមើលរូបភាពបង្កាន់ដៃផ្ញើជូនខាងក្រោម)*`;
 
       const adminUsername = "Sovannarithz"; 
       const shareUrl = `https://t.me/${adminUsername}?text=${encodeURIComponent(msg)}`;
 
-      // លុប Pending ចោលពេលភ្ញៀវផ្ញើសាររួច
+      // ១. Clear ទិន្នន័យ Pending Orders ចោលភ្លាមៗ
       localStorage.removeItem('pendingOrder');
+      localStorage.removeItem('pendingOrdersList');
+      localStorage.removeItem('cartData');
+      localStorage.removeItem('orderDetails');
 
+      // ២. បើក Telegram Direct Chat ទៅ Admin
       if (tg && tg.openTelegramLink) {
         tg.openTelegramLink(shareUrl);
       } else {
