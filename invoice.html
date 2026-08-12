@@ -2,147 +2,130 @@
 <html lang="km">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>រង់ចាំការទូទាត់ - តូបជជុស Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>រង់ចាំការទូទាត់ប្រាក់ - តូបជជុស Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Kantumruy Pro', sans-serif; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen p-3 flex flex-col items-center justify-center">
 
-  <div class="bg-white w-full max-w-md p-5 rounded-3xl shadow-sm border border-gray-100 space-y-4">
+  <div class="bg-white w-full max-w-md p-5 rounded-3xl shadow-sm border space-y-4">
     
-    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-center space-y-1">
-      <div class="inline-flex p-2 bg-amber-100 rounded-full text-amber-600 mb-1">
-        ⏳
+    <div class="text-center space-y-1 border-b pb-3">
+      <div class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold border border-amber-200">
+        <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+        រង់ចាំការទូទាត់ប្រាក់ (Waiting for Payment)
       </div>
-      <h2 class="font-bold text-sm text-amber-800">រង់ចាំការទូទាត់ប្រាក់ (Waiting for Payment)</h2>
-      <p class="text-[11px] text-amber-700">សូមស្កែនទូទាត់ប្រាក់ រួចផ្ញើប្រវត្តិ/ស្លីបបង់ប្រាក់មកកាន់ Admin ដើម្បី Confirm Order</p>
+      <h1 class="text-base font-bold text-gray-800 pt-1">តូបជជុស Online</h1>
+      <p class="text-[11px] text-gray-500">សូមស្កែន ABA KHQR ដើម្បីបន្តការបញ្ជាទិញ</p>
     </div>
 
-    <div class="bg-gray-50 p-3 rounded-2xl text-xs space-y-1 border border-gray-100">
-      <div class="flex justify-between items-center border-b pb-1.5 mb-1">
-        <span class="font-bold text-gray-800">📍 ព័ត៌មានដឹកជញ្ជូន</span>
-        <a href="delivery.html" class="text-[11px] text-blue-600 font-bold hover:underline">✏️ កែប្រែ</a>
-      </div>
-      <p class="text-gray-600" id="custNameText"><b>ឈ្មោះ៖</b> --</p>
-      <p class="text-gray-600" id="custPhoneText"><b>លេខទូរស័ព្ទ៖</b> --</p>
-      <p class="text-gray-600" id="custAddressText"><b>អាសយដ្ឋាន៖</b> --</p>
-    </div>
-
-    <div class="space-y-2">
-      <p class="text-xs font-bold text-gray-800">🛍️ ទំនិញដែលបានកុម្ម៉ង់</p>
-      <div id="orderItems" class="space-y-1.5 text-xs"></div>
-    </div>
-
-    <div class="bg-blue-50/50 p-3 rounded-2xl border border-blue-100 space-y-1.5 text-xs">
-      <div class="flex justify-between text-gray-600">
-        <span>ថ្លៃទំនិញសរុប៖</span>
-        <span id="subTotal">$0.00</span>
-      </div>
-      <div class="flex justify-between text-gray-600">
-        <span>ថ្លៃដឹកជញ្ជូន៖</span>
-        <span id="deliveryFee">$0.00</span>
-      </div>
-      <div class="flex justify-between font-bold text-sm text-blue-900 border-t border-blue-200 pt-1.5">
-        <span>ទឹកប្រាក់ត្រូវទូទាត់សរុប៖</span>
-        <span class="text-blue-600 text-base" id="grandTotal">$0.00</span>
-      </div>
-    </div>
-
-    <div class="border-t pt-3 text-center space-y-2">
-      <p class="text-xs font-bold text-gray-800">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
+    <div class="bg-gradient-to-br from-blue-900 to-indigo-900 text-white p-4 rounded-2xl text-center space-y-3 shadow-md">
+      <p class="text-xs font-semibold text-blue-200">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
       
-      <div class="flex justify-center cursor-pointer" onclick="openQrModal()">
-        <img id="abaQrCode" src="https://via.placeholder.com/250?text=ABA+KHQR" class="w-44 h-44 object-contain border-2 border-blue-500/20 rounded-2xl p-1 bg-white shadow-sm">
+      <div class="flex justify-center">
+        <div class="bg-white p-2 rounded-2xl shadow-inner border border-blue-200">
+          <img id="abaQrCode" src="https://via.placeholder.com/250?text=ABA+KHQR" 
+               class="w-48 h-48 object-contain rounded-xl">
+        </div>
       </div>
-      <p class="text-[10px] text-gray-400">💡 ចុចលើរូប QR ដើម្បីពង្រីកធំ ឬសង្កត់លើរូបដើម្បី Save ទុកស្កែន</p>
 
-      <div class="bg-gray-50 p-2.5 rounded-xl text-center space-y-1 border border-gray-100">
-        <p class="text-[11px] text-gray-500">ឈ្មោះគណនី៖ <b class="text-gray-800">TORP JOJUS ONLINE</b></p>
-        <div class="flex items-center justify-center gap-2">
-          <span class="font-bold text-xs text-blue-900">000 123 456</span>
-          <button type="button" onclick="copyABA()" class="bg-blue-100 text-blue-700 text-[10px] px-2.5 py-0.5 rounded-md font-bold active:scale-95 transition">
+      <div class="bg-white/10 backdrop-blur-md p-2.5 rounded-xl space-y-1 border border-white/10 text-xs">
+        <p class="text-blue-100 text-[11px]">ឈ្មោះគណនី (Account Name):</p>
+        <p class="font-bold text-yellow-300 text-sm tracking-wide">SOVANNARITH MEAS</p>
+        
+        <div class="flex items-center justify-center gap-2 pt-1 border-t border-white/10 mt-1">
+          <span class="font-bold text-white tracking-widest text-sm">017 666 209</span>
+          <button type="button" onclick="copyABA()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-[10px] px-2 py-0.5 rounded-md font-bold active:scale-95 transition">
             📋 Copy
           </button>
         </div>
       </div>
     </div>
 
+    <div class="bg-gray-50 p-3 rounded-2xl space-y-2 text-xs border">
+      <p class="font-bold text-gray-800 border-b pb-1">📦 សង្ខេបការបញ្ជាទិញ៖</p>
+      <div id="orderItemsSummary" class="space-y-1 text-gray-600"></div>
+      
+      <div class="border-t pt-2 space-y-1">
+        <div class="flex justify-between text-gray-500">
+          <span>ថ្លៃទំនិញសរុប៖</span>
+          <span id="subTotal">$0.00</span>
+        </div>
+        <div class="flex justify-between text-gray-500">
+          <span>ថ្លៃដឹកជញ្ជូន៖</span>
+          <span id="deliveryFee">$0.00</span>
+        </div>
+        <div class="flex justify-between font-bold text-sm text-gray-900 pt-1 border-t">
+          <span>ទឹកប្រាក់ត្រូវទូទាត់៖</span>
+          <span class="text-blue-600 text-base font-bold" id="grandTotal">$0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-[11px] text-amber-800 space-y-1">
+      <p class="font-bold">💡 ជំហានបន្ទាប់៖</p>
+      <ol class="list-decimal list-inside space-y-0.5 text-[10px]">
+        <li>ទូទាត់ប្រាក់តាម ABA KHQR ខាងលើ</li>
+        <li>ថតរូបបង្កាន់ដៃទូទាត់ (Transaction Screenshot)</li>
+        <li>ចុចប៊ូតុងខាងក្រោមដើម្បីផ្ញើទៅកាន់ Telegram Admin</li>
+      </ol>
+    </div>
+
   </div>
 
   <div class="w-full max-w-md mt-3 space-y-2">
-    <button type="button" onclick="sendTransactionToAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition">
-      📲 ផ្ញើប្រតិបត្តិការទូទាត់ប្រាក់ (Send Slip) ទៅ Admin
+    <button type="button" onclick="submitPayment()" 
+            class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-95 transition">
+      <span>💬</span>
+      <span>ផ្ញើប្រតិបត្តិការទូទាត់ប្រាក់ទៅ Telegram Admin</span>
     </button>
-    
-    <a href="index.html" onclick="clearCart()" class="block w-full bg-gray-200 text-gray-700 font-bold py-2.5 rounded-2xl text-xs text-center active:scale-95 transition">
-      🏠 ត្រឡប់ទៅទំព័រដើម
+
+    <a href="index.html" class="block w-full text-center text-gray-400 text-xs py-2 hover:underline">
+      ត្រឡប់ទៅទំព័រដើម
     </a>
   </div>
 
-  <div id="qrModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50" onclick="closeQrModal()">
-    <div class="bg-white p-4 rounded-2xl text-center space-y-3 max-w-xs w-full" onclick="event.stopPropagation()">
-      <h3 class="font-bold text-sm">ស្កែន ឬសង្កត់លើរូបដើម្បី Save ទុកស្កែន</h3>
-      <img id="modalQrImg" src="" class="w-full h-auto rounded-lg border">
-      <button onclick="closeQrModal()" class="w-full bg-gray-200 text-gray-800 font-bold py-2 rounded-xl text-xs">
-        បិទវិញ
-      </button>
-    </div>
-  </div>
-
   <script>
-    // 1. Telegram WebApp Initialization
+    // ១. Initialize Telegram WebApp API
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
     }
 
+    // ២. ទាញយកទិន្នន័យ Order
     const cart = JSON.parse(localStorage.getItem('cartData')) || [];
-    let details = JSON.parse(localStorage.getItem('orderDetails')) || { customer: {}, deliveryFee: 0, itemsTotal: 0, grandTotal: 0 };
+    const details = JSON.parse(localStorage.getItem('orderDetails')) || { customer: {}, deliveryFee: 0, itemsTotal: 0, grandTotal: 0 };
 
-    document.getElementById('custNameText').innerHTML = `<b>ឈ្មោះ៖</b> ${details.customer.name || 'ភ្ញៀវទូទៅ'}`;
-    document.getElementById('custPhoneText').innerHTML = `<b>លេខទូរស័ព្ទ៖</b> ${details.customer.phone || '--'}`;
-    document.getElementById('custAddressText').innerHTML = `<b>អាសយដ្ឋាន៖</b> ${details.customer.address || '--'}`;
-
-    const itemsContainer = document.getElementById('orderItems');
+    // បង្ហាញបញ្ជីទំនិញ
+    const itemsSummaryDiv = document.getElementById('orderItemsSummary');
     if (cart.length > 0) {
-      itemsContainer.innerHTML = cart.map(item => {
+      itemsSummaryDiv.innerHTML = cart.map((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
         const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
         return `
-          <div class="flex justify-between items-center bg-gray-50 p-2 rounded-xl border border-gray-100">
-            <span><b>#${codeText}</b> - ${item.title}</span>
-            <span class="font-bold text-blue-600">$${parseFloat(item.price || 0).toFixed(2)}</span>
+          <div class="flex justify-between items-center">
+            <span>${idx + 1}. <b>#${codeText}</b> - ${item.title}</span>
+            <span class="font-semibold text-gray-800">$${parseFloat(item.price || 0).toFixed(2)}</span>
           </div>
         `;
       }).join('');
     } else {
-      itemsContainer.innerHTML = `<p class="text-gray-400 italic text-center">គ្មានទំនិញត្រូវបានជ្រើសរើសទេ</p>`;
+      itemsSummaryDiv.innerHTML = `<p class="text-gray-400 italic">គ្មានទំនិញ</p>`;
     }
 
     document.getElementById('subTotal').innerText = `$${(details.itemsTotal || 0).toFixed(2)}`;
     document.getElementById('deliveryFee').innerText = `$${(details.deliveryFee || 0).toFixed(2)}`;
     document.getElementById('grandTotal').innerText = `$${(details.grandTotal || 0).toFixed(2)}`;
 
-    function openQrModal() {
-      const qrSrc = document.getElementById('abaQrCode').src;
-      document.getElementById('modalQrImg').src = qrSrc;
-      document.getElementById('qrModal').classList.remove('hidden');
-      document.getElementById('qrModal').classList.add('flex');
-    }
-
-    function closeQrModal() {
-      document.getElementById('qrModal').classList.add('hidden');
-      document.getElementById('qrModal').classList.remove('flex');
-    }
-
+    // ៣. មុខងារ Copy លេខ ABA
     function copyABA() {
-      const accNum = "017666209"; // ដាក់លេខ ABA ពិតប្រាកដ
+      const accNum = "017666209";
       navigator.clipboard.writeText(accNum);
       if (tg && tg.showAlert) {
         tg.showAlert("បានចម្លងលេខគណនី ABA៖ " + accNum);
@@ -151,14 +134,14 @@
       }
     }
 
-    // 2. មុខងារផ្ញើព័ត៌មាន Order ទៅកាន់ Telegram Admin (ដើរ ១០០% លើ Mobile / Mini App)
-    function sendTransactionToAdmin() {
-      let msg = `🛒 *ការកុម្ម៉ង់ថ្មី (រង់ចាំការទូទាត់ប្រាក់)*\n`;
+    // ៤. មុខងារ ផ្ញើប្រតិបត្តិការទូទាត់ (កែសម្រួលឱ្យដើរលើ Mobile & PC)
+    function submitPayment() {
+      let msg = `🛒 *ការបញ្ជាទិញថ្មី (Waiting for Payment)*\n`;
       msg += `🏪 *តូបជជុស Online*\n\n`;
       msg += `👤 *អតិថិជន:* ${details.customer.name || 'N/A'}\n`;
       msg += `📞 *ទូរស័ព្ទ:* ${details.customer.phone || 'N/A'}\n`;
       msg += `📍 *អាសយដ្ឋាន:* ${details.customer.address || 'N/A'}\n\n`;
-      msg += `👖 *បញ្ជីទំនិញ (${cart.length} មុខ):*\n`;
+      msg += `👖 *ទំនិញ (${cart.length} មុខ):*\n`;
 
       cart.forEach((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
@@ -167,23 +150,19 @@
       });
 
       msg += `\n🚚 *ថ្លៃដឹក:* $${(details.deliveryFee || 0).toFixed(2)}`;
-      msg += `\n💰 *ទឹកប្រាក់ត្រូវបង់សរុប:* $${(details.grandTotal || 0).toFixed(2)}\n\n`;
-      msg += `👉 *សូមភ្ញៀវផ្ញើស្លីប/Transaction បង់ប្រាក់មកកាន់ទីនេះ!*`;
+      msg += `\n💰 *ទឹកប្រាក់ត្រូវទូទាត់សរុប:* $${(details.grandTotal || 0).toFixed(2)}\n\n`;
+      msg += `📌 *ខ្ញុំបានទូទាត់រួចរាល់ហើយ សូមផ្ញើបង្កាន់ដៃទូទាត់ (Transaction) ជូន Admin!*`;
 
-      const username = "Sovannarithz"; // តួអក្សរ Username Telegram Admin
-      const textEncoded = encodeURIComponent(msg);
+      // Username Telegram Admin របស់បង
+      const adminUsername = "Torp_jojus_online"; 
+      const shareUrl = `https://t.me/${adminUsername}?text=${encodeURIComponent(msg)}`;
 
-      // វិធីបើក Link សកល ធានាដើរលើ Mini App គ្រប់ Device
+      // ការការពារកុំឱ្យទាក់/Error លើ Telegram Mobile App
       if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(`https://t.me/${username}?text=${textEncoded}`);
+        tg.openTelegramLink(shareUrl);
       } else {
-        window.location.href = `https://t.me/${username}?text=${textEncoded}`;
+        window.location.href = shareUrl;
       }
-    }
-
-    function clearCart() {
-      localStorage.removeItem('cartData');
-      localStorage.removeItem('orderDetails');
     }
   </script>
 </body>
