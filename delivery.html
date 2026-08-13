@@ -2,8 +2,8 @@
 <html lang="km">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ព័ត៌មានដឹកជញ្ជូន - តូបជជុស Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ព័ត៌មានដឹកជញ្ជូន និងការទូទាត់ - តូបជជុស Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
@@ -19,44 +19,74 @@
           ⬅️
         </a>
         <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-             onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-full border object-cover">
+             onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-full border">
         <div>
-          <h1 class="font-bold text-sm text-gray-800">🚚 ព័ត៌មានដឹកជញ្ជូន</h1>
-          <p class="text-[10px] text-gray-500">បំពេញព័ត៌មានដើម្បីបន្តទៅការទូទាត់ប្រាក់</p>
+          <h1 class="font-bold text-sm">🚚 ព័ត៌មានដឹកជញ្ជូន និងទូទាត់</h1>
+          <p class="text-[10px] text-gray-500">បំពេញព័ត៌មានដើម្បីបន្តទៅការបង់ប្រាក់</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-gray-50 p-3 rounded-xl border space-y-1 text-xs">
-      <p class="font-bold text-gray-700 border-b pb-1 mb-1">📦 ខោដែលបានជ្រើសរើស៖</p>
-      <div id="selectedItems" class="space-y-1 text-gray-600 max-h-36 overflow-y-auto"></div>
+    <div class="bg-blue-50/50 border border-blue-100 p-3 rounded-xl space-y-1 text-xs">
+      <p class="font-bold text-blue-900 border-b border-blue-100 pb-1">📦 ទំនិញដែលបានជ្រើសរើស៖</p>
+      <div id="selectedItems" class="space-y-1 pt-1 text-gray-700"></div>
     </div>
 
-    <form id="deliveryForm" onsubmit="confirmPlaceOrder(event)" class="space-y-3 text-xs">
-      <div>
-        <label class="font-bold block mb-1 text-gray-700">👤 ឈ្មោះអតិថិជន *</label>
-        <input type="text" id="custName" required placeholder="ឧទាហរណ៍៖ សុខ ជា" class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+    <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-3.5 text-xs">
+      
+      <div class="space-y-2">
+        <p class="font-bold text-gray-800 text-[13px] flex items-center gap-1">
+          <span>📍</span> ព័ត៌មានអ្នកទទួល និងទីតាំង
+        </p>
+
+        <div>
+          <label class="font-semibold block mb-1 text-gray-700">👤 ឈ្មោះអតិថិជន *</label>
+          <input type="text" id="custName" required placeholder="ឧទាហរណ៍៖ សុខ ជា" 
+                 class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+        </div>
+
+        <div>
+          <label class="font-semibold block mb-1 text-gray-700">📞 លេខទូរស័ព្ទ *</label>
+          <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012 345 678" 
+                 class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+        </div>
+
+        <div>
+          <label class="font-semibold block mb-1 text-gray-700">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង *</label>
+          <textarea id="custAddress" required rows="2" placeholder="ឧទាហរណ៍៖ ភ្នំពេញ, ផ្ទះលេខ..., ផ្លូវ..." 
+                    class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+        </div>
+
+        <div>
+          <label class="font-semibold block mb-1 text-gray-700">🚚 តំបន់ដឹកជញ្ជូន</label>
+          <select id="deliveryLocation" onchange="calculateTotal()" 
+                  class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+            <option value="1.5">ភ្នំពេញ ($1.50)</option>
+            <option value="2.5">តាមខេត្ត ($2.50)</option>
+          </select>
+        </div>
       </div>
 
-      <div>
-        <label class="font-bold block mb-1 text-gray-700">📞 លេខទូរស័ព្ទ *</label>
-        <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012 345 678" class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="pt-2 border-t space-y-2">
+        <p class="font-bold text-gray-800 text-[13px] flex items-center gap-1">
+          <span>💳</span> ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់
+        </p>
+
+        <div class="grid grid-cols-1 gap-2">
+          <label class="flex items-center justify-between p-3 border-2 border-blue-600 bg-blue-50/30 rounded-xl cursor-pointer">
+            <div class="flex items-center gap-2.5">
+              <input type="radio" name="paymentMethod" value="ABA_KHQR" checked class="w-4 h-4 text-blue-600">
+              <div>
+                <p class="font-bold text-gray-800">ABA KHQR (ទូទាត់ភ្លាមៗ)</p>
+                <p class="text-[10px] text-gray-500">ស្កែន ABA Mobile App ស្វ័យប្រវត្តិ</p>
+              </div>
+            </div>
+            <span class="text-xs bg-red-600 text-white font-bold px-2 py-0.5 rounded">ABA</span>
+          </label>
+        </div>
       </div>
 
-      <div>
-        <label class="font-bold block mb-1 text-gray-700">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង *</label>
-        <textarea id="custAddress" required rows="2" placeholder="ឧទាហរណ៍៖ ភ្នំពេញ, ផ្ទះលេខ..., ផ្លូវ..." class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-      </div>
-
-      <div>
-        <label class="font-bold block mb-1 text-gray-700">🚚 តំបន់ដឹកជញ្ជូន</label>
-        <select id="deliveryLocation" onchange="calculateTotal()" class="w-full p-2.5 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="1.5">ភ្នំពេញ ($1.50)</option>
-          <option value="2.5">តាមខេត្ត ($2.50)</option>
-        </select>
-      </div>
-
-      <div class="border-t pt-3 space-y-1 font-bold">
+      <div class="border-t pt-3 space-y-1 font-bold bg-gray-50 p-3 rounded-xl">
         <div class="flex justify-between text-gray-600">
           <span>ថ្លៃទំនិញសរុប៖</span>
           <span id="itemsTotalText">$0.00</span>
@@ -65,126 +95,11 @@
           <span>ថ្លៃដឹកជញ្ជូន៖</span>
           <span id="deliveryFeeText">$1.50</span>
         </div>
-        <div class="flex justify-between text-base text-blue-600 pt-1 border-t">
-          <span>សរុបរួមត្រូវទូទាត់៖</span>
-          <span id="grandTotalText">$0.00</span>
+        <div class="flex justify-between text-base text-blue-600 pt-1 border-t border-gray-200">
+          <span>សរុបទឹកប្រាក់ត្រូវបង់៖</span>
+          <span id="grandTotalText" class="text-lg text-blue-700 font-extrabold">$0.00</span>
         </div>
       </div>
 
-      <div class="flex gap-2 pt-2">
-        <a href="index.html" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl text-xs text-center flex items-center justify-center transition active:scale-95">
-          ⬅️ ថយក្រោយ
-        </a>
-        <button type="submit" class="w-2/3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition">
-          ✅ បញ្ជាក់ការបញ្ជាទិញ (Confirm)
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <script>
-    // Initialize Telegram WebApp API
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
-
-    const cart = JSON.parse(localStorage.getItem('cartData')) || [];
-    let itemsTotal = 0;
-
-    if (cart.length === 0) {
-      alert('គ្មានទំនិញក្នុងកន្ត្រក់ទេ!');
-      window.location.href = 'index.html';
-    }
-
-    // ចងចាំព័ត៌មានអតិថិជនដែលធ្លាប់បំពេញ
-    const savedDetails = JSON.parse(localStorage.getItem('orderDetails')) || {};
-    if (savedDetails.customer) {
-      if (savedDetails.customer.name) document.getElementById('custName').value = savedDetails.customer.name;
-      if (savedDetails.customer.phone) document.getElementById('custPhone').value = savedDetails.customer.phone;
-      if (savedDetails.customer.address) document.getElementById('custAddress').value = savedDetails.customer.address;
-    }
-
-    // បង្ហាញបញ្ជីទំនិញក្នុង Cart
-    const itemsContainer = document.getElementById('selectedItems');
-    itemsContainer.innerHTML = cart.map((item, idx) => {
-      const price = parseFloat(item.price || 0);
-      itemsTotal += price;
-      const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-      const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
-      return `
-        <div class="flex justify-between items-center py-0.5">
-          <span>${idx + 1}. <b>#${codeText}</b> - ${item.title}</span>
-          <span class="font-bold text-gray-800">$${price.toFixed(2)}</span>
-        </div>
-      `;
-    }).join('');
-
-    function calculateTotal() {
-      const fee = parseFloat(document.getElementById('deliveryLocation').value);
-      const grandTotal = itemsTotal + fee;
-
-      document.getElementById('itemsTotalText').innerText = `$${itemsTotal.toFixed(2)}`;
-      document.getElementById('deliveryFeeText').innerText = `$${fee.toFixed(2)}`;
-      document.getElementById('grandTotalText').innerText = `$${grandTotal.toFixed(2)}`;
-
-      return { fee, grandTotal };
-    }
-
-    // មុខងារ confirmPlaceOrder រៀបចំ Order និងចេញសារតប
-    function confirmPlaceOrder(e) {
-      e.preventDefault();
-      const totals = calculateTotal();
-
-      const custName = document.getElementById('custName').value;
-      const custPhone = document.getElementById('custPhone').value;
-      const custAddress = document.getElementById('custAddress').value;
-
-      const orderDetails = {
-        customer: {
-          name: custName,
-          phone: custPhone,
-          address: custAddress
-        },
-        deliveryFee: totals.fee,
-        itemsTotal: itemsTotal,
-        grandTotal: totals.grandTotal
-      };
-
-      const newOrder = {
-        orderId: "ORD-" + Date.now(),
-        cart: cart,
-        details: orderDetails,
-        status: 'PENDING_PAYMENT',
-        createdAt: new Date().toISOString()
-      };
-
-      // ១. រក្សាទុកក្នុង Order Details & Pending Orders (គាំទ្រ Multi-Orders)
-      localStorage.setItem('orderDetails', JSON.stringify(orderDetails));
-      
-      let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
-      pendingOrdersList.push(newOrder);
-      localStorage.setItem('pendingOrdersList', JSON.stringify(pendingOrdersList));
-      localStorage.setItem('pendingOrder', JSON.stringify(newOrder));
-
-      // ២. បង្ហាញសារតបទៅកាន់អតិថិជន (Confirm Notice)
-      const successMsg = "✅ បញ្ជាក់ការបញ្ជាទិញជោគជ័យ!\n\nសូមបន្តទៅស្កែនទូទាត់ប្រាក់ ABA KHQR និងផ្ញើបង្កាន់ដៃ (Transaction) ជូន Admin។";
-      
-      if (tg && tg.showAlert) {
-        tg.showAlert(successMsg, () => {
-          // Clear Cart ដើម រួចទៅ waiting-payment
-          localStorage.removeItem('cartData');
-          window.location.href = 'waiting-payment.html';
-        });
-      } else {
-        alert(successMsg);
-        localStorage.removeItem('cartData');
-        window.location.href = 'waiting-payment.html';
-      }
-    }
-
-    calculateTotal();
-  </script>
-</body>
-</html>
+      <div class="flex gap-2 pt-1">
+        <a href="index.html" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-
