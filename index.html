@@ -46,7 +46,7 @@
   <main class="max-w-md mx-auto p-3 space-y-3">
     <div class="flex justify-between items-center px-1">
       <p class="text-xs font-bold text-gray-700 flex items-center gap-1">
-        <span>📦</span> ឥវ៉ាន់​ដែលមានក្នុងស្តុក
+        <span>📦</span> ឥវ៉ាន់ដែលមានក្នុងស្តុក
       </p>
       <span id="totalItemsCount" class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
         0 មុខ
@@ -70,9 +70,7 @@
       </div>
 
       <!-- បញ្ជីទំនិញក្នុង Cart -->
-      <div id="cartModalItems" class="overflow-y-auto flex-1 space-y-2 pr-1 min-h-[120px]">
-        <!-- នឹង Render ទំនិញតាម JS -->
-      </div>
+      <div id="cartModalItems" class="overflow-y-auto flex-1 space-y-2 pr-1 min-h-[120px]"></div>
 
       <!-- Footer Modal / Total & Action -->
       <div class="border-t pt-3 space-y-2.5">
@@ -94,6 +92,11 @@
     </div>
   </div>
 
+  <!-- Toast Notification (ជំនួស alert() កុំឱ្យលោត Domain) -->
+  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg border border-gray-700 hidden z-50 transition-all">
+    ✅ បានបន្ថែមទំនិញចូលកន្ត្រក!
+  </div>
+
   <!-- JAVASCRIPT SECTION -->
   <script>
     // 1. Setup Telegram WebApp
@@ -103,7 +106,10 @@
       tg.expand();
     }
 
-    // 2. Fetch Products from Supabase or Local Data
+    // 🧹 Clear ទិន្នន័យ buyNowItem ចាស់ចោល ពេលអ្នកប្រើត្រឡប់មក HomePage
+    localStorage.removeItem('buyNowItem');
+
+    // 2. Fetch Products from Supabase
     const SUPABASE_URL = "https://gzclvhcvsfcslilxaiyg.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE";
 
@@ -179,6 +185,14 @@
       updateCartBadge();
     }
 
+    // Toast Notification Handler
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      toast.innerText = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => { toast.classList.add('hidden'); }, 2000);
+    }
+
     // 4. Cart Operations
     function getCart() {
       return JSON.parse(localStorage.getItem('cartData')) || [];
@@ -209,11 +223,10 @@
       saveCart(cart);
 
       if (showNotification) {
-        alert(`បានបន្ថែមខោចូលកន្ត្រកហើយ!`);
+        showToast('✅ បានបន្ថែមខោចូលកន្ត្រកហើយ!');
       }
     }
 
-    // ⚡ មុខងារទិញភ្លាមៗ (Buy Now)
     function buyNow(productId) {
       const product = productsList.find(p => String(p.id) === String(productId));
       if (!product) return;
@@ -222,7 +235,6 @@
       window.location.href = 'delivery.html';
     }
 
-    // Search Filter
     function filterProducts() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
       const filtered = productsList.filter(p => {
@@ -234,7 +246,6 @@
       renderProducts(filtered);
     }
 
-    // Cart Modal Handlers
     function openCartModal() {
       renderCartModalItems();
       const modal = document.getElementById('cartModal');
@@ -295,19 +306,20 @@
     }
 
     function clearCart() {
-      if (confirm('តើអ្នកពិតជាចង់លុបទំនិញទាំងអស់ចេញពីកន្ត្រកមែនទេ?')) {
-        localStorage.removeItem('cartData');
-        updateCartBadge();
-        renderCartModalItems();
-      }
+      localStorage.removeItem('cartData');
+      updateCartBadge();
+      renderCartModalItems();
+      showToast('🗑️ បានសម្អាតកន្ត្រករួចរាល់');
     }
 
     function goToCheckout() {
       const cart = getCart();
       if (cart.length === 0) {
-        alert('សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១ ចូលកន្ត្រក!');
+        showToast('⚠️ សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១!');
         return;
       }
+      // ត្រូវ Clear buyNowItem ដើម្បីឱ្យវាទាញចេញពី Cart វិញ
+      localStorage.removeItem('buyNowItem');
       window.location.href = 'delivery.html';
     }
 
