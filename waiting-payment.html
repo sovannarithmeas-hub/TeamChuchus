@@ -16,55 +16,68 @@
     <div class="text-center space-y-1 border-b pb-3">
       <div class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold border border-amber-200">
         <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-        រង់ចាំការទូទាត់ប្រាក់ (Pending POs)
+        រង់ចាំការទូទាត់ប្រាក់ (Waiting for Payment)
       </div>
       <h1 class="text-base font-bold text-gray-800 pt-1">តូបជជុស Online</h1>
-      <p class="text-[11px] text-gray-500">ជ្រើសរើស Order (PO) ដែលអ្នកចង់ទូទាត់ប្រាក់</p>
+      <p class="text-[11px] text-gray-500">សូមស្កែន ABA KHQR ដើម្បីបន្តការបញ្ជាទិញ</p>
     </div>
 
     <div class="bg-gradient-to-br from-blue-900 to-indigo-900 text-white p-4 rounded-2xl text-center space-y-3 shadow-md">
       <p class="text-xs font-semibold text-blue-200">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
       
-      <div class="flex justify-center">
-        <div onclick="openQrModal()" class="bg-white p-2 rounded-2xl shadow-inner border border-blue-200 cursor-pointer">
-          <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/IMG_20260812_155656.jpg" 
-               class="w-44 h-44 object-contain rounded-xl">
+      <div class="flex flex-col items-center justify-center">
+        <div onclick="openQrModal()" class="bg-white p-2 rounded-2xl shadow-inner border border-blue-200 cursor-pointer hover:scale-105 transition-transform">
+          <img id="abaQrCode" src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/IMG_20260812_155656.jpg" 
+               class="w-48 h-48 object-contain rounded-xl">
         </div>
+        <span class="text-[10px] text-blue-200 mt-1 cursor-pointer underline" onclick="openQrModal()">🔍 ចុចលើរូប QR ដើម្បីបង្រីកធំ</span>
       </div>
 
       <div class="bg-white/10 backdrop-blur-md p-2.5 rounded-xl space-y-1 border border-white/10 text-xs">
         <p class="text-blue-100 text-[11px]">ឈ្មោះគណនី (Account Name):</p>
         <p class="font-bold text-yellow-300 text-sm tracking-wide">SOVANNARITH MEAS</p>
+        
         <div class="flex items-center justify-center gap-2 pt-1 border-t border-white/10 mt-1">
           <span class="font-bold text-white tracking-widest text-sm">017 666 209</span>
-          <button type="button" onclick="copyABA()" class="bg-yellow-400 text-gray-900 text-[10px] px-2 py-0.5 rounded-md font-bold">📋 Copy</button>
+          <button type="button" onclick="copyABA()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-[10px] px-2 py-0.5 rounded-md font-bold active:scale-95 transition">
+            📋 Copy
+          </button>
         </div>
       </div>
     </div>
 
-    <div class="bg-gray-50 p-3 rounded-2xl space-y-3 text-xs border">
+    <div class="bg-gray-50 p-3 rounded-2xl space-y-2 text-xs border">
       <div class="flex justify-between items-center border-b pb-1">
-        <p class="font-bold text-gray-800">📋 បញ្ជី Order រង់ចាំទូទាត់៖</p>
-        <span id="orderCountBadge" class="bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px]">0 Order</span>
+        <p class="font-bold text-gray-800">📦 ទំនិញរង់ចាំទូទាត់៖</p>
+        <span id="orderCountBadge" class="bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px]">1 Order</span>
       </div>
 
-      <div id="ordersListContainer" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
-
+      <div id="orderItemsSummary" class="space-y-1 text-gray-600 max-h-40 overflow-y-auto pr-1"></div>
+      
       <div class="border-t pt-2 space-y-1">
-        <div class="flex justify-between font-bold text-sm text-gray-900">
-          <span>ទឹកប្រាក់ត្រូវទូទាត់សរុប (ជ្រើសរើស)៖</span>
-          <span class="text-blue-600 text-base font-bold" id="selectedGrandTotal">$0.00</span>
+        <div class="flex justify-between font-bold text-sm text-gray-900 pt-1">
+          <span>ទឹកប្រាក់ត្រូវទូទាត់សរុប៖</span>
+          <span class="text-blue-600 text-base font-bold" id="grandTotal">$0.00</span>
         </div>
       </div>
+    </div>
+
+    <div class="bg-blue-50 border border-blue-200 p-2.5 rounded-xl text-[11px] text-blue-900 space-y-1">
+      <p class="font-bold">💡 ជំហានទូទាត់ស្វ័យប្រវត្តិ៖</p>
+      <ol class="list-decimal list-inside space-y-0.5 text-[10px]">
+        <li>ទូទាត់ប្រាក់តាម ABA KHQR ខាងលើ</li>
+        <li>ចុចប៊ូតុង <b>"បាញ់ទិន្នន័យចូល Telegram Bot"</b> ខាងក្រោម</li>
+        <li><b>Reply ផ្ញើរូបភាពបង្កាន់ដៃ (Screenshot)</b> ចូលក្នុង Bot Chat ជាការស្រេច!</li>
+      </ol>
     </div>
 
   </div>
 
   <div class="w-full max-w-md mt-3 space-y-2">
-    <button type="button" onclick="submitSelectedPayments()" 
+    <button type="button" onclick="sendOrderToBot()" 
             class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-95 transition">
-      <span>💬</span>
-      <span>ផ្ញើប្រតិបត្តិការទូទាត់ប្រាក់ទៅ Telegram Admin</span>
+      <span>🤖</span>
+      <span>បាញ់ទិន្នន័យបញ្ជាទិញចូល Telegram Bot</span>
     </button>
 
     <a href="index.html" class="block w-full text-center text-gray-500 text-xs py-2 hover:underline">
@@ -72,111 +85,133 @@
     </a>
   </div>
 
+  <div id="qrModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm" onclick="closeQrModal()">
+    <div class="bg-white p-4 rounded-3xl text-center space-y-3 max-w-sm w-full shadow-2xl relative" onclick="event.stopPropagation()">
+      <button onclick="closeQrModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-lg font-bold bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center">✕</button>
+      <h3 class="font-bold text-sm text-gray-800 pt-1">ស្កែនទូទាត់ប្រាក់ ABA KHQR</h3>
+      <div class="bg-gray-50 p-2 rounded-2xl border flex justify-center">
+        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/IMG_20260812_155656.jpg" 
+             class="w-72 h-72 object-contain rounded-xl">
+      </div>
+      <p class="text-[11px] text-gray-500">ឈ្មោះ៖ <b>SOVANNARITH MEAS</b> (017 666 209)</p>
+    </div>
+  </div>
+
   <script>
     const tg = window.Telegram?.WebApp;
-    if (tg) tg.ready();
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
 
     let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
+    const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
+    if (pendingOrdersList.length === 0 && singlePending) {
+      pendingOrdersList.push(singlePending);
+    }
 
-    function renderOrders() {
-      const container = document.getElementById('ordersListContainer');
+    let allCartItems = [];
+    let totalGrand = 0;
+    let customerInfo = { name: 'N/A', phone: 'N/A', address: 'N/A' };
+
+    if (pendingOrdersList.length > 0) {
       document.getElementById('orderCountBadge').innerText = `${pendingOrdersList.length} Order(s)`;
 
-      if (pendingOrdersList.length === 0) {
-        container.innerHTML = `<p class="text-gray-400 italic text-center py-4">គ្មាន Order រង់ចាំទូទាត់ទេ</p>`;
-        document.getElementById('selectedGrandTotal').innerText = `$0.00`;
-        return;
-      }
+      pendingOrdersList.forEach(order => {
+        if (order.cart) allCartItems.push(...order.cart);
+        if (order.details) {
+          totalGrand += parseFloat(order.details.grandTotal || 0);
+          if (order.details.customer && order.details.customer.name) {
+            customerInfo = order.details.customer;
+          }
+        }
+      });
+    }
 
-      container.innerHTML = pendingOrdersList.map((order, idx) => {
-        const cartText = order.cart.map(c => c.title).join(', ');
+    const itemsSummaryDiv = document.getElementById('orderItemsSummary');
+    if (allCartItems.length > 0) {
+      itemsSummaryDiv.innerHTML = allCartItems.map((item, idx) => {
+        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+        const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
         return `
-          <div class="bg-white p-2.5 rounded-xl border space-y-1">
-            <div class="flex items-center justify-between border-b pb-1">
-              <label class="flex items-center gap-2 cursor-pointer font-bold text-blue-700">
-                <input type="checkbox" class="order-checkbox w-4 h-4 text-blue-600 rounded" value="${idx}" checked onchange="calculateSelectedTotal()">
-                <span>${order.orderId || 'PO-' + (idx + 1)}</span>
-              </label>
-              <span class="font-bold text-gray-800">$${(order.details.grandTotal || 0).toFixed(2)}</span>
-            </div>
-            <p class="text-[10px] text-gray-500 line-clamp-1">👖 ${cartText}</p>
+          <div class="flex justify-between items-center py-1 border-b border-gray-100 last:border-none">
+            <span>${idx + 1}. <b>#${codeText}</b> - ${item.title}</span>
+            <span class="font-semibold text-gray-800">$${parseFloat(item.price || 0).toFixed(2)}</span>
           </div>
         `;
       }).join('');
-
-      calculateSelectedTotal();
+    } else {
+      itemsSummaryDiv.innerHTML = `<p class="text-gray-400 italic">គ្មានទំនិញរង់ចាំទូទាត់ទេ</p>`;
     }
 
-    function calculateSelectedTotal() {
-      const checkboxes = document.querySelectorAll('.order-checkbox');
-      let total = 0;
-      checkboxes.forEach(cb => {
-        if (cb.checked) {
-          const idx = parseInt(cb.value);
-          total += pendingOrdersList[idx].details.grandTotal || 0;
-        }
-      });
-      document.getElementById('selectedGrandTotal').innerText = `$${total.toFixed(2)}`;
+    document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
+
+    function openQrModal() {
+      document.getElementById('qrModal').classList.remove('hidden');
+      document.getElementById('qrModal').classList.add('flex');
     }
 
-    function submitSelectedPayments() {
-      const checkboxes = document.querySelectorAll('.order-checkbox:checked');
-      if (checkboxes.length === 0) {
-        alert('សូមជ្រើសរើសយ៉ាងហោចណាស់ Order មួយដើម្បីទូទាត់!');
-        return;
-      }
-
-      let selectedIndices = [];
-      let totalPaid = 0;
-      let msg = `🛒 *ប្រតិបត្តិការទូទាត់ប្រាក់ (Payment Orders)*\n`;
-      msg += `🏪 *តូបជជុស Online*\n\n`;
-
-      checkboxes.forEach((cb, i) => {
-        const idx = parseInt(cb.value);
-        selectedIndices.push(idx);
-        const order = pendingOrdersList[idx];
-        totalPaid += order.details.grandTotal;
-
-        msg += `📌 *${order.orderId || 'Order ' + (i + 1)}*\n`;
-        order.cart.forEach((item) => {
-          const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-          const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
-          msg += `   • #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
-        });
-        msg += `   💰 សរុប Order នេះ: $${order.details.grandTotal.toFixed(2)}\n\n`;
-      });
-
-      const firstCustomer = pendingOrdersList[selectedIndices[0]].details.customer;
-      msg += `👤 *អតិថិជន:* ${firstCustomer.name || 'N/A'}\n`;
-      msg += `📞 *ទូរស័ព្ទ:* ${firstCustomer.phone || 'N/A'}\n`;
-      msg += `📍 *អាសយដ្ឋាន:* ${firstCustomer.address || 'N/A'}\n\n`;
-      msg += `💵 *ទឹកប្រាក់បានទូទាត់សរុប:* $${totalPaid.toFixed(2)}\n`;
-      msg += `📌 *ខ្ញុំបានទូទាត់រួចរាល់ហើយ! (សូមមើលរូបភាពបង្កាន់ដៃផ្ញើជូនខាងក្រោម)*`;
-
-      // លុបតែ Order ណាដែលបានជ្រើសរើសទូទាត់ រក្សាទុក Order ផ្សេងទៀតដែលមិនទាន់ទូទាត់
-      pendingOrdersList = pendingOrdersList.filter((_, idx) => !selectedIndices.includes(idx));
-      localStorage.setItem('pendingOrdersList', JSON.stringify(pendingOrdersList));
-
-      if (pendingOrdersList.length === 0) {
-        localStorage.removeItem('pendingOrder');
-      }
-
-      const adminUsername = "Sovannarithz";
-      const shareUrl = `https://t.me/${adminUsername}?text=${encodeURIComponent(msg)}`;
-
-      if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(shareUrl);
-      } else {
-        window.location.href = shareUrl;
-      }
+    function closeQrModal() {
+      document.getElementById('qrModal').classList.add('hidden');
+      document.getElementById('qrModal').classList.remove('flex');
     }
 
     function copyABA() {
       navigator.clipboard.writeText("017666209");
-      alert("បានចម្លងលេខគណនី ABA៖ 017666209");
+      alert("បានចម្លងលេខគណនី ABA៖ 017 666 209");
     }
 
-    renderOrders();
+    // 🤖 មុខងារបាញ់ Order ចូល Telegram Bot ស្វ័យប្រវត្តិ
+    function sendOrderToBot() {
+      if (allCartItems.length === 0) {
+        alert('គ្មានទំនិញត្រូវទូទាត់ទេ!');
+        return;
+      }
+
+      let orderText = `🛒 *ការបញ្ជាទិញថ្មីពី Mini App*\n`;
+      orderText += `---------------------------\n`;
+      orderText += `👤 *អតិថិជន:* ${customerInfo.name}\n`;
+      orderText += `📞 *ទូរស័ព្ទ:* ${customerInfo.phone}\n`;
+      orderText += `📍 *អាសយដ្ឋាន:* ${customerInfo.address}\n\n`;
+      orderText += `👖 *បញ្ជីទំនិញ (${allCartItems.length} មុខ):*\n`;
+
+      allCartItems.forEach((item, idx) => {
+        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+        const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
+        orderText += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
+      });
+
+      orderText += `\n💰 *ទឹកប្រាក់សរុបត្រូវទូទាត់:* $${totalGrand.toFixed(2)}\n`;
+      orderText += `---------------------------\n`;
+      orderText += `📸 *សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!*`;
+
+      // ឈ្មោះ Bot របស់បង
+      const botUsername = "TobChuchusAuto_bot"; 
+
+      // ករណីបើកក្នុង Telegram WebApp
+      if (tg && tg.sendData) {
+        // បាញ់ទិន្នន័យ JSON ទៅ Bot ដោយស្វ័យប្រវត្តិ
+        tg.sendData(JSON.stringify({
+          action: "NEW_ORDER",
+          orderText: orderText,
+          grandTotal: totalGrand
+        }));
+      }
+
+      // បើក Link Chat ទៅ Bot
+      const botUrl = `https://t.me/${botUsername}?text=${encodeURIComponent(orderText)}`;
+      
+      // Clear Storage
+      localStorage.removeItem('pendingOrder');
+      localStorage.removeItem('pendingOrdersList');
+      localStorage.removeItem('cartData');
+
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(botUrl);
+      } else {
+        window.location.href = botUrl;
+      }
+    }
   </script>
 </body>
 </html>
