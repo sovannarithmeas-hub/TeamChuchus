@@ -2,274 +2,166 @@
 <html lang="km">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>តូបជជុស Online - ទំព័រដើម</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>តូបជជុស Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Kantumruy Pro', sans-serif; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
+<body class="bg-gray-100 min-h-screen pb-10">
 
-<body class="bg-gray-100 min-h-screen text-gray-800 flex flex-col">
-
-  <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-md mx-auto p-3">
-      <div class="flex items-center justify-between mb-2 gap-2">
-        
-        <div class="flex items-center gap-2">
-          <div class="w-10 h-10 rounded-full border-2 border-blue-500 overflow-hidden shadow-sm flex-shrink-0 bg-white flex items-center justify-center">
-            <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-                 onerror="this.src='https://via.placeholder.com/100?text=Logo';" class="w-full h-full object-cover">
-          </div>
-          <div>
-            <h1 class="text-sm font-bold text-gray-900 leading-tight">តូបជជុស Online</h1>
-            <p class="text-[10px] text-gray-500">ខោជជុសគុណភាពខ្ពស់</p>
-          </div>
+  <!-- Header Section -->
+  <header class="sticky top-0 bg-white/90 backdrop-blur-md z-40 border-b p-3 shadow-sm">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
+             onerror="this.src='https://via.placeholder.com/40';" 
+             class="w-10 h-10 rounded-full border">
+        <div>
+          <h1 class="font-bold text-sm text-gray-800">តូបជជុស Online</h1>
+          <p class="text-[10px] text-gray-500">ខោជជុសគុណភាពខ្ពស់</p>
         </div>
-
-        <div class="flex items-center gap-1.5">
-          <a id="pendingOrderBtn" href="waiting-payment.html" class="hidden bg-amber-100 text-amber-800 text-[11px] px-2.5 py-1.5 rounded-xl font-bold items-center gap-1 border border-amber-300 shadow-sm active:scale-95 transition">
-            <span>⏳</span>
-            <span>រង់ចាំទូទាត់</span>
-            <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-          </a>
-
-          <button onclick="openCartModal()" class="relative p-2 bg-blue-50 hover:bg-blue-100 rounded-xl transition text-blue-600 active:scale-95">
-            <span class="text-lg">🛒</span>
-            <span id="cartBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
-          </button>
-        </div>
-
       </div>
 
-      <input type="text" id="searchInput" oninput="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬប្រភេទខោ..." class="w-full pl-3 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+      <!-- Cart Button with Badge -->
+      <a href="delivery.html" class="relative p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition">
+        🛒
+        <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center hidden">
+          0
+        </span>
+      </a>
+    </div>
+
+    <!-- Search Input -->
+    <div class="max-w-md mx-auto mt-2">
+      <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬប្រភេទខោ..." 
+             class="w-full p-2.5 text-xs bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
     </div>
   </header>
 
-  <main class="flex-1 max-w-md mx-auto w-full p-3 space-y-3">
+  <!-- Main Container -->
+  <main class="max-w-md mx-auto p-3 space-y-3">
     <div class="flex justify-between items-center px-1">
-      <span class="text-xs font-bold text-gray-700">📦 ខោដែលមានក្នុងស្តុក</span>
-      <span id="stockCount" class="text-[11px] bg-blue-100 text-blue-700 font-bold px-2.5 py-0.5 rounded-full">0 មុខ</span>
+      <p class="text-xs font-bold text-gray-700 flex items-center gap-1">
+        <span>📦</span> ខោដែលមានក្នុងស្តុក
+      </p>
+      <span id="totalItemsCount" class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+        0 មុខ
+      </span>
     </div>
 
-    <div id="productList" class="space-y-3">
-      <div class="text-center py-10 text-xs text-gray-400">⏳ កំពុងទាញទិន្នន័យ...</div>
-    </div>
+    <!-- Product Feed Grid -->
+    <div id="productGrid" class="space-y-4"></div>
   </main>
 
-  <div id="productModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm transition-opacity">
-    <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-y-auto p-4 space-y-3">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 id="modalCode" class="text-sm font-bold text-blue-600"></h3>
-        <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600 text-lg font-bold px-2">✕</button>
-      </div>
-      
-      <div class="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border">
-        <div id="modalImageSlider" class="flex w-full h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"></div>
-        <span id="imageCounter" class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full font-mono">1/1</span>
-      </div>
-
-      <div>
-        <div class="flex justify-between items-start mb-1">
-          <h2 id="modalTitle" class="text-base font-bold text-gray-800"></h2>
-          <span id="modalPrice" class="text-base font-extrabold text-blue-600"></span>
-        </div>
-        <div id="modalSize" class="text-xs text-gray-500 mb-2"></div>
-        <div id="modalDetails" class="text-xs bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1 text-gray-700 leading-relaxed font-mono whitespace-pre-line"></div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2 pt-2 border-t">
-        <button id="modalAddToCartBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
-          🛒 បញ្ចូលកន្ត្រក់
-        </button>
-        <button id="modalBuyNowBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
-          ⚡ ទិញឥឡូវនេះ
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div id="cartModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
-    <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[80vh] flex flex-col p-4">
-      <div class="flex justify-between items-center border-b pb-2 mb-2">
-        <h3 class="text-sm font-bold text-gray-800">🛒 កន្ត្រក់ទំនិញរបស់អ្នក</h3>
-        <button onclick="closeCartModal()" class="text-gray-400 hover:text-gray-600 font-bold px-2">✕</button>
-      </div>
-
-      <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-2 py-2"></div>
-
-      <div class="border-t pt-3 mt-2 space-y-2">
-        <div class="flex justify-between items-center text-xs font-bold text-gray-800">
-          <span>សរុបថ្លៃទំនិញ៖</span>
-          <span id="cartTotalPrice" class="text-sm text-blue-600">$0.00</span>
-        </div>
-        <button onclick="proceedToDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
-          🚀 បន្តទៅការដឹកជញ្ជូន
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // Initialize Telegram WebApp
+    // 1. Setup Telegram WebApp
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
     }
 
-    const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww'; 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // 2. Fetch Products from Supabase or Local Data
+    const SUPABASE_URL = "https://gzclvhcvsfcslilxaiyg.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwNjY2NDksImV4cCI6MjAzODY0MjY0OX0.4XwB5_0859W_P2K7L3y71ZgLw7c0S5U8bE21I047V6o";
 
-    let allProducts = [];
-    let cart = JSON.parse(localStorage.getItem('cartData')) || [];
+    let productsList = [];
 
-    // ១. Check និងបង្ហាញប៊ូតុង Pending Order ឱ្យដើរគ្រប់ Platform (Mobile + PC)
-    function checkPendingOrder() {
-      const pendingOrder = JSON.parse(localStorage.getItem('pendingOrder'));
-      const btn = document.getElementById('pendingOrderBtn');
-      if (pendingOrder && (pendingOrder.status === 'PENDING_PAYMENT' || pendingOrder.cart?.length > 0)) {
-        if (btn) {
-          btn.classList.remove('hidden');
-          btn.classList.add('inline-flex');
-        }
-      } else {
-        if (btn) {
-          btn.classList.add('hidden');
-          btn.classList.remove('inline-flex');
-        }
-      }
-    }
-
-    // ២. Fetch Products 
-    async function fetchProducts() {
+    async function loadProducts() {
       try {
-        const { data, error } = await supabaseClient.from('products').select('*');
-        if (error) throw error;
-        allProducts = data || [];
-        renderProducts(allProducts);
-        updateCartUI();
-        checkPendingOrder(); // ត្រួតពិនិត្យ Pending Order ពេល Load Page
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*`, {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          }
+        });
+        productsList = await response.json();
+        renderProducts(productsList);
       } catch (err) {
-        document.getElementById('productList').innerHTML = `<div class="text-center py-5 text-xs text-red-500">❌ បរាជ័យទាញទិន្នន័យ</div>`;
+        console.error("Error loading products:", err);
       }
     }
 
-    function renderProducts(products) {
-      const listEl = document.getElementById('productList');
-      document.getElementById('stockCount').innerText = `${products.length} មុខ`;
+    // 3. Render Product Cards (Fixing #N/A Code & Action Buttons)
+    function renderProducts(items) {
+      const container = document.getElementById('productGrid');
+      document.getElementById('totalItemsCount').innerText = `${items.length} មុខ`;
 
-      if (products.length === 0) {
-        listEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400">គ្មានទំនិញក្នុងស្តុកទេ</div>`;
+      if (items.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-gray-400 py-10">ពុំមានទំនិញក្នុងស្តុកទេ</p>`;
         return;
       }
 
-      listEl.innerHTML = products.map(p => {
-        const images = (p.images && Array.isArray(p.images) && p.images.length > 0) ? p.images : ['https://via.placeholder.com/300'];
-        const mainImg = images[0];
-        const imgCount = images.length;
+      container.innerHTML = items.map(item => {
+        // ដោះស្រាយបញ្ហា #N/A៖ ស្វែងរក Code ពី Description ឬ Field Code
+        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+        const itemCode = codeMatch ? codeMatch[1] : (item.code || item.title || 'STOCK');
 
-        const codeMatch = p.description ? p.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-        const codeText = codeMatch ? codeMatch[1] : (p.code || 'N/A');
+        const imageList = item.images && item.images.length > 0 ? item.images : [item.image_url || 'https://via.placeholder.com/300'];
 
         return `
-          <div class="bg-white rounded-2xl p-3 shadow-sm border space-y-2">
-            <div onclick="openProductModal('${p.id}')" class="cursor-pointer space-y-2">
-              <div class="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden border">
-                <img src="${mainImg}" class="w-full h-full object-cover">
-                <span class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">#${codeText}</span>
-                ${imgCount > 1 ? `<span class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">📸 ${imgCount} រូប</span>` : ''}
-              </div>
+          <div class="bg-white rounded-2xl p-3 border shadow-sm space-y-2">
+            <!-- Image & Code Badge -->
+            <div class="relative rounded-xl overflow-hidden bg-gray-100 aspect-square">
+              <img src="${imageList[0]}" class="w-full h-full object-cover">
               
-              <div class="flex justify-between items-start">
-                <h3 class="font-bold text-gray-800 text-xs">${p.title || 'គ្មានចំណងជើង'}</h3>
-                <span class="font-extrabold text-blue-600 text-xs">$${parseFloat(p.price || 0).toFixed(2)}</span>
-              </div>
-              <p class="text-[10px] text-gray-500 line-clamp-2">${p.description || ''}</p>
+              <!-- Code Tag -->
+              <span class="absolute top-2 left-2 bg-blue-600 text-white font-bold text-[11px] px-2.5 py-0.5 rounded-lg shadow">
+                #${itemCode}
+              </span>
+
+              ${imageList.length > 1 ? `
+                <span class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-0.5 rounded-full">
+                  📷 ${imageList.length} រូប
+                </span>
+              ` : ''}
             </div>
 
-            <div class="grid grid-cols-2 gap-2 pt-2 border-t">
-              <button onclick="addToCart('${p.id}')" class="bg-amber-50 text-amber-700 font-bold py-1.5 rounded-xl text-[11px] border border-amber-200 active:scale-95 transition">🛒 ចូលកន្ត្រក់</button>
-              <button onclick="buyNowDirect('${p.id}')" class="bg-blue-600 text-white font-bold py-1.5 rounded-xl text-[11px] active:scale-95 transition">⚡ ទិញភ្លាមៗ</button>
+            <!-- Details -->
+            <div class="flex justify-between items-start pt-1">
+              <div>
+                <h2 class="font-bold text-xs text-gray-800">${item.title}</h2>
+                <p class="text-[10px] text-gray-500">${item.description || ''}</p>
+              </div>
+              <span class="font-bold text-sm text-blue-600">$${parseFloat(item.price || 0).toFixed(2)}</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="addToCart('${item.id}', false)" 
+                      class="bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 transition">
+                🛒 ចូលកន្ត្រក
+              </button>
+              
+              <button onclick="buyNow('${item.id}')" 
+                      class="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md transition">
+                ⚡ ទិញភ្លាមៗ
+              </button>
             </div>
           </div>
         `;
       }).join('');
+
+      updateCartBadge();
     }
 
-    function openProductModal(productId) {
-      const product = allProducts.find(p => p.id == productId);
-      if (!product) return;
-
-      const codeMatch = product.description ? product.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-      const codeText = codeMatch ? codeMatch[1] : (product.code || 'N/A');
-
-      document.getElementById('modalCode').innerText = `#${codeText}`;
-      document.getElementById('modalTitle').innerText = product.title || '';
-      document.getElementById('modalPrice').innerText = `$${parseFloat(product.price || 0).toFixed(2)}`;
-      document.getElementById('modalSize').innerText = `Size: ${product.sizes ? (Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes) : 'N/A'}`;
-      document.getElementById('modalDetails').innerText = product.description || 'គ្មានព័ត៌មានបន្ថែម';
-
-      const images = (product.images && Array.isArray(product.images) && product.images.length > 0) ? product.images : ['https://via.placeholder.com/300'];
-      const sliderEl = document.getElementById('modalImageSlider');
-      
-      sliderEl.innerHTML = images.map((imgUrl) => `
-        <div class="w-full h-full flex-shrink-0 snap-center">
-          <img src="${imgUrl}" class="w-full h-full object-cover">
-        </div>
-      `).join('');
-
-      document.getElementById('imageCounter').innerText = `1/${images.length}`;
-
-      sliderEl.onscroll = () => {
-        const index = Math.round(sliderEl.scrollLeft / sliderEl.clientWidth) + 1;
-        document.getElementById('imageCounter').innerText = `${index}/${images.length}`;
-      };
-
-      document.getElementById('modalAddToCartBtn').onclick = () => { addToCart(product.id); closeProductModal(); };
-      document.getElementById('modalBuyNowBtn').onclick = () => { buyNowDirect(product.id); };
-
-      document.getElementById('productModal').classList.remove('hidden');
+    // 4. Cart Operations
+    function getCart() {
+      return JSON.parse(localStorage.getItem('cartData')) || [];
     }
 
-    function closeProductModal() {
-      document.getElementById('productModal').classList.add('hidden');
-    }
-
-    function filterProducts() {
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      const filtered = allProducts.filter(p => 
-        (p.title && p.title.toLowerCase().includes(query)) || 
-        (p.description && p.description.toLowerCase().includes(query))
-      );
-      renderProducts(filtered);
-    }
-
-    function addToCart(productId) {
-      const product = allProducts.find(p => p.id == productId);
-      if (!product) return;
-      if (!cart.some(item => item.id == productId)) {
-        cart.push(product);
-        saveCart();
-        alert('✅ បានបន្ថែមចូលក្នុងកន្ត្រក់!');
-      } else {
-        alert('⚠️ មានក្នុងកន្ត្រក់រួចហើយ!');
-      }
-    }
-
-    function saveCart() {
+    function saveCart(cart) {
       localStorage.setItem('cartData', JSON.stringify(cart));
-      updateCartUI();
+      updateCartBadge();
     }
 
-    function updateCartUI() {
-      const badge = document.getElementById('cartBadge');
+    function updateCartBadge() {
+      const cart = getCart();
+      const badge = document.getElementById('cartCountBadge');
       if (cart.length > 0) {
         badge.innerText = cart.length;
         badge.classList.remove('hidden');
@@ -278,58 +170,47 @@
       }
     }
 
-    function openCartModal() {
-      const container = document.getElementById('cartItemsList');
-      let total = 0;
-      if (cart.length === 0) {
-        container.innerHTML = `<div class="text-center py-6 text-xs text-gray-400">គ្មានទំនិញក្នុងកន្ត្រក់ទេ</div>`;
-      } else {
-        container.innerHTML = cart.map((item, index) => {
-          total += parseFloat(item.price || 0);
-          return `
-            <div class="flex justify-between items-center p-2 bg-gray-50 rounded-xl border text-xs">
-              <div>
-                <span class="font-bold text-blue-600">${item.title}</span>
-                <div class="text-[10px] text-gray-500">$${parseFloat(item.price || 0).toFixed(2)}</div>
-              </div>
-              <button onclick="removeFromCart(${index})" class="text-red-500 font-bold px-2">🗑️</button>
-            </div>
-          `;
-        }).join('');
-      }
-      document.getElementById('cartTotalPrice').innerText = `$${total.toFixed(2)}`;
-      document.getElementById('cartModal').classList.remove('hidden');
-    }
+    // 🛒 ១. មុខងារបន្ថែមចូលកន្ត្រក (Add to Cart Only)
+    function addToCart(productId, showNotification = true) {
+      const product = productsList.find(p => String(p.id) === String(productId));
+      if (!product) return;
 
-    function removeFromCart(index) {
-      cart.splice(index, 1);
-      saveCart();
-      openCartModal();
-    }
+      let cart = getCart();
+      cart.push(product);
+      saveCart(cart);
 
-    function closeCartModal() {
-      document.getElementById('cartModal').classList.add('hidden');
-    }
-
-    function buyNowDirect(productId) {
-      const product = allProducts.find(p => p.id == productId);
-      if (product) {
-        cart = [product];
-        saveCart();
-        window.location.href = 'delivery.html';
+      if (showNotification) {
+        alert(`បានបន្ថែមខោលេខ #${product.code || 'ទំនិញ'} ចូលកន្ត្រកហើយ!`);
       }
     }
 
-    function proceedToDelivery() {
-      if (!cart || cart.length === 0) {
-        alert('សូមជ្រើសរើសខោជាមុនសិន!');
-        return;
-      }
-      saveCart();
+    // ⚡ ២. មុខងារទិញភ្លាមៗ (Buy Now - Redirect to Delivery Page Directly)
+    function buyNow(productId) {
+      const product = productsList.find(p => String(p.id) === String(productId));
+      if (!product) return;
+
+      // ដាក់ចូលកន្ត្រកភ្លាម
+      let cart = getCart();
+      cart.push(product);
+      saveCart(cart);
+
+      // ផ្លាស់ប្តូរទំព័រទៅកាន់ delivery.html ភ្លាមៗ
       window.location.href = 'delivery.html';
     }
 
-    fetchProducts();
+    // Search Filter
+    function filterProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const filtered = productsList.filter(p => {
+        const title = (p.title || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        const code = (p.code || '').toLowerCase();
+        return title.includes(query) || desc.includes(query) || code.includes(query);
+      });
+      renderProducts(filtered);
+    }
+
+    loadProducts();
   </script>
 </body>
 </html>
