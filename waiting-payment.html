@@ -13,6 +13,7 @@
 
   <div class="bg-white w-full max-w-md p-5 rounded-3xl shadow-sm border space-y-4">
     
+    <!-- Status Banner -->
     <div class="text-center space-y-1 border-b pb-3">
       <div class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold border border-amber-200">
         <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
@@ -22,13 +23,14 @@
       <p class="text-[11px] text-gray-500">សូមស្កែន ABA KHQR ដើម្បីបន្តការបញ្ជាទិញ</p>
     </div>
 
+    <!-- QR Payment Card -->
     <div class="bg-gradient-to-br from-blue-900 to-indigo-900 text-white p-4 rounded-2xl text-center space-y-3 shadow-md">
       <p class="text-xs font-semibold text-blue-200">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
       
       <div class="flex flex-col items-center justify-center">
         <div onclick="openQrModal()" class="bg-white p-2 rounded-2xl shadow-inner border border-blue-200 cursor-pointer hover:scale-105 transition-transform">
           <img id="abaQrCode" src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/IMG_20260812_155656.jpg" 
-               class="w-48 h-48 object-contain rounded-xl">
+               class="w-48 h-48 object-contain rounded-xl" alt="ABA KHQR">
         </div>
         <span class="text-[10px] text-blue-200 mt-1 cursor-pointer underline" onclick="openQrModal()">🔍 ចុចលើរូប QR ដើម្បីបង្រីកធំ</span>
       </div>
@@ -39,13 +41,14 @@
         
         <div class="flex items-center justify-center gap-2 pt-1 border-t border-white/10 mt-1">
           <span class="font-bold text-white tracking-widest text-sm">017 666 209</span>
-          <button type="button" onclick="copyABA()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-[10px] px-2 py-0.5 rounded-md font-bold active:scale-95 transition">
+          <button type="button" onclick="copyABA()" class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 text-[10px] px-2 py-0.5 rounded-md font-bold active:scale-95 transition">
             📋 Copy
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Order Summary -->
     <div class="bg-gray-50 p-3 rounded-2xl space-y-2 text-xs border">
       <div class="flex justify-between items-center border-b pb-1">
         <p class="font-bold text-gray-800">📦 ទំនិញរង់ចាំទូទាត់៖</p>
@@ -62,6 +65,7 @@
       </div>
     </div>
 
+    <!-- Instructions -->
     <div class="bg-blue-50 border border-blue-200 p-2.5 rounded-xl text-[11px] text-blue-900 space-y-1">
       <p class="font-bold">💡 ជំហានទូទាត់ស្វ័យប្រវត្តិ៖</p>
       <ol class="list-decimal list-inside space-y-0.5 text-[10px]">
@@ -73,6 +77,7 @@
 
   </div>
 
+  <!-- Action Buttons -->
   <div class="w-full max-w-md mt-3 space-y-2">
     <button type="button" onclick="sendOrderToBot()" 
             class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-95 transition">
@@ -85,18 +90,25 @@
     </a>
   </div>
 
+  <!-- Modal QR Zoom -->
   <div id="qrModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm" onclick="closeQrModal()">
     <div class="bg-white p-4 rounded-3xl text-center space-y-3 max-w-sm w-full shadow-2xl relative" onclick="event.stopPropagation()">
       <button onclick="closeQrModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-lg font-bold bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center">✕</button>
       <h3 class="font-bold text-sm text-gray-800 pt-1">ស្កែនទូទាត់ប្រាក់ ABA KHQR</h3>
       <div class="bg-gray-50 p-2 rounded-2xl border flex justify-center">
         <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/IMG_20260812_155656.jpg" 
-             class="w-72 h-72 object-contain rounded-xl">
+             class="w-72 h-72 object-contain rounded-xl" alt="ABA KHQR Large">
       </div>
       <p class="text-[11px] text-gray-500">ឈ្មោះ៖ <b>SOVANNARITH MEAS</b> (017 666 209)</p>
     </div>
   </div>
 
+  <!-- Custom Toast Notification (សម្រាប់ជំនួស Alert ធម្មតា) -->
+  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg border border-gray-700 hidden z-50 transition-all">
+    ✅ បានចម្លងលេខគណនី ABA រួចរាល់!
+  </div>
+
+  <!-- JAVASCRIPT SECTION -->
   <script>
     const tg = window.Telegram?.WebApp;
     if (tg) {
@@ -104,6 +116,15 @@
       tg.expand();
     }
 
+    // 1. Toast Alert Custom
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      toast.innerText = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => { toast.classList.add('hidden'); }, 2200);
+    }
+
+    // 2. Load Order Data
     let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
     const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
     if (pendingOrdersList.length === 0 && singlePending) {
@@ -128,6 +149,7 @@
       });
     }
 
+    // Render Summary Items
     const itemsSummaryDiv = document.getElementById('orderItemsSummary');
     if (allCartItems.length > 0) {
       itemsSummaryDiv.innerHTML = allCartItems.map((item, idx) => {
@@ -146,6 +168,7 @@
 
     document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
 
+    // Modal Control
     function openQrModal() {
       document.getElementById('qrModal').classList.remove('hidden');
       document.getElementById('qrModal').classList.add('flex');
@@ -156,15 +179,28 @@
       document.getElementById('qrModal').classList.remove('flex');
     }
 
+    // 3. Copy ABA Number (អត់លោត Domain Name)
     function copyABA() {
-      navigator.clipboard.writeText("017666209");
-      alert("បានចម្លងលេខគណនី ABA៖ 017 666 209");
+      const abaAcc = "017666209";
+      navigator.clipboard.writeText(abaAcc).then(() => {
+        if (tg && tg.showAlert) {
+          tg.showAlert(`បានចម្លងលេខគណនី ABA៖ 017 666 209`);
+        } else {
+          showToast(`📋 បានចម្លងលេខគណនី ABA៖ 017 666 209`);
+        }
+      }).catch(() => {
+        showToast(`📋 បានចម្លងលេខគណនី ABA៖ 017 666 209`);
+      });
     }
 
-    // 🤖 មុខងារបាញ់ Order ចូល Telegram Bot ស្វ័យប្រវត្តិ
+    // 4. Send Data to Telegram Bot
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
-        alert('គ្មានទំនិញត្រូវទូទាត់ទេ!');
+        if (tg && tg.showAlert) {
+          tg.showAlert('គ្មានទំនិញត្រូវទូទាត់ទេ!');
+        } else {
+          showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
+        }
         return;
       }
 
@@ -185,12 +221,9 @@
       orderText += `---------------------------\n`;
       orderText += `📸 *សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!*`;
 
-      // ឈ្មោះ Bot របស់បង
       const botUsername = "TobChuchusAuto_bot"; 
 
-      // ករណីបើកក្នុង Telegram WebApp
       if (tg && tg.sendData) {
-        // បាញ់ទិន្នន័យ JSON ទៅ Bot ដោយស្វ័យប្រវត្តិ
         tg.sendData(JSON.stringify({
           action: "NEW_ORDER",
           orderText: orderText,
@@ -198,7 +231,6 @@
         }));
       }
 
-      // បើក Link Chat ទៅ Bot
       const botUrl = `https://t.me/${botUsername}?text=${encodeURIComponent(orderText)}`;
       
       // Clear Storage
