@@ -119,7 +119,7 @@
     </form>
   </div>
 
-  <!-- 🎯 ផ្នែក JAVASCRIPT (កូដចំណុច ២ និង ៣ ត្រូវដាក់ត្រង់នេះ) -->
+  <!-- JAVASCRIPT SECTION -->
   <script>
     const tg = window.Telegram?.WebApp;
     if (tg) {
@@ -142,7 +142,6 @@
 
     // ករណីគ្មានទំនិញសោះ ឱ្យត្រឡប់ទៅ index.html វិញ
     if (checkoutItems.length === 0) {
-      alert('គ្មានទំនិញសម្រាប់ទូទាត់ទេ!');
       window.location.href = 'index.html';
     }
 
@@ -172,7 +171,7 @@
       calculateTotal();
     }
 
-    // 3️⃣ គណនាប្រាក់សរុប (រួមទាំងថ្លៃដឹក)
+    // 3️⃣ គណនាប្រាក់សរុប
     function calculateTotal() {
       const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
       const grandTotal = itemsSubtotal + deliveryFee;
@@ -181,14 +180,13 @@
       document.getElementById('grandTotalText').innerText = `$${grandTotal.toFixed(2)}`;
     }
 
-    // 4️⃣ អនុគមន៍ពេលចុចប៊ូតុង Back / បោះបង់ ត្រឡប់ទៅ index.html
+    // 4️⃣ ប៊ូតុង Back
     function goBack() {
-      // លុបទិន្នន័យ Buy Now ចោលវិញ ដើម្បីឱ្យស្អាត និងមិនជាប់កន្ត្រក
       localStorage.removeItem('buyNowItem');
       window.location.href = 'index.html';
     }
 
-    // 5️⃣ Submit Order (ចំណុចទី ៣ នៃការកែសម្រួល)
+    // 5️⃣ Submit Order
     function submitOrder(event) {
       event.preventDefault();
 
@@ -209,14 +207,10 @@
         }
       };
 
-      // រក្សាទុក Order រង់ចាំទូទាត់
       localStorage.setItem('pendingOrder', JSON.stringify(orderData));
-
-      // 🧹 សម្អាត Storage តាមប្រភេទបញ្ជាទិញ
       onOrderSuccess();
     }
 
-    // 6️⃣ កែប្រែបន្ទាប់ពី Submit Order ជោគជ័យ
     function onOrderSuccess() {
       if (localStorage.getItem('buyNowItem')) {
         localStorage.removeItem('buyNowItem');
@@ -227,7 +221,6 @@
       window.location.href = 'waiting-payment.html';
     }
 
-    // ដំណើរការដំបូង
     renderCheckoutSummary();
   </script>
 </body>
