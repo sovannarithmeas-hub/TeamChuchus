@@ -13,11 +13,12 @@
 
   <div class="bg-white w-full max-w-md p-5 rounded-2xl shadow-sm border space-y-4">
     
+    <!-- Header Page -->
     <div class="flex items-center justify-between border-b pb-3">
       <div class="flex items-center gap-2">
-        <a href="index.html" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition flex items-center justify-center">
+        <button type="button" onclick="goBack()" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition flex items-center justify-center">
           ⬅️
-        </a>
+        </button>
         <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
              onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-full border">
         <div>
@@ -27,11 +28,13 @@
       </div>
     </div>
 
+    <!-- Selected Items Summary -->
     <div class="bg-blue-50/50 border border-blue-100 p-3 rounded-xl space-y-1 text-xs">
       <p class="font-bold text-blue-900 border-b border-blue-100 pb-1">📦 ទំនិញដែលបានជ្រើសរើស៖</p>
       <div id="selectedItems" class="space-y-1 pt-1 text-gray-700"></div>
     </div>
 
+    <!-- Form Section -->
     <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-3.5 text-xs">
       
       <div class="space-y-2">
@@ -67,6 +70,7 @@
         </div>
       </div>
 
+      <!-- Payment Method Selection -->
       <div class="pt-2 border-t space-y-2">
         <p class="font-bold text-gray-800 text-[13px] flex items-center gap-1">
           <span>💳</span> ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់
@@ -86,6 +90,7 @@
         </div>
       </div>
 
+      <!-- Pricing Summary -->
       <div class="border-t pt-3 space-y-1 font-bold bg-gray-50 p-3 rounded-xl">
         <div class="flex justify-between text-gray-600">
           <span>ថ្លៃទំនិញសរុប៖</span>
@@ -101,5 +106,129 @@
         </div>
       </div>
 
+      <!-- Action Buttons -->
       <div class="flex gap-2 pt-1">
-        <a href="index.html" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-
+        <button type="button" onclick="goBack()" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl text-center transition">
+          ❌ បោះបង់
+        </button>
+        <button type="submit" class="w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md transition">
+          🚀 បន្តទៅការបង់ប្រាក់
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- 🎯 ផ្នែក JAVASCRIPT (កូដចំណុច ២ និង ៣ ត្រូវដាក់ត្រង់នេះ) -->
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    // 1️⃣ ទាញយកទិន្នន័យពី LocalStorage
+    const buyNowItem = JSON.parse(localStorage.getItem('buyNowItem'));
+    const cartItems = JSON.parse(localStorage.getItem('cartData')) || [];
+    let checkoutItems = [];
+
+    // ប្រសិនបើមានទំនិញពី Buy Now ត្រូវយកវា
+    if (buyNowItem) {
+      checkoutItems = [buyNowItem];
+    } else {
+      // ប្រសិនបើគ្មានទេ ទើបយកទំនិញចេញពី Cart
+      checkoutItems = cartItems;
+    }
+
+    // ករណីគ្មានទំនិញសោះ ឱ្យត្រឡប់ទៅ index.html វិញ
+    if (checkoutItems.length === 0) {
+      alert('គ្មានទំនិញសម្រាប់ទូទាត់ទេ!');
+      window.location.href = 'index.html';
+    }
+
+    let itemsSubtotal = 0;
+
+    // 2️⃣ Render បញ្ជីទំនិញ
+    function renderCheckoutSummary() {
+      const container = document.getElementById('selectedItems');
+      itemsSubtotal = 0;
+
+      container.innerHTML = checkoutItems.map((item, index) => {
+        const price = parseFloat(item.price || 0);
+        itemsSubtotal += price;
+
+        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+        const itemCode = codeMatch ? codeMatch[1] : (item.code || 'N/A');
+
+        return `
+          <div class="flex justify-between items-center border-b border-blue-100/50 pb-1 last:border-none">
+            <span>${index + 1}. <b>#${itemCode}</b> - ${item.title}</span>
+            <span class="font-bold text-gray-900">$${price.toFixed(2)}</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('itemsTotalText').innerText = `$${itemsSubtotal.toFixed(2)}`;
+      calculateTotal();
+    }
+
+    // 3️⃣ គណនាប្រាក់សរុប (រួមទាំងថ្លៃដឹក)
+    function calculateTotal() {
+      const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
+      const grandTotal = itemsSubtotal + deliveryFee;
+
+      document.getElementById('deliveryFeeText').innerText = `$${deliveryFee.toFixed(2)}`;
+      document.getElementById('grandTotalText').innerText = `$${grandTotal.toFixed(2)}`;
+    }
+
+    // 4️⃣ អនុគមន៍ពេលចុចប៊ូតុង Back / បោះបង់ ត្រឡប់ទៅ index.html
+    function goBack() {
+      // លុបទិន្នន័យ Buy Now ចោលវិញ ដើម្បីឱ្យស្អាត និងមិនជាប់កន្ត្រក
+      localStorage.removeItem('buyNowItem');
+      window.location.href = 'index.html';
+    }
+
+    // 5️⃣ Submit Order (ចំណុចទី ៣ នៃការកែសម្រួល)
+    function submitOrder(event) {
+      event.preventDefault();
+
+      const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
+      const grandTotal = itemsSubtotal + deliveryFee;
+
+      const orderData = {
+        cart: checkoutItems,
+        details: {
+          customer: {
+            name: document.getElementById('custName').value.trim(),
+            phone: document.getElementById('custPhone').value.trim(),
+            address: document.getElementById('custAddress').value.trim()
+          },
+          deliveryFee: deliveryFee,
+          grandTotal: grandTotal,
+          paymentMethod: 'ABA_KHQR'
+        }
+      };
+
+      // រក្សាទុក Order រង់ចាំទូទាត់
+      localStorage.setItem('pendingOrder', JSON.stringify(orderData));
+
+      // 🧹 សម្អាត Storage តាមប្រភេទបញ្ជាទិញ
+      onOrderSuccess();
+    }
+
+    // 6️⃣ កែប្រែបន្ទាប់ពី Submit Order ជោគជ័យ
+    function onOrderSuccess() {
+      if (localStorage.getItem('buyNowItem')) {
+        localStorage.removeItem('buyNowItem');
+      } else {
+        localStorage.removeItem('cartData');
+      }
+      
+      window.location.href = 'waiting-payment.html';
+    }
+
+    // ដំណើរការដំបូង
+    renderCheckoutSummary();
+  </script>
+</body>
+</html>
