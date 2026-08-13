@@ -184,18 +184,17 @@
       }
     }
 
-    // ⚡ ២. មុខងារទិញភ្លាមៗ (Buy Now - Redirect to Delivery Page Directly)
-    function buyNow(productId) {
-      const product = productsList.find(p => String(p.id) === String(productId));
-      if (!product) return;
+    // ⚡ មុខងារទិញភ្លាមៗ (Buy Now - រក្សាទុកដាច់ដោយឡែក មិនចូល Cart ទេ)
+function buyNow(productId) {
+  const product = productsList.find(p => String(p.id) === String(productId));
+  if (!product) return;
 
-      // ដាក់ចូលកន្ត្រកភ្លាម
-      let cart = getCart();
-      cart.push(product);
-      saveCart(cart);
+  // រក្សាទុកជាទំនិញទិញភ្លាមៗ (Temporary Direct Checkout Item)
+  localStorage.setItem('buyNowItem', JSON.stringify(product));
 
-      // ផ្លាស់ប្តូរទំព័រទៅកាន់ delivery.html ភ្លាមៗ
-      window.location.href = 'delivery.html';
+  // ផ្លាស់ប្តូរទំព័រទៅ delivery.html ភ្លាមៗ
+  window.location.href = 'delivery.html';
+}
     }
 
     // Search Filter
