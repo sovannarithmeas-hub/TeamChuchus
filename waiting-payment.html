@@ -391,6 +391,10 @@
     function closeSuccessAndOpenBot() {
       closeSuccessModal();
       openTelegramBot();
+
+      // បន្ថែមបន្ទាត់នេះដើម្បីបិទ Mini App បន្ទាប់ពីចុចបើក Bot
+    if (tg && typeof tg.close === 'function') {
+        tg.close();
     }
 
     // Copy ABA
@@ -608,14 +612,27 @@
 
         // 4. គ្រប់គ្រងលទ្ធផល
         if (result.ok) {
-          // ផ្ញើជោគជ័យ!
+          // 1. សម្អាតទិន្នន័យចាស់ៗចោល (ដើម្បីកុំឱ្យវាត្រឡប់មកទំព័រនេះវិញ)
+    localStorage.removeItem('pendingOrder');
+    localStorage.removeItem('pendingOrdersList');
+    localStorage.removeItem('cartData');
+    localStorage.removeItem('pendingOrderText');
+          // 2. បិទ Upload Modal និងបង្ហាញ Success Modal
           closeUploadModal();
           showToast('✅ ផ្ញើរូបភាពទៅ Telegram Bot ដោយជោគជ័យ!');
           
           setTimeout(() => {
             document.getElementById('successModal').classList.add('flex');
           }, 300);
-          
+          // 3. បើក Bot ឬបិទ App ទាំងស្រុង
+    // អ្នកអាចជ្រើសរើសយកមួយណាមួយក្នុងចំណោមពីរខាងក្រោម៖
+    
+    // ជម្រើស A: ប្រសិនបើអ្នកចង់ឱ្យវាបើក Bot ហើយបិទ Mini App (ស្អាតបំផុត)
+    // openTelegramBot(); // ហៅមុខងារបើក Bot
+    // if (tg && typeof tg.close === 'function') { tg.close(); } // បិទ Mini App ភ្លាមៗ
+
+    // ជម្រើស B: ប្រសិនបើអ្នកចង់ឱ្យវាលោតទៅទំព័រដើមវិញ (ឧទាហរណ៍ index.html)
+    // window.location.href = "index.html";
         } else {
           // ផ្ញើបរាជ័យ (Telegram ត្រឡប់ Error)
           console.error('Telegram Error:', result);
