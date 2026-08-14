@@ -82,6 +82,18 @@
     #manualCopyModal.flex { display: flex; }
     #toastNotification { display: none; }
     #toastNotification.show { display: block; }
+    #successModal { display: none; }
+    #successModal.flex { display: flex; }
+
+    /* Success Animation */
+    @keyframes checkmark {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .checkmark-animate {
+      animation: checkmark 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
   </style>
 </head>
 <body class="p-3 flex items-center justify-center relative overflow-x-hidden">
@@ -139,7 +151,7 @@
       <button type="button" onclick="sendOrderToBot()" 
               class="btn-glow w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25">
         <span>🤖</span>
-        <span>បាញ់ទិន្នន័យបញ្ជាទិញចូល Telegram Bot</span>
+        <span>បញ្ជូនទិន្នន័យទៅ Telegram Bot</span>
       </button>
       <a href="index.html" class="block w-full text-center text-slate-500 text-xs py-2 hover:text-slate-800 font-semibold transition">🏠 ត្រឡប់ទៅទំព័រដើម</a>
     </div>
@@ -158,14 +170,16 @@
     </div>
   </div>
 
-  <!-- Bot Action Modal -->
+  <!-- Bot Action Modal (សម្រាប់បើក Bot) -->
   <div id="botActionModal" class="fixed inset-0 bg-slate-900/80 items-center justify-center p-4 z-50 backdrop-blur-sm">
     <div class="bg-white p-6 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate">
-      <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">✅</div>
+      <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">📋</div>
       <div class="space-y-1.5">
         <h3 class="font-extrabold text-slate-900 text-base">ទិន្នន័យបញ្ជាទិញត្រូវបាន Copy រួចរាល់!</h3>
         <p class="text-xs text-slate-600 leading-relaxed font-medium">
-          សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក <b>Telegram Bot Chat</b> រួចធ្វើការ <b class="text-blue-600">Paste (បិទភ្ជាប់)</b> សារបញ្ជាទិញ។
+          សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក <b>Telegram Bot Chat</b>។<br>
+          <span class="text-blue-600 font-bold">អត្ថបទបញ្ជាទិញនឹងមានស្រាប់</span> ក្នុងឆាតរបស់អ្នក។<br>
+          ភ្ញៀវគ្រាន់តែ <b class="text-rose-600">ផ្ញើរូបភាពបង្កាន់ដៃទូទាត់</b> បន្ថែមមកកាន់ Bot ប៉ុណ្ណោះ!
         </p>
       </div>
       <div class="space-y-2 pt-2">
@@ -178,7 +192,28 @@
     </div>
   </div>
 
-  <!-- Manual Copy Modal -->
+  <!-- Success Modal -->
+  <div id="successModal" class="fixed inset-0 bg-slate-900/80 items-center justify-center p-4 z-50 backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate">
+      <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
+        <svg class="w-10 h-10 text-emerald-600 checkmark-animate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <div class="space-y-1.5">
+        <h3 class="font-extrabold text-slate-900 text-base">✅ បានបញ្ជូនទិន្នន័យដោយជោគជ័យ!</h3>
+        <p class="text-xs text-slate-600 leading-relaxed font-medium">
+          សូមចូលទៅកាន់ Telegram Bot ហើយផ្ញើរូបភាពបង្កាន់ដៃទូទាត់របស់អ្នក។<br>
+          <span class="text-blue-600">អត្ថបទបញ្ជាទិញមានស្រាប់ក្នុងឆាតរួចហើយ!</span>
+        </p>
+      </div>
+      <button type="button" onclick="closeSuccessModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs shadow-md shadow-blue-500/20 active:scale-95 transition">
+        យល់ព្រម (OK)
+      </button>
+    </div>
+  </div>
+
+  <!-- Manual Copy Modal (Fallback) -->
   <div id="manualCopyModal" class="fixed inset-0 bg-slate-900/90 items-center justify-center p-4 z-[60] backdrop-blur-sm">
     <div class="bg-white p-5 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl relative modal-animate">
       <h3 class="font-extrabold text-rose-600 text-sm">⚠️ ទូរស័ព្ទរារាំងការ Copy អូតូ</h3>
@@ -267,6 +302,11 @@
       modal.classList.remove('flex');
     }
 
+    function closeSuccessModal() {
+      const modal = document.getElementById('successModal');
+      modal.classList.remove('flex');
+    }
+
     function closeManualCopyModal() {
       const modal = document.getElementById('manualCopyModal');
       modal.classList.remove('flex');
@@ -321,13 +361,14 @@
       }
     }
 
-    // PROCESS ORDER
+    // PROCESS ORDER - បង្កើតអត្ថបទសម្រាប់ Bot
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
         showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
         return;
       }
 
+      // បង្កើតអត្ថបទបញ្ជាទិញ
       let orderText = `🛒 ការបញ្ជាទិញថ្មីពី Mini App\n`;
       orderText += `---------------------------\n`;
       orderText += `👤 អតិថិជន: ${customerInfo.name || 'N/A'}\n`;
@@ -345,14 +386,23 @@
       orderText += `---------------------------\n`;
       orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
 
+      // រក្សាទុកអត្ថបទក្នុង localStorage ដើម្បីឱ្យ Bot អាចអានបាន
+      localStorage.setItem('pendingOrderText', orderText);
+
+      // Copy ទៅក្ដារចុច
       copyToClipboardMobile(orderText, 
+        // ជោគជ័យ
         () => {
+          // លុបទិន្នន័យដែលលែងត្រូវការ
           localStorage.removeItem('pendingOrder');
           localStorage.removeItem('pendingOrdersList');
           localStorage.removeItem('cartData');
+          
+          // បង្ហាញ Modal បើក Bot
           const modal = document.getElementById('botActionModal');
           modal.classList.add('flex');
         },
+        // បរាជ័យ (Block ដោយទូរស័ព្ទ)
         (failedText) => {
           document.getElementById('manualOrderText').value = failedText;
           const modal = document.getElementById('manualCopyModal');
@@ -361,9 +411,12 @@
       );
     }
 
-    // REDIRECT
+    // REDIRECT TO BOT
     function redirectToBotChat() {
       const directBotUrl = `https://t.me/${botUsername}`;
+      
+      // ផ្ញើអត្ថបទទៅ Bot តាមរយៈ Deep Link (ប្រសិនបើ Bot គាំទ្រ)
+      // បើមិនគាំទ្រទេ គ្រាន់តែបើក Chat
       if (tg) {
         if (typeof tg.openTelegramLink === 'function') {
           tg.openTelegramLink(directBotUrl);
@@ -376,6 +429,22 @@
       } else {
         window.location.href = directBotUrl;
       }
+
+      // បិទ Modals
+      closeBotModal();
+      closeManualCopyModal();
+      
+      // បង្ហាញ Success Modal
+      setTimeout(() => {
+        const successModal = document.getElementById('successModal');
+        successModal.classList.add('flex');
+      }, 500);
+    }
+
+    // ការបើក Bot ពី Success Modal (បើអ្នកប្រើប្រាស់មិនទាន់បានបើក)
+    function openBotFromSuccess() {
+      closeSuccessModal();
+      redirectToBotChat();
     }
   </script>
 </body>
