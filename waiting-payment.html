@@ -578,7 +578,15 @@
       sendBtn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> កំពុងផ្ញើរូប...`;
       isSending = true;
 
-     
+     // 1. ពិនិត្យ BOT_TOKEN (ដើម្បីកុំឱ្យផ្ញើទៅ Bot បរាជ័យដោយសារគ្មាន Token)
+  if (BOT_TOKEN === "8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA" || CHAT_ID === "321592436") {
+    showToast('⚠️ សូមកំណត់ BOT_TOKEN និង CHAT_ID ក្នុង JavaScript ជាមុន!');
+    sendBtn.innerHTML = `<span>🚀</span><span>ផ្ញើរូបទៅ Bot</span>`;
+    sendBtn.disabled = false;
+    sendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+    isSending = false;
+    return;
+  }
       }
 
       try {
