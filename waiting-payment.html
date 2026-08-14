@@ -153,7 +153,7 @@
       <ol class="list-decimal list-inside space-y-1 text-[10px] text-blue-950 font-medium pl-1">
         <li>ទូទាត់ប្រាក់តាម ABA KHQR ខាងលើ</li>
         <li>ចុចប៊ូតុង <b>"បាញ់ទិន្នន័យបញ្ជាទិញចូល Telegram Bot"</b> ខាងក្រោម</li>
-        <li><b class="text-rose-600">Reply ផ្ញើរូបភាពបង្កាន់ដៃ (Screenshot)</b> ចូលក្នុង Bot Chat ជាការស្រេច!</li>
+        <li><b class="text-rose-600">Paste (បិទភ្ជាប់)</b> សារចូល Bot Chat រួចផ្ញើ <b class="text-rose-600">Screenshot បង្កាន់ដៃ</b> ជាការស្រេច!</li>
       </ol>
     </div>
 
@@ -257,7 +257,7 @@
     }
 
     function closeQrModal() {
-      document.getElementById('qrModal').classList.add('hidden');
+      document.getElementById('qrModal').classList.hidden = true;
       document.getElementById('qrModal').classList.remove('flex');
     }
 
@@ -275,7 +275,7 @@
       });
     }
 
-    // 4. Send Order Data safely on both Mobile & PC
+    // 4. Send Order Data - Auto Copy Text + Open Direct Bot Chat
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
         if (tg && tg.showAlert) {
@@ -287,12 +287,12 @@
       }
 
       // Format Plain Text Order Message
-      let orderText = `🛒 *ការបញ្ជាទិញថ្មីពី Mini App*\n`;
+      let orderText = `🛒 ការបញ្ជាទិញថ្មីពី Mini App\n`;
       orderText += `---------------------------\n`;
-      orderText += `👤 *អតិថិជន:* ${customerInfo.name}\n`;
-      orderText += `📞 *ទូរស័ព្ទ:* ${customerInfo.phone}\n`;
-      orderText += `📍 *អាសយដ្ឋាន:* ${customerInfo.address}\n\n`;
-      orderText += `👖 *បញ្ជីទំនិញ (${allCartItems.length} មុខ):*\n`;
+      orderText += `👤 អតិថិជន: ${customerInfo.name}\n`;
+      orderText += `📞 ទូរស័ព្ទ: ${customerInfo.phone}\n`;
+      orderText += `📍 អាសយដ្ឋាន: ${customerInfo.address}\n\n`;
+      orderText += `👖 បញ្ជីទំនិញ (${allCartItems.length} មុខ):\n`;
 
       allCartItems.forEach((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
@@ -300,42 +300,41 @@
         orderText += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
       });
 
-      orderText += `\n💰 *ទឹកប្រាក់សរុបត្រូវទូទាត់:* $${totalGrand.toFixed(2)}\n`;
+      orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${totalGrand.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
-      orderText += `📸 *សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!*`;
+      orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
 
       const botUsername = "TobChuchusAuto_bot";
 
-      // Clear Local Storage Data after processing
-      localStorage.removeItem('pendingOrder');
-      localStorage.removeItem('pendingOrdersList');
-      localStorage.removeItem('cartData');
+      // 1. Copy Order Text to Clipboard Automatically
+      navigator.clipboard.writeText(orderText).then(() => {
+        proceedToBot();
+      }).catch(() => {
+        proceedToBot();
+      });
 
-      // 1. Try sendData first (Works if opened from Telegram Keyboard Button)
-      let sendDataSuccess = false;
-      try {
-        if (tg && tg.sendData) {
-          tg.sendData(JSON.stringify({
-            action: "NEW_ORDER",
-            orderText: orderText,
-            grandTotal: totalGrand
-          }));
-          sendDataSuccess = true;
+      function proceedToBot() {
+        // Clear Local Storage
+        localStorage.removeItem('pendingOrder');
+        localStorage.removeItem('pendingOrdersList');
+        localStorage.removeItem('cartData');
+
+        const directBotUrl = `https://t.me/${botUsername}`;
+
+        if (tg && tg.showAlert) {
+          tg.showAlert("✅ ទិន្នន័យបញ្ជាទិញត្រូវបាន Copy រួចរាល់!\n\nសូម Paste (បិទភ្ជាប់) ចូលក្នុង Telegram Bot Chat។", () => {
+            if (tg.openTelegramLink) {
+              tg.openTelegramLink(directBotUrl);
+            } else {
+              window.location.href = directBotUrl;
+            }
+          });
+        } else {
+          showToast("📋 បាន Copy ទិន្នន័យបញ្ជាទិញរួចរាល់!");
+          setTimeout(() => {
+            window.location.href = directBotUrl;
+          }, 1200);
         }
-      } catch (e) {
-        console.log("sendData failed, falling back to Telegram Link", e);
-      }
-
-      // 2. Fallback for Mobile App / Direct Links (Force Open Bot Chat with pre-filled text)
-      const shareUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(orderText)}`;
-      const directBotUrl = `https://t.me/${botUsername}?text=${encodeURIComponent(orderText)}`;
-
-      if (tg && tg.openTelegramLink) {
-        // Open Bot chat on Mobile Telegram App
-        tg.openTelegramLink(directBotUrl);
-        tg.close(); // Close Mini App window
-      } else {
-        window.location.href = directBotUrl;
       }
     }
   </script>
