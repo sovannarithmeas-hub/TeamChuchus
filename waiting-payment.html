@@ -20,7 +20,6 @@
       min-height: 100vh;
     }
 
-    /* Floating Background Shapes */
     .blob {
       position: absolute;
       filter: blur(50px);
@@ -44,7 +43,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Pulse Glow Badge */
     @keyframes pingSlow {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.15); opacity: 0.8; }
@@ -53,7 +51,6 @@
       animation: pingSlow 2s infinite ease-in-out;
     }
 
-    /* Button Light Sweep */
     .btn-glow {
       position: relative;
       overflow: hidden;
@@ -81,6 +78,15 @@
     }
     .btn-glow:active {
       transform: translateY(1px) scale(0.98);
+    }
+
+    /* Modal Animation */
+    .modal-animate {
+      animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
@@ -185,6 +191,39 @@
     </div>
   </div>
 
+  <!-- NEW: CUSTOM POPUP ALERT DIALOG WITH BOT ACTION BUTTON -->
+  <div id="botActionModal" class="fixed inset-0 bg-slate-900/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate">
+      
+      <!-- Icon Status -->
+      <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">
+        ✅
+      </div>
+
+      <div class="space-y-1.5">
+        <h3 class="font-extrabold text-slate-900 text-base">ទិន្នន័យបញ្ជាទិញត្រូវបាន Copy រួចរាល់!</h3>
+        <p class="text-xs text-slate-600 leading-relaxed font-medium">
+          សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក <b>Telegram Bot Chat</b> រួចធ្វើការ <b class="text-blue-600">Paste (បិទភ្ជាប់)</b> សារបញ្ជាទិញ។
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-2 pt-2">
+        <button type="button" onclick="redirectToBotChat()" 
+                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
+          <span>💬</span>
+          <span>បើក Telegram Bot Chat ឥឡូវនេះ</span>
+        </button>
+
+        <button type="button" onclick="closeBotModal()" 
+                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-4 rounded-2xl text-xs transition active:scale-95">
+          បិទ (Close)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Custom Toast Notification -->
   <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 hidden z-50 transition-all font-medium">
     ✅ បានចម្លងលេខគណនី ABA រួចរាល់!
@@ -197,6 +236,8 @@
       tg.ready();
       tg.expand();
     }
+
+    const botUsername = "TobChuchusAuto_bot";
 
     // 1. Toast Notification
     function showToast(message) {
@@ -257,32 +298,29 @@
     }
 
     function closeQrModal() {
-      document.getElementById('qrModal').classList.hidden = true;
+      document.getElementById('qrModal').classList.add('hidden');
       document.getElementById('qrModal').classList.remove('flex');
+    }
+
+    function closeBotModal() {
+      document.getElementById('botActionModal').classList.add('hidden');
+      document.getElementById('botActionModal').classList.remove('flex');
     }
 
     // 3. Copy ABA Account Number
     function copyABA() {
       const abaAcc = "017666209";
       navigator.clipboard.writeText(abaAcc).then(() => {
-        if (tg && tg.showAlert) {
-          tg.showAlert(`បានចម្លងលេខគណនី ABA៖ 017 666 209`);
-        } else {
-          showToast(`📋 បានចម្លងលេខគណនី ABA៖ 017 666 209`);
-        }
+        showToast(`📋 បានចម្លងលេខគណនី ABA៖ 017 666 209`);
       }).catch(() => {
         showToast(`📋 បានចម្លងលេខគណនី ABA៖ 017 666 209`);
       });
     }
 
-    // 4. Send Order Data - Auto Copy Text + Open Direct Bot Chat
+    // 4. Send Order Data - Auto Copy & Trigger Custom Modal
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
-        if (tg && tg.showAlert) {
-          tg.showAlert('គ្មានទំនិញត្រូវទូទាត់ទេ!');
-        } else {
-          showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
-        }
+        showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
         return;
       }
 
@@ -304,37 +342,34 @@
       orderText += `---------------------------\n`;
       orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
 
-      const botUsername = "TobChuchusAuto_bot";
-
-      // 1. Copy Order Text to Clipboard Automatically
+      // Copy Order Text to Clipboard
       navigator.clipboard.writeText(orderText).then(() => {
-        proceedToBot();
+        showCustomBotModal();
       }).catch(() => {
-        proceedToBot();
+        showCustomBotModal();
       });
 
-      function proceedToBot() {
-        // Clear Local Storage
-        localStorage.removeItem('pendingOrder');
-        localStorage.removeItem('pendingOrdersList');
-        localStorage.removeItem('cartData');
+      // Clear Local Storage
+      localStorage.removeItem('pendingOrder');
+      localStorage.removeItem('pendingOrdersList');
+      localStorage.removeItem('cartData');
+    }
 
-        const directBotUrl = `https://t.me/${botUsername}`;
+    // Show Custom Popup Modal
+    function showCustomBotModal() {
+      const modal = document.getElementById('botActionModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
 
-        if (tg && tg.showAlert) {
-          tg.showAlert("✅ ទិន្នន័យបញ្ជាទិញត្រូវបាន Copy រួចរាល់!\n\nសូម Paste (បិទភ្ជាប់) ចូលក្នុង Telegram Bot Chat។", () => {
-            if (tg.openTelegramLink) {
-              tg.openTelegramLink(directBotUrl);
-            } else {
-              window.location.href = directBotUrl;
-            }
-          });
-        } else {
-          showToast("📋 បាន Copy ទិន្នន័យបញ្ជាទិញរួចរាល់!");
-          setTimeout(() => {
-            window.location.href = directBotUrl;
-          }, 1200);
-        }
+    // Redirect user directly into Telegram Bot Chat
+    function redirectToBotChat() {
+      const directBotUrl = `https://t.me/${botUsername}`;
+      
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(directBotUrl);
+      } else {
+        window.location.href = directBotUrl;
       }
     }
   </script>
