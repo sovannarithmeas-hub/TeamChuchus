@@ -117,14 +117,6 @@
       max-height: 200px;
       object-fit: contain;
     }
-
-    /* Upload Button Styles */
-    .upload-btn {
-      transition: all 0.2s ease;
-    }
-    .upload-btn:active {
-      transform: scale(0.95);
-    }
   </style>
 </head>
 <body class="p-3 flex items-center justify-center relative overflow-x-hidden">
@@ -319,44 +311,53 @@
     // Load Data
     let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
     const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
-    if (pendingOrdersList.length === 0 && singlePending) {
-      pendingOrdersList.push(singlePending);
-    }
-
-    let allCartItems = [];
-    let totalGrand = 0;
-    let customerInfo = { name: 'N/A', phone: 'N/A', address: 'N/A' };
-
-    if (pendingOrdersList.length > 0) {
-      document.getElementById('orderCountBadge').innerText = `${pendingOrdersList.length} Order(s)`;
-      pendingOrdersList.forEach(order => {
-        if (order.cart) allCartItems.push(...order.cart);
-        if (order.details) {
-          totalGrand += parseFloat(order.details.grandTotal || 0);
-          if (order.details.customer && order.details.customer.name) {
-            customerInfo = order.details.customer;
-          }
-        }
-      });
-    }
-
-    // Render Data
-    const itemsSummaryDiv = document.getElementById('orderItemsSummary');
-    if (allCartItems.length > 0) {
-      itemsSummaryDiv.innerHTML = allCartItems.map((item, idx) => {
-        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-        const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
-        return `
-          <div class="flex justify-between items-center py-1 border-b border-slate-200/60 last:border-none">
-            <span class="font-medium">${idx + 1}. <b>#${codeText}</b> - ${item.title || 'ទំនិញ'}</span>
-            <span class="font-extrabold text-slate-900">$${parseFloat(item.price || 0).toFixed(2)}</span>
-          </div>
-        `;
-      }).join('');
+    
+    // === កែប្រែផ្នែក Load Data ឱ្យល្អជាងមុន ===
+    if (pendingOrdersList.length === 0 && !singlePending) {
+      // គ្មានទិន្នន័យ៖ បង្ហាញថាគ្មានអ្វី
+      document.getElementById('orderCountBadge').innerText = `0 Order(s)`;
+      document.getElementById('orderItemsSummary').innerHTML = `<p class="text-slate-400 italic text-center py-2">🛒 បច្ចុប្បន្នមិនមានការបញ្ជាទិញទេ។<br><a href="index.html" class="text-blue-600 underline font-bold">ត្រឡប់ទៅទំព័រដើម</a></p>`;
+      document.getElementById('grandTotal').innerText = `$0.00`;
     } else {
-      itemsSummaryDiv.innerHTML = `<p class="text-slate-400 italic text-center py-2">គ្មានទំនិញទេ</p>`;
+      if (pendingOrdersList.length === 0 && singlePending) {
+        pendingOrdersList.push(singlePending);
+      }
+
+      let allCartItems = [];
+      let totalGrand = 0;
+      let customerInfo = { name: 'N/A', phone: 'N/A', address: 'N/A' };
+
+      if (pendingOrdersList.length > 0) {
+        document.getElementById('orderCountBadge').innerText = `${pendingOrdersList.length} Order(s)`;
+        pendingOrdersList.forEach(order => {
+          if (order.cart) allCartItems.push(...order.cart);
+          if (order.details) {
+            totalGrand += parseFloat(order.details.grandTotal || 0);
+            if (order.details.customer && order.details.customer.name) {
+              customerInfo = order.details.customer;
+            }
+          }
+        });
+        
+        // Render Data
+        const itemsSummaryDiv = document.getElementById('orderItemsSummary');
+        if (allCartItems.length > 0) {
+          itemsSummaryDiv.innerHTML = allCartItems.map((item, idx) => {
+            const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+            const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
+            return `
+              <div class="flex justify-between items-center py-1 border-b border-slate-200/60 last:border-none">
+                <span class="font-medium">${idx + 1}. <b>#${codeText}</b> - ${item.title || 'ទំនិញ'}</span>
+                <span class="font-extrabold text-slate-900">$${parseFloat(item.price || 0).toFixed(2)}</span>
+              </div>
+            `;
+          }).join('');
+        } else {
+          itemsSummaryDiv.innerHTML = `<p class="text-slate-400 italic text-center py-2">គ្មានទំនិញទេ</p>`;
+        }
+        document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
+      }
     }
-    document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
 
     // QR Modal
     function openQrModal() {
@@ -391,6 +392,10 @@
     function closeSuccessAndOpenBot() {
       closeSuccessModal();
       openTelegramBot();
+      // === បន្ថែម៖ បិទ Mini App បន្ទាប់ពីបើក Bot ===
+      if (tg && typeof tg.close === 'function') {
+        tg.close();
+      }
     }
 
     // Copy ABA
@@ -449,25 +454,45 @@
 
     // SEND ORDER TO BOT
     function sendOrderToBot() {
-      if (allCartItems.length === 0) {
+      // ពិនិត្យថាមានទំនិញឬអត់ ដោយដកចេញពី local storage ថ្មី
+      let currentList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
+      const currentSingle = JSON.parse(localStorage.getItem('pendingOrder'));
+      if (currentList.length === 0 && currentSingle) currentList.push(currentSingle);
+      
+      if (currentList.length === 0) {
         showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
         return;
       }
 
+      // Re-calculate items to ensure accuracy
+      let currentItems = [];
+      let currentTotal = 0;
+      let currentCust = { name: 'N/A', phone: 'N/A', address: 'N/A' };
+      
+      currentList.forEach(order => {
+        if (order.cart) currentItems.push(...order.cart);
+        if (order.details) {
+          currentTotal += parseFloat(order.details.grandTotal || 0);
+          if (order.details.customer && order.details.customer.name) {
+            currentCust = order.details.customer;
+          }
+        }
+      });
+
       let orderText = `🛒 ការបញ្ជាទិញថ្មីពី Mini App\n`;
       orderText += `---------------------------\n`;
-      orderText += `👤 អតិថិជន: ${customerInfo.name || 'N/A'}\n`;
-      orderText += `📞 ទូរស័ព្ទ: ${customerInfo.phone || 'N/A'}\n`;
-      orderText += `📍 អាសយដ្ឋាន: ${customerInfo.address || 'N/A'}\n\n`;
-      orderText += `👖 បញ្ជីទំនិញ (${allCartItems.length} មុខ):\n`;
+      orderText += `👤 អតិថិជន: ${currentCust.name || 'N/A'}\n`;
+      orderText += `📞 ទូរស័ព្ទ: ${currentCust.phone || 'N/A'}\n`;
+      orderText += `📍 អាសយដ្ឋាន: ${currentCust.address || 'N/A'}\n\n`;
+      orderText += `👖 បញ្ជីទំនិញ (${currentItems.length} មុខ):\n`;
 
-      allCartItems.forEach((item, idx) => {
+      currentItems.forEach((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
         const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
         orderText += `${idx + 1}. #${codeText} - ${item.title || 'ទំនិញ'} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
       });
 
-      orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${totalGrand.toFixed(2)}\n`;
+      orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${currentTotal.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
       orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់មកកាន់ Bot នេះ!`;
 
@@ -475,6 +500,7 @@
 
       copyToClipboardMobile(orderText, 
         () => {
+          // សម្អាតទិន្នន័យចោលនៅដំណាក់កាលនេះផងដែរ
           localStorage.removeItem('pendingOrder');
           localStorage.removeItem('pendingOrdersList');
           localStorage.removeItem('cartData');
@@ -559,7 +585,6 @@
       }
     }
 
-    // function confirmAndSend ថ្មី (កែប្រែឱ្យផ្ញើរូបពិតប្រាកដ!)
     async function confirmAndSend() {
       if (!selectedImageFile) {
         showToast('⚠️ សូមជ្រើសរូបភាពបង្កាន់ដៃទូទាត់ជាមុនសិន!');
@@ -578,15 +603,7 @@
       sendBtn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> កំពុងផ្ញើរូប...`;
       isSending = true;
 
-      // 1. ពិនិត្យ BOT_TOKEN (ដើម្បីកុំឱ្យផ្ញើទៅ Bot បរាជ័យដោយសារគ្មាន Token)
-      if (BOT_TOKEN === "YOUR_TELEGRAM_BOT_TOKEN_GOES_HERE" || CHAT_ID === "YOUR_TELEGRAM_CHAT_ID_GOES_HERE") {
-        showToast('⚠️ សូមកំណត់ BOT_TOKEN និង CHAT_ID ក្នុង JavaScript ជាមុន!');
-        sendBtn.innerHTML = `<span>🚀</span><span>ផ្ញើរូបទៅ Bot</span>`;
-        sendBtn.disabled = false;
-        sendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-        isSending = false;
-        return;
-      }
+      // === លុបចោលនូវការត្រួតពិនិត្យ Token ដែលខុសឡូជីខល! ===
 
       try {
         // 2. បង្កើត FormData ដើម្បីផ្ញើទៅ Telegram API
@@ -608,7 +625,12 @@
 
         // 4. គ្រប់គ្រងលទ្ធផល
         if (result.ok) {
-          // ផ្ញើជោគជ័យ!
+          // === សំខាន់៖ សម្អាតទិន្នន័យចោលទាំងស្រុង ដើម្បីកុំឱ្យផ្ញើដដែលៗ ===
+          localStorage.removeItem('pendingOrder');
+          localStorage.removeItem('pendingOrdersList');
+          localStorage.removeItem('cartData');
+          localStorage.removeItem('pendingOrderText');
+
           closeUploadModal();
           showToast('✅ ផ្ញើរូបភាពទៅ Telegram Bot ដោយជោគជ័យ!');
           
