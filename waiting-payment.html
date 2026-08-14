@@ -276,10 +276,10 @@
         </svg>
       </div>
       <div class="space-y-1.5">
-        <h3 class="font-extrabold text-slate-900 text-base">✅ រូបភាពបានត្រៀមរួចរាល់!</h3>
+        <h3 class="font-extrabold text-slate-900 text-base">🎉 ផ្ញើរូបភាពជោគជ័យ!</h3>
         <p class="text-xs text-slate-600 leading-relaxed font-medium">
-          សូមចូលទៅកាន់ Telegram Bot ហើយ <b class="text-blue-600">បិទភ្ជាប់ (Paste)</b> រូបភាពបង្កាន់ដៃទូទាត់របស់អ្នក។<br>
-          <span class="text-blue-600">អត្ថបទបញ្ជាទិញមានស្រាប់ក្នុងឆាតរួចហើយ!</span>
+          រូបភាពបង្កាន់ដៃរបស់អ្នកបានបញ្ជូនទៅកាន់ Telegram Bot ដោយជោគជ័យ!<br>
+          <span class="text-blue-600 font-bold">សូមរង់ចាំ Admin ត្រួតពិនិត្យ និងបញ្ជាក់បញ្ជាទិញ។</span>
         </p>
       </div>
       <button type="button" onclick="closeSuccessAndOpenBot()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
@@ -300,9 +300,14 @@
       tg.expand();
     }
 
-    const botUsername = "TobChuchusAuto_bot";
+    // សូមប្តូរ Bot Token នេះទៅតាម Token ពិតរបស់អ្នក!
+    const BOT_TOKEN = "8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA"; 
+    const CHAT_ID = "321592436"; 
+    const botUsername = "@TobChuchusAuto_bot";
+
     let selectedImageFile = null;
     let selectedImageDataUrl = null;
+    let isSending = false; // ការពារកុំឱ្យចុចផ្ញើច្រើនដង
 
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
@@ -366,12 +371,10 @@
       document.getElementById('botActionModal').classList.remove('flex');
     }
 
-    // Upload Modal - បើក Upload Modal ដោយមិនបើក Bot
+    // Upload Modal
     function openUploadModal() {
       closeBotModal();
-      // បង្ហាញ Upload Modal
       document.getElementById('uploadModal').classList.add('flex');
-      // Enable send button only when image is selected
       updateSendButton();
     }
 
@@ -398,7 +401,6 @@
       });
     }
 
-    // Copy to Clipboard
     function copyToClipboardMobile(textToCopy, onSuccess) {
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(textToCopy).then(() => {
@@ -422,22 +424,11 @@
       textArea.focus();
       textArea.select();
       
-      try {
-        textArea.setSelectionRange(0, 99999);
-      } catch(e) {}
-
+      try { textArea.setSelectionRange(0, 99999); } catch(e) {}
       let successful = false;
-      try {
-        successful = document.execCommand('copy');
-      } catch (err) {
-        console.error('Fallback Copy Failed', err);
-      }
-      
+      try { successful = document.execCommand('copy'); } catch (err) { console.error('Fallback Copy Failed', err); }
       document.body.removeChild(textArea);
-      
-      if (successful && onSuccess) {
-        onSuccess();
-      }
+      if (successful && onSuccess) { onSuccess(); }
     }
 
     // Open Telegram Bot
@@ -451,8 +442,6 @@
         } else {
           window.open(directBotUrl, '_blank');
         }
-        // Don't close the mini app immediately
-        // setTimeout(() => { if (typeof tg.close === 'function') tg.close(); }, 500);
       } else {
         window.open(directBotUrl, '_blank');
       }
@@ -480,7 +469,7 @@
 
       orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${totalGrand.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
-      orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
+      orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់មកកាន់ Bot នេះ!`;
 
       localStorage.setItem('pendingOrderText', orderText);
 
@@ -498,15 +487,15 @@
       );
     }
 
-    // FILE UPLOAD HANDLERS
+    // =======================================================
+    //  ផ្នែកដែលត្រូវបានកែសម្រួលយ៉ាងសំខាន់ (UPLOAD & SEND IMAGE)
+    // =======================================================
+
     function handleFileSelect(event) {
       const file = event.target.files[0];
-      if (file) {
-        processSelectedFile(file);
-      }
+      if (file) processSelectedFile(file);
     }
 
-    // Drag and Drop Support
     const uploadZone = document.getElementById('uploadZone');
     uploadZone.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -531,7 +520,6 @@
         showToast('⚠️ សូមជ្រើសរើសឯកសាររូបភាពប៉ុណ្ណោះ!');
         return;
       }
-
       selectedImageFile = file;
       
       const reader = new FileReader();
@@ -571,22 +559,82 @@
       }
     }
 
-    function confirmAndSend() {
+    // function confirmAndSend ថ្មី (កែប្រែឱ្យផ្ញើរូបពិតប្រាកដ!)
+    async function confirmAndSend() {
       if (!selectedImageFile) {
         showToast('⚠️ សូមជ្រើសរូបភាពបង្កាន់ដៃទូទាត់ជាមុនសិន!');
         return;
       }
-
-      // Close Upload Modal
-      closeUploadModal();
       
-      // Show Success Modal
-      setTimeout(() => {
-        document.getElementById('successModal').classList.add('flex');
-      }, 300);
+      if (isSending) {
+        showToast('⏳ កំពុងផ្ញើ... សូមរង់ចាំបន្តិច');
+        return;
+      }
 
-      showToast('✅ សូមចូលទៅកាន់ Telegram Bot ហើយបិទភ្ជាប់រូបភាព!');
+      // ប្តូរប៊ូតុងទៅជា Loading
+      const sendBtn = document.getElementById('sendImageBtn');
+      sendBtn.disabled = true;
+      sendBtn.classList.add('opacity-70', 'cursor-not-allowed');
+      sendBtn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> កំពុងផ្ញើរូប...`;
+      isSending = true;
+
+      // 1. ពិនិត្យ BOT_TOKEN (ដើម្បីកុំឱ្យផ្ញើទៅ Bot បរាជ័យដោយសារគ្មាន Token)
+      if (BOT_TOKEN === "YOUR_TELEGRAM_BOT_TOKEN_GOES_HERE" || CHAT_ID === "YOUR_TELEGRAM_CHAT_ID_GOES_HERE") {
+        showToast('⚠️ សូមកំណត់ BOT_TOKEN និង CHAT_ID ក្នុង JavaScript ជាមុន!');
+        sendBtn.innerHTML = `<span>🚀</span><span>ផ្ញើរូបទៅ Bot</span>`;
+        sendBtn.disabled = false;
+        sendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+        isSending = false;
+        return;
+      }
+
+      try {
+        // 2. បង្កើត FormData ដើម្បីផ្ញើទៅ Telegram API
+        let formData = new FormData();
+        formData.append('chat_id', CHAT_ID);
+        formData.append('photo', selectedImageFile);
+        
+        // ភ្ជាប់អត្ថបទជាមួយរូបផងដែរ (អាចយក OrderText ដែលបាន Copy ពីលើមក Caption)
+        const pendingOrderText = localStorage.getItem('pendingOrderText') || 'រូបភាពបង្កាន់ដៃទូទាត់';
+        formData.append('caption', pendingOrderText);
+
+        // 3. ផ្ញើ Request ទៅ Telegram
+        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        // 4. គ្រប់គ្រងលទ្ធផល
+        if (result.ok) {
+          // ផ្ញើជោគជ័យ!
+          closeUploadModal();
+          showToast('✅ ផ្ញើរូបភាពទៅ Telegram Bot ដោយជោគជ័យ!');
+          
+          setTimeout(() => {
+            document.getElementById('successModal').classList.add('flex');
+          }, 300);
+          
+        } else {
+          // ផ្ញើបរាជ័យ (Telegram ត្រឡប់ Error)
+          console.error('Telegram Error:', result);
+          showToast(`❌ បរាជ័យ: ${result.description || 'Unknown Error'}`);
+        }
+
+      } catch (error) {
+        // ផ្ញើបរាជ័យ (Network Error)
+        console.error('Network Error:', error);
+        showToast('❌ មានបញ្ហាបណ្តាញ ឬ Server មិនដំណើរការ!');
+      }
+
+      // 5. Reset ប៊ូតុងវិញ
+      sendBtn.innerHTML = `<span>🚀</span><span>ផ្ញើរូបទៅ Bot</span>`;
+      sendBtn.disabled = false;
+      sendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+      isSending = false;
     }
+
   </script>
 </body>
 </html>
