@@ -1,394 +1,71 @@
-<!DOCTYPE html>
-<html lang="km">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>រង់ចាំការទូទាត់ប្រាក់ - តូបជជុស Online</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    body { 
-      font-family: 'Kantumruy Pro', sans-serif; 
-      background: linear-gradient(135deg, #f0f7ff 0%, #e0eefd 50%, #f8fafc 100%);
-      min-height: 100vh;
-    }
-
-    .blob {
-      position: absolute;
-      filter: blur(50px);
-      z-index: 0;
-      opacity: 0.5;
-      animation: floatBlob 8s infinite alternate ease-in-out;
-    }
-    @keyframes floatBlob {
-      0% { transform: translate(0px, 0px) scale(1); }
-      100% { transform: translate(20px, -20px) scale(1.1); }
-    }
-
-    .main-card {
-      animation: cardEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    @keyframes cardEntrance {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pingSlow {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.15); opacity: 0.8; }
-    }
-    .badge-pulse {
-      animation: pingSlow 2s infinite ease-in-out;
-    }
-
-    .btn-glow {
-      position: relative;
-      overflow: hidden;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .btn-glow::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -60%;
-      width: 50%;
-      height: 200%;
-      background: linear-gradient(60deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0) 100%);
-      transform: rotate(25deg);
-      animation: sweep 3.5s infinite;
-    }
-    @keyframes sweep {
-      0% { left: -60%; }
-      30% { left: 140%; }
-      100% { left: 140%; }
-    }
-    .btn-glow:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
-    }
-    .btn-glow:active {
-      transform: translateY(1px) scale(0.98);
-    }
-
-    /* Modal Animation */
-    .modal-animate {
-      animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    @keyframes modalPop {
-      from { opacity: 0; transform: scale(0.85); }
-      to { opacity: 1; transform: scale(1); }
-    }
-  </style>
-</head>
-<body class="p-3 flex items-center justify-center relative overflow-x-hidden">
-
-  <!-- Background Blobs -->
-  <div class="blob w-64 h-64 bg-blue-300 rounded-full -top-10 -left-10"></div>
-  <div class="blob w-64 h-64 bg-indigo-200 rounded-full -bottom-10 -right-10"></div>
-
-  <!-- Main Container -->
-  <div class="main-card relative z-10 w-full max-w-md p-5 rounded-3xl shadow-2xl border border-white/80 space-y-4">
-    
-    <!-- Status Banner -->
-    <div class="text-center space-y-1.5 border-b border-slate-100 pb-3">
-      <div class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 px-3.5 py-1 rounded-full text-[11px] font-extrabold border border-amber-200/80 shadow-xs">
-        <span class="w-2 h-2 rounded-full bg-amber-500 badge-pulse"></span>
-        រង់ចាំការទូទាត់ប្រាក់ (Waiting for Payment)
-      </div>
-      <h1 class="text-base font-extrabold text-slate-900 pt-1">តូបជជុស Online</h1>
-      <p class="text-[11px] text-slate-500 font-medium">សូមស្កែន ABA KHQR ដើម្បីបន្តការបញ្ជាទិញ</p>
-    </div>
-
-    <!-- QR Payment Card -->
-    <div class="bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white p-4 rounded-2xl text-center space-y-3 shadow-lg border border-blue-800/40">
-      <p class="text-xs font-bold text-blue-200 tracking-wide">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
-      
-      <div class="flex flex-col items-center justify-center">
-        <div onclick="openQrModal()" class="bg-white p-2 rounded-2xl shadow-xl border-2 border-blue-200/80 cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-200">
-          <img id="abaQrCode" src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/IMG_20260812_155656.jpg" 
-               class="w-48 h-48 object-contain rounded-xl" alt="ABA KHQR">
-        </div>
-        <span class="text-[10px] text-blue-200/90 mt-1.5 cursor-pointer hover:underline flex items-center gap-1 font-semibold" onclick="openQrModal()">
-          🔍 ចុចលើរូប QR ដើម្បីបង្រីកធំ
-        </span>
-      </div>
-
-      <div class="bg-white/10 backdrop-blur-md p-3 rounded-xl space-y-1 border border-white/15 text-xs">
-        <p class="text-blue-100 text-[10px] font-medium">ឈ្មោះគណនី (Account Name):</p>
-        <p class="font-black text-yellow-300 text-sm tracking-wider">SOVANNARITH MEAS</p>
-        
-        <div class="flex items-center justify-center gap-2 pt-1.5 border-t border-white/10 mt-1">
-          <span class="font-extrabold text-white tracking-widest text-sm">017 666 209</span>
-          <button type="button" onclick="copyABA()" class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-slate-900 text-[10px] px-2.5 py-1 rounded-lg font-extrabold active:scale-95 transition shadow-xs">
-            📋 Copy
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Order Summary Box -->
-    <div class="bg-slate-50/90 p-3.5 rounded-2xl space-y-2 text-xs border border-slate-200/70 shadow-xs">
-      <div class="flex justify-between items-center border-b border-slate-200 pb-1.5">
-        <p class="font-bold text-slate-800 flex items-center gap-1">📦 ទំនិញរង់ចាំទូទាត់៖</p>
-        <span id="orderCountBadge" class="bg-blue-100 text-blue-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px]">1 Order(s)</span>
-      </div>
-
-      <div id="orderItemsSummary" class="space-y-1.5 text-slate-700 max-h-36 overflow-y-auto pr-1"></div>
-      
-      <div class="border-t border-slate-200 pt-2 space-y-1">
-        <div class="flex justify-between items-center font-bold text-sm pt-0.5">
-          <span class="text-slate-800 font-extrabold">ទឹកប្រាក់ត្រូវទូទាត់សរុប៖</span>
-          <span class="text-blue-600 text-lg font-black" id="grandTotal">$0.00</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Instructions Box -->
-    <div class="bg-blue-50/80 border border-blue-200/80 p-3 rounded-2xl text-[11px] text-blue-900 space-y-1 shadow-xs">
-      <p class="font-extrabold flex items-center gap-1">💡 ជំហានទូទាត់ និងបញ្ជូនទិន្នន័យ៖</p>
-      <ol class="list-decimal list-inside space-y-1 text-[10px] text-blue-950 font-medium pl-1">
-        <li>ទូទាត់ប្រាក់តាម ABA KHQR ខាងលើ</li>
-        <li>ចុចប៊ូតុង <b>"បាញ់ទិន្នន័យបញ្ជាទិញចូល Telegram Bot"</b> ខាងក្រោម</li>
-        <li><b class="text-rose-600">Paste (បិទភ្ជាប់)</b> សារចូល Bot Chat រួចផ្ញើ <b class="text-rose-600">Screenshot បង្កាន់ដៃ</b> ជាការស្រេច!</li>
-      </ol>
-    </div>
-
-    <!-- Actions -->
-    <div class="space-y-2 pt-1">
-      <button type="button" onclick="sendOrderToBot()" 
-              class="btn-glow w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25">
-        <span>🤖</span>
-        <span>បាញ់ទិន្នន័យបញ្ជាទិញចូល Telegram Bot</span>
-      </button>
-
-      <a href="index.html" class="block w-full text-center text-slate-500 text-xs py-2 hover:text-slate-800 font-semibold transition">
-        🏠 ត្រឡប់ទៅទំព័រដើម
-      </a>
-    </div>
-
-  </div>
-
-  <!-- QR Zoom Modal -->
-  <div id="qrModal" class="fixed inset-0 bg-slate-900/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm" onclick="closeQrModal()">
-    <div class="bg-white p-5 rounded-3xl text-center space-y-3 max-w-sm w-full shadow-2xl relative" onclick="event.stopPropagation()">
-      <button onclick="closeQrModal()" class="absolute top-3.5 right-3.5 text-slate-400 hover:text-slate-600 text-sm font-bold bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition">✕</button>
-      <h3 class="font-extrabold text-sm text-slate-900 pt-1">ស្កែនទូទាត់ប្រាក់ ABA KHQR</h3>
-      <div class="bg-slate-50 p-2 rounded-2xl border border-slate-200 flex justify-center">
-        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/IMG_20260812_155656.jpg" 
-             class="w-72 h-72 object-contain rounded-xl" alt="ABA KHQR Large">
-      </div>
-      <p class="text-[11px] text-slate-600 font-medium">ឈ្មោះ៖ <b class="text-slate-900">SOVANNARITH MEAS</b> (017 666 209)</p>
-    </div>
-  </div>
-
-  <!-- CUSTOM POPUP ALERT DIALOG WITH BOT ACTION BUTTON -->
-  <div id="botActionModal" class="fixed inset-0 bg-slate-900/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
-    <div class="bg-white p-6 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate">
-      
-      <!-- Icon Status -->
-      <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">
-        ✅
-      </div>
-
-      <div class="space-y-1.5">
-        <h3 class="font-extrabold text-slate-900 text-base">ទិន្នន័យបញ្ជាទិញត្រូវបាន Copy រួចរាល់!</h3>
-        <p class="text-xs text-slate-600 leading-relaxed font-medium">
-          សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក <b>Telegram Bot Chat</b> រួចធ្វើការ <b class="text-blue-600">Paste (បិទភ្ជាប់)</b> សារបញ្ជាទិញ។
-        </p>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="space-y-2 pt-2">
-        <button type="button" onclick="redirectToBotChat()" 
-                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
-          <span>💬</span>
-          <span>បើក Telegram Bot Chat ឥឡូវនេះ</span>
-        </button>
-
-        <button type="button" onclick="closeBotModal()" 
-                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-4 rounded-2xl text-xs transition active:scale-95">
-          បិទ (Close)
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Custom Toast Notification -->
-  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 hidden z-50 transition-all font-medium">
-    ✅ បានចម្លងលេខគណនី ABA រួចរាល់!
-  </div>
-
-  <!-- JAVASCRIPT LOGIC -->
-  <script>
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
-
-    const botUsername = "TobChuchusAuto_bot";
-
-    function showToast(message) {
-      const toast = document.getElementById('toastNotification');
-      toast.innerText = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => { toast.classList.add('hidden'); }, 2200);
-    }
-
-    // Load Order Data
-    let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
-    const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
-    if (pendingOrdersList.length === 0 && singlePending) {
-      pendingOrdersList.push(singlePending);
-    }
-
-    let allCartItems = [];
-    let totalGrand = 0;
-    let customerInfo = { name: 'N/A', phone: 'N/A', address: 'N/A' };
-
-    if (pendingOrdersList.length > 0) {
-      document.getElementById('orderCountBadge').innerText = `${pendingOrdersList.length} Order(s)`;
-
-      pendingOrdersList.forEach(order => {
-        if (order.cart) allCartItems.push(...order.cart);
-        if (order.details) {
-          totalGrand += parseFloat(order.details.grandTotal || 0);
-          if (order.details.customer && order.details.customer.name) {
-            customerInfo = order.details.customer;
-          }
-        }
-      });
-    }
-
-    // Render Order Summary
-    const itemsSummaryDiv = document.getElementById('orderItemsSummary');
-    if (allCartItems.length > 0) {
-      itemsSummaryDiv.innerHTML = allCartItems.map((item, idx) => {
-        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-        const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
-        return `
-          <div class="flex justify-between items-center py-1 border-b border-slate-200/60 last:border-none">
-            <span class="font-medium">${idx + 1}. <b>#${codeText}</b> - ${item.title}</span>
-            <span class="font-extrabold text-slate-900">$${parseFloat(item.price || 0).toFixed(2)}</span>
-          </div>
-        `;
-      }).join('');
-    } else {
-      itemsSummaryDiv.innerHTML = `<p class="text-slate-400 italic text-center py-2">គ្មានទំនិញរង់ចាំទូទាត់ទេ</p>`;
-    }
-
-    document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
-
-    // Modal Controls
-    function openQrModal() {
-      document.getElementById('qrModal').classList.remove('hidden');
-      document.getElementById('qrModal').classList.add('flex');
-    }
-
-    function closeQrModal() {
-      document.getElementById('qrModal').classList.add('hidden');
-      document.getElementById('qrModal').classList.remove('flex');
-    }
-
-    function closeBotModal() {
-      document.getElementById('botActionModal').classList.add('hidden');
-      document.getElementById('botActionModal').classList.remove('flex');
-    }
-
-    // Copy ABA Account
-    function copyABA() {
-      const abaAcc = "017666209";
-      navigator.clipboard.writeText(abaAcc).then(() => {
-        showToast(`📋 បានចម្លងលេខគណនី ABA៖ 017 666 209`);
-      }).catch(() => {
-        showToast(`📋 បានចម្លងលេខគណនី ABA៖ 017 666 209`);
-      });
-    }
-
-    // Send Order & Auto Copy
+    // 4. Send Order & Auto Copy (កែប្រែរួចរាល់)
     function sendOrderToBot() {
-      if (allCartItems.length === 0) {
+      // ពិនិត្យមើលថាមាន Cart Items ឬអត់
+      if (!allCartItems || allCartItems.length === 0) {
         showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
         return;
       }
 
+      // បង្កើត Plain Text សម្រាប់បញ្ជាទិញ
       let orderText = `🛒 ការបញ្ជាទិញថ្មីពី Mini App\n`;
       orderText += `---------------------------\n`;
-      orderText += `👤 អតិថិជន: ${customerInfo.name}\n`;
-      orderText += `📞 ទូរស័ព្ទ: ${customerInfo.phone}\n`;
-      orderText += `📍 អាសយដ្ឋាន: ${customerInfo.address}\n\n`;
+      orderText += `👤 អតិថិជន: ${customerInfo.name || 'N/A'}\n`;
+      orderText += `📞 ទូរស័ព្ទ: ${customerInfo.phone || 'N/A'}\n`;
+      orderText += `📍 អាសយដ្ឋាន: ${customerInfo.address || 'N/A'}\n\n`;
       orderText += `👖 បញ្ជីទំនិញ (${allCartItems.length} មុខ):\n`;
 
       allCartItems.forEach((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
         const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
-        orderText += `${idx + 1}. #${codeText} - ${item.title} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
+        orderText += `${idx + 1}. #${codeText} - ${item.title || 'ទំនិញ'} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
       });
 
       orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${totalGrand.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
       orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
 
-      // Fallback copy implementation
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(orderText).then(showCustomBotModal).catch(showCustomBotModal);
-      } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = orderText;
-        document.body.appendChild(textArea);
-        textArea.select();
-        try { document.execCommand('copy'); } catch (e) {}
-        document.body.removeChild(textArea);
-        showCustomBotModal();
-      }
-
-      localStorage.removeItem('pendingOrder');
-      localStorage.removeItem('pendingOrdersList');
-      localStorage.removeItem('cartData');
-    }
-
-    function showCustomBotModal() {
-      const modal = document.getElementById('botActionModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    // REDIRECT LOGIC FIXED (FOR MOBILE WEBAPP & BROWSERS)
-    function redirectToBotChat() {
-      const directBotUrl = `https://t.me/${botUsername}`;
-      
-      if (tg) {
-        // 1. ព្យាយាមប្រើ tg.openTelegramLink មុនគេ
-        if (typeof tg.openTelegramLink === 'function') {
-          tg.openTelegramLink(directBotUrl);
-        } else if (typeof tg.openLink === 'function') {
-          tg.openLink(directBotUrl);
-        } else {
-          window.open(directBotUrl, '_blank');
-        }
+      // វិធី Copy សារតែមួយគត់ដែលសុវត្ថិភាពបំផុត (Safe Copy)
+      copyToClipboardSafe(orderText, () => {
+        // Clear Local Storage បន្ទាប់ពី Copy ជោគជ័យ
+        localStorage.removeItem('pendingOrder');
+        localStorage.removeItem('pendingOrdersList');
+        localStorage.removeItem('cartData');
         
-        // 2. បិទ WebApp Popup ភ្លាមៗ ដើម្បីឱ្យ Telegram Switch ទៅកាន់ Bot Chat
-        setTimeout(() => {
-          if (typeof tg.close === 'function') {
-            tg.close();
-          }
-        }, 300);
+        // បង្ហាញ Popup Modal
+        showCustomBotModal();
+      });
+    }
+
+    // Helper Function សម្រាប់ Copy Text ដោយមិនឱ្យច្រឡំ Copy HTML Code
+    function copyToClipboardSafe(text, callback) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(callback).catch(() => {
+          fallbackCopyText(text, callback);
+        });
       } else {
-        // បើបើកលើ External Browser
-        window.location.href = directBotUrl;
+        fallbackCopyText(text, callback);
       }
     }
-  </script>
-</body>
-</html>
+
+    function fallbackCopyText(text, callback) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      
+      // ការពារមិនឱ្យ Scroll និងលាក់ពី Screen
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      
+      textArea.focus();
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Copy failed', err);
+      }
+      
+      document.body.removeChild(textArea);
+      if (callback) callback();
+    }
