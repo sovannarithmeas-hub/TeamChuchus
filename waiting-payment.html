@@ -191,7 +191,7 @@
     </div>
   </div>
 
-  <!-- NEW: CUSTOM POPUP ALERT DIALOG WITH BOT ACTION BUTTON -->
+  <!-- CUSTOM POPUP ALERT DIALOG WITH BOT ACTION BUTTON -->
   <div id="botActionModal" class="fixed inset-0 bg-slate-900/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
     <div class="bg-white p-6 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate">
       
@@ -239,7 +239,6 @@
 
     const botUsername = "TobChuchusAuto_bot";
 
-    // 1. Toast Notification
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
       toast.innerText = message;
@@ -247,7 +246,7 @@
       setTimeout(() => { toast.classList.add('hidden'); }, 2200);
     }
 
-    // 2. Load Order Data
+    // Load Order Data
     let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
     const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
     if (pendingOrdersList.length === 0 && singlePending) {
@@ -291,7 +290,7 @@
 
     document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
 
-    // Modal Control
+    // Modal Controls
     function openQrModal() {
       document.getElementById('qrModal').classList.remove('hidden');
       document.getElementById('qrModal').classList.add('flex');
@@ -307,7 +306,7 @@
       document.getElementById('botActionModal').classList.remove('flex');
     }
 
-    // 3. Copy ABA Account Number
+    // Copy ABA Account
     function copyABA() {
       const abaAcc = "017666209";
       navigator.clipboard.writeText(abaAcc).then(() => {
@@ -317,14 +316,13 @@
       });
     }
 
-    // 4. Send Order Data - Auto Copy & Trigger Custom Modal
+    // Send Order & Auto Copy
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
         showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
         return;
       }
 
-      // Format Plain Text Order Message
       let orderText = `🛒 ការបញ្ជាទិញថ្មីពី Mini App\n`;
       orderText += `---------------------------\n`;
       orderText += `👤 អតិថិជន: ${customerInfo.name}\n`;
@@ -342,33 +340,52 @@
       orderText += `---------------------------\n`;
       orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
 
-      // Copy Order Text to Clipboard
-      navigator.clipboard.writeText(orderText).then(() => {
+      // Fallback copy implementation
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(orderText).then(showCustomBotModal).catch(showCustomBotModal);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = orderText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(textArea);
         showCustomBotModal();
-      }).catch(() => {
-        showCustomBotModal();
-      });
+      }
 
-      // Clear Local Storage
       localStorage.removeItem('pendingOrder');
       localStorage.removeItem('pendingOrdersList');
       localStorage.removeItem('cartData');
     }
 
-    // Show Custom Popup Modal
     function showCustomBotModal() {
       const modal = document.getElementById('botActionModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
 
-    // Redirect user directly into Telegram Bot Chat
+    // REDIRECT LOGIC FIXED (FOR MOBILE WEBAPP & BROWSERS)
     function redirectToBotChat() {
       const directBotUrl = `https://t.me/${botUsername}`;
       
-      if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(directBotUrl);
+      if (tg) {
+        // 1. ព្យាយាមប្រើ tg.openTelegramLink មុនគេ
+        if (typeof tg.openTelegramLink === 'function') {
+          tg.openTelegramLink(directBotUrl);
+        } else if (typeof tg.openLink === 'function') {
+          tg.openLink(directBotUrl);
+        } else {
+          window.open(directBotUrl, '_blank');
+        }
+        
+        // 2. បិទ WebApp Popup ភ្លាមៗ ដើម្បីឱ្យ Telegram Switch ទៅកាន់ Bot Chat
+        setTimeout(() => {
+          if (typeof tg.close === 'function') {
+            tg.close();
+          }
+        }, 300);
       } else {
+        // បើបើកលើ External Browser
         window.location.href = directBotUrl;
       }
     }
