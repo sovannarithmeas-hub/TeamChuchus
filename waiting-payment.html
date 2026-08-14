@@ -275,7 +275,7 @@
       });
     }
 
-    // 4. Send Order Data & Prompt Screenshot Upload
+    // 4. Send Order Data safely on both Mobile & PC
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
         if (tg && tg.showAlert) {
@@ -306,29 +306,36 @@
 
       const botUsername = "TobChuchusAuto_bot";
 
-      // Telegram WebApp sendData Handler
-      if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify({
-          action: "NEW_ORDER",
-          orderText: orderText,
-          grandTotal: totalGrand,
-          customer: customerInfo,
-          items: allCartItems
-        }));
-      }
-
-      const botUrl = `https://t.me/${botUsername}?text=${encodeURIComponent(orderText)}`;
-      
-      // Clear Local Storage Data after sending
+      // Clear Local Storage Data after processing
       localStorage.removeItem('pendingOrder');
       localStorage.removeItem('pendingOrdersList');
       localStorage.removeItem('cartData');
 
-      // Redirect to Bot
+      // 1. Try sendData first (Works if opened from Telegram Keyboard Button)
+      let sendDataSuccess = false;
+      try {
+        if (tg && tg.sendData) {
+          tg.sendData(JSON.stringify({
+            action: "NEW_ORDER",
+            orderText: orderText,
+            grandTotal: totalGrand
+          }));
+          sendDataSuccess = true;
+        }
+      } catch (e) {
+        console.log("sendData failed, falling back to Telegram Link", e);
+      }
+
+      // 2. Fallback for Mobile App / Direct Links (Force Open Bot Chat with pre-filled text)
+      const shareUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(orderText)}`;
+      const directBotUrl = `https://t.me/${botUsername}?text=${encodeURIComponent(orderText)}`;
+
       if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(botUrl);
+        // Open Bot chat on Mobile Telegram App
+        tg.openTelegramLink(directBotUrl);
+        tg.close(); // Close Mini App window
       } else {
-        window.location.href = botUrl;
+        window.location.href = directBotUrl;
       }
     }
   </script>
