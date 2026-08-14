@@ -17,217 +17,229 @@
 
     body { 
       font-family: 'Kantumruy Pro', sans-serif; 
-      background: #f8fafc;
+      background-color: #f1f5f9;
     }
 
-    /* Custom Input Focus Glow */
-    input:focus, textarea:focus {
-      user-select: text;
-      -webkit-user-select: text;
+    /* Glassmorphism background */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
-    /* Animations */
-    @keyframes bounceSoft {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-    .animate-bounce-soft { animation: bounceSoft 2s infinite ease-in-out; }
-
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(1.03); }
-    }
-    .animate-pulse-glow { animation: pulseGlow 2.5s infinite ease-in-out; }
-
-    /* Custom Animated Dropdown Menu */
-    .dropdown-menu {
-      transform-origin: top;
+    /* Custom Input Focus Glowing Effects */
+    .animated-input {
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      opacity: 0;
-      transform: scaleY(0.85) translateY(-10px);
+    }
+    .animated-input:focus {
+      background-color: #ffffff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    }
+
+    /* Keyframe Animations */
+    @keyframes floatDelivery {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-4px) rotate(-2deg); }
+    }
+    .animate-truck {
+      display: inline-block;
+      animation: floatDelivery 2.2s infinite ease-in-out;
+    }
+
+    @keyframes rocketLaunch {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-3px) translateX(2px); }
+    }
+    .animate-rocket {
+      display: inline-block;
+      animation: rocketLaunch 1.8s infinite ease-in-out;
+    }
+
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-dropdown {
+      animation: dropdownFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Glowing Blobs for background beauty */
+    .bg-blob-1 {
+      position: fixed;
+      top: -10%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(255,255,255,0) 70%);
+      z-index: 0;
       pointer-events: none;
     }
-    .dropdown-menu.open {
-      opacity: 1;
-      transform: scaleY(1) translateY(0);
-      pointer-events: auto;
-    }
-
-    /* Glassmorphic Cards */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+    .bg-blob-2 {
+      position: fixed;
+      bottom: -10%;
+      left: -10%;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, rgba(255,255,255,0) 70%);
+      z-index: 0;
+      pointer-events: none;
     }
   </style>
 </head>
-<body class="min-h-screen p-3 flex flex-col items-center justify-center">
+<body class="min-h-screen p-3 sm:p-5 flex flex-col items-center justify-center relative overflow-x-hidden">
+
+  <!-- Floating Background Ambient Light -->
+  <div class="bg-blob-1"></div>
+  <div class="bg-blob-2"></div>
 
   <!-- Main Container -->
-  <div class="glass-card w-full max-w-md p-4 sm:p-5 rounded-3xl shadow-xl border border-slate-200/80 space-y-4">
+  <div class="glass-card w-full max-w-md p-4 sm:p-5 rounded-3xl shadow-xl border border-white/80 space-y-4 relative z-10">
     
-    <!-- 🚚 Header Page -->
-    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="goBack()" class="p-2 bg-slate-100 hover:bg-slate-200/80 active:scale-90 rounded-2xl text-slate-600 transition flex items-center justify-center border border-slate-200/60 shadow-xs">
+    <!-- Header Page -->
+    <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="goBack()" 
+                class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl active:scale-90 transition flex items-center justify-center shadow-xs">
           ⬅️
         </button>
         <div class="relative">
           <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-               onerror="this.src='https://via.placeholder.com/40';" 
-               class="w-10 h-10 rounded-2xl object-cover border-2 border-blue-500/30 shadow-xs"
-               oncontextmenu="return false;">
-          <span class="absolute -bottom-1 -right-1 text-xs animate-bounce-soft">🚚</span>
+               onerror="this.src='https://via.placeholder.com/50';" 
+               class="w-10 h-10 rounded-2xl border-2 border-blue-500/30 object-cover shadow-xs">
         </div>
         <div>
-          <h1 class="font-extrabold text-sm text-slate-800 flex items-center gap-1">
-            ព័ត៌មានដឹកជញ្ជូន
+          <h1 class="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+            <span class="animate-truck">🚚</span> ព័ត៌មានដឹកជញ្ជូន & ទូទាត់
           </h1>
-          <p class="text-[10px] text-slate-400 font-medium">បំពេញព័ត៌មានដើម្បីបន្តទៅការបង់ប្រាក់</p>
+          <p class="text-[10px] text-slate-500 font-medium">បំពេញព័ត៌មានដើម្បីបន្តទៅការបង់ប្រាក់</p>
         </div>
       </div>
     </div>
 
-    <!-- 📦 Selected Items Summary Card -->
-    <div class="bg-gradient-to-r from-blue-50/80 to-indigo-50/50 border border-blue-100/80 p-3 rounded-2xl space-y-1.5 text-xs shadow-xs">
-      <div class="flex items-center justify-between border-b border-blue-100/80 pb-1.5">
-        <span class="font-extrabold text-blue-900 flex items-center gap-1 text-[11px]">
-          📦 ទំនិញដែលបានជ្រើសរើស
-        </span>
-        <span id="itemsBadgeCount" class="bg-blue-600 text-white font-black text-[9px] px-2 py-0.5 rounded-full shadow-xs">
+    <!-- Selected Items Summary Card -->
+    <div class="bg-gradient-to-br from-blue-50/90 to-indigo-50/60 border border-blue-100/80 p-3.5 rounded-2xl space-y-2 text-xs shadow-xs">
+      <div class="flex justify-between items-center border-b border-blue-200/60 pb-1.5">
+        <p class="font-extrabold text-blue-950 flex items-center gap-1.5">
+          <span>📦</span> ទំនិញដែលបានជ្រើសរើស
+        </p>
+        <span id="itemsBadge" class="bg-blue-600 text-white font-bold text-[10px] px-2 py-0.5 rounded-full shadow-xs">
           0 មុខ
         </span>
       </div>
-      <div id="selectedItems" class="space-y-1 pt-1 text-slate-700"></div>
+      <div id="selectedItems" class="space-y-1.5 pt-0.5 text-slate-700"></div>
     </div>
 
-    <!-- 📝 Form Section -->
-    <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-3.5 text-xs">
+    <!-- Delivery Form -->
+    <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-4 text-xs">
       
-      <div class="space-y-2.5">
-        <p class="font-extrabold text-slate-800 text-[12px] flex items-center gap-1.5">
-          <span class="animate-bounce-soft">📍</span> ព័ត៌មានអ្នកទទួល និងទីតាំង
+      <!-- Customer Information -->
+      <div class="space-y-3">
+        <p class="font-extrabold text-slate-800 text-[13px] flex items-center gap-1.5">
+          <span class="p-1 bg-amber-100 text-amber-600 rounded-lg text-xs">📍</span> ព័ត៌មានអ្នកទទួល និងទីតាំង
         </p>
 
-        <!-- Customer Name -->
         <div>
-          <label class="font-bold block mb-1 text-slate-700 text-[11px]">👤 ឈ្មោះអតិថិជន *</label>
+          <label class="font-bold block mb-1 text-slate-700">👤 ឈ្មោះអតិថិជន <span class="text-rose-500">*</span></label>
           <input type="text" id="custName" required placeholder="ឧទាហរណ៍៖ សុខ ជា" 
-                 class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400 shadow-inner">
+                 class="animated-input w-full p-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none text-xs font-medium placeholder:text-slate-400">
         </div>
 
-        <!-- Phone Number -->
         <div>
-          <label class="font-bold block mb-1 text-slate-700 text-[11px]">📞 លេខទូរស័ព្ទ *</label>
+          <label class="font-bold block mb-1 text-slate-700">📞 លេខទូរស័ព្ទ <span class="text-rose-500">*</span></label>
           <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012 345 678" 
-                 class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400 shadow-inner">
+                 class="animated-input w-full p-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none text-xs font-medium placeholder:text-slate-400">
         </div>
 
-        <!-- Delivery Address -->
         <div>
-          <label class="font-bold block mb-1 text-slate-700 text-[11px]">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង *</label>
+          <label class="font-bold block mb-1 text-slate-700">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង <span class="text-rose-500">*</span></label>
           <textarea id="custAddress" required rows="2" placeholder="ឧទាហរណ៍៖ ភ្នំពេញ, ផ្ទះលេខ..., ផ្លូវ..." 
-                    class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400 shadow-inner resize-none"></textarea>
+                    class="animated-input w-full p-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none text-xs font-medium placeholder:text-slate-400 resize-none"></textarea>
         </div>
 
-        <!-- 🚚 Custom Animated Dropdown Selector -->
+        <!-- Animated Custom Dropdown (តំបន់ដឹកជញ្ជូន) -->
         <div>
-          <label class="font-bold block mb-1 text-slate-700 text-[11px]">🚚 តំបន់ដឹកជញ្ជូន</label>
+          <label class="font-bold block mb-1 text-slate-700">🚚 តំបន់ដឹកជញ្ជូន</label>
+          <input type="hidden" id="deliveryLocation" value="1.5">
           
           <div class="relative">
-            <!-- Custom Trigger Button -->
-            <button type="button" id="dropdownTrigger" onclick="toggleDropdown()" 
-                    class="w-full p-2.5 bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-2xl outline-none flex items-center justify-between transition-all font-bold text-slate-800 shadow-xs active:scale-[0.99]">
-              <div class="flex items-center gap-2">
-                <span id="selectedLocationIcon" class="text-base">🏙️</span>
-                <span id="selectedLocationText">ភ្នំពេញ ($1.50)</span>
-              </div>
+            <!-- Custom Select Trigger -->
+            <button type="button" onclick="toggleCustomDropdown()" id="dropdownTrigger"
+                    class="w-full p-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-2xl flex items-center justify-between text-slate-800 font-bold transition-all active:scale-[0.99] shadow-xs">
+              <span id="dropdownSelectedText" class="flex items-center gap-2">
+                <span>🏙️</span> ភ្នំពេញ ($1.50)
+              </span>
               <svg id="dropdownArrow" class="w-4 h-4 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
-            <!-- Animated Dropdown Options Menu -->
-            <div id="dropdownMenu" class="dropdown-menu absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-30 overflow-hidden p-1 space-y-1">
-              
-              <!-- Option 1: Phnom Penh -->
-              <div onclick="selectLocation('1.5', 'ភ្នំពេញ ($1.50)', '🏙️')" 
-                   class="location-option flex items-center justify-between p-2.5 rounded-xl cursor-pointer hover:bg-blue-50 transition-all font-semibold text-slate-700 bg-blue-50/60 border border-blue-100">
-                <div class="flex items-center gap-2">
-                  <span class="text-base">🏙️</span>
-                  <div>
-                    <p class="text-xs font-bold text-slate-800">ភ្នំពេញ</p>
-                    <p class="text-[9px] text-slate-400">សេវាដឹកជញ្ជូនរហ័សក្នុងក្រុង</p>
-                  </div>
+            <!-- Custom Select Menu Options -->
+            <div id="dropdownMenu" class="hidden absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md border border-slate-200 rounded-2xl shadow-2xl z-30 overflow-hidden animate-dropdown">
+              <div onclick="selectLocation('1.5', '🏙️ ភ្នំពេញ ($1.50)')" 
+                   class="p-3 hover:bg-blue-50 cursor-pointer flex items-center justify-between border-b border-slate-100 transition active:bg-blue-100">
+                <div class="flex items-center gap-2 font-bold text-slate-800">
+                  <span>🏙️</span> ភ្នំពេញ ($1.50)
                 </div>
-                <span class="font-extrabold text-blue-600 bg-white px-2 py-0.5 rounded-lg text-[10px] border border-blue-100 shadow-2xs">$1.50</span>
+                <span id="check-1.5" class="text-blue-600 font-bold">✓</span>
               </div>
-
-              <!-- Option 2: Provinces -->
-              <div onclick="selectLocation('2.5', 'តាមខេត្ត ($2.50)', '🏞️')" 
-                   class="location-option flex items-center justify-between p-2.5 rounded-xl cursor-pointer hover:bg-blue-50 transition-all font-semibold text-slate-700">
-                <div class="flex items-center gap-2">
-                  <span class="text-base">🏞️</span>
-                  <div>
-                    <p class="text-xs font-bold text-slate-800">តាមខេត្ត</p>
-                    <p class="text-[9px] text-slate-400">ផ្ញើតាមក្រុមហ៊ុនដឹកជញ្ជូន</p>
-                  </div>
+              <div onclick="selectLocation('2.5', '🏕️ តាមខេត្ត ($2.50)')" 
+                   class="p-3 hover:bg-blue-50 cursor-pointer flex items-center justify-between transition active:bg-blue-100">
+                <div class="flex items-center gap-2 font-bold text-slate-800">
+                  <span>🏕️</span> តាមខេត្ត ($2.50)
                 </div>
-                <span class="font-extrabold text-blue-600 bg-slate-50 px-2 py-0.5 rounded-lg text-[10px] border border-slate-200 shadow-2xs">$2.50</span>
+                <span id="check-2.5" class="text-blue-600 font-bold hidden">✓</span>
               </div>
-
             </div>
           </div>
-          <!-- Hidden Input for Form Submission -->
-          <input type="hidden" id="deliveryLocationValue" value="1.5">
         </div>
       </div>
 
-      <!-- 💳 Payment Method Selection Card -->
-      <div class="pt-2 border-t border-slate-100 space-y-2">
-        <p class="font-extrabold text-slate-800 text-[12px] flex items-center gap-1.5">
-          <span>💳</span> ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់
+      <!-- Payment Method Selection -->
+      <div class="pt-2 border-t border-slate-200/80 space-y-2">
+        <p class="font-extrabold text-slate-800 text-[13px] flex items-center gap-1.5">
+          <span class="p-1 bg-emerald-100 text-emerald-600 rounded-lg text-xs">💳</span> ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់
         </p>
 
         <div class="grid grid-cols-1 gap-2">
-          <label class="flex items-center justify-between p-3 border-2 border-blue-600 bg-gradient-to-r from-blue-50/60 to-indigo-50/40 rounded-2xl cursor-pointer shadow-xs transition-all active:scale-[0.99]">
-            <div class="flex items-center gap-2.5">
-              <input type="radio" name="paymentMethod" value="ABA_KHQR" checked class="w-4 h-4 text-blue-600 accent-blue-600">
+          <label class="flex items-center justify-between p-3.5 border-2 border-blue-600 bg-blue-50/50 rounded-2xl cursor-pointer shadow-xs transition transform hover:scale-[1.01]">
+            <div class="flex items-center gap-3">
+              <input type="radio" name="paymentMethod" value="ABA_KHQR" checked class="w-4 h-4 text-blue-600 focus:ring-blue-500">
               <div>
-                <p class="font-bold text-slate-800 text-xs">ABA KHQR (ទូទាត់ភ្លាមៗ)</p>
+                <p class="font-extrabold text-slate-900 text-xs">ABA KHQR (ទូទាត់ភ្លាមៗ)</p>
                 <p class="text-[10px] text-slate-500 font-medium">ស្កែន ABA Mobile App ស្វ័យប្រវត្តិ</p>
               </div>
             </div>
-            <span class="text-[10px] bg-rose-600 text-white font-black px-2 py-0.5 rounded-lg shadow-2xs animate-pulse-glow">ABA</span>
+            <span class="text-[10px] bg-rose-600 text-white font-black px-2.5 py-1 rounded-xl shadow-xs">ABA</span>
           </label>
         </div>
       </div>
 
-      <!-- 💵 Pricing Summary Box -->
-      <div class="border border-slate-200/80 pt-3 space-y-1.5 font-bold bg-slate-50/80 p-3.5 rounded-2xl shadow-xs">
-        <div class="flex justify-between text-slate-500 text-[11px]">
+      <!-- Pricing Summary -->
+      <div class="border border-slate-200/80 pt-3 space-y-1.5 font-bold bg-slate-50/80 p-3.5 rounded-2xl shadow-inner">
+        <div class="flex justify-between text-slate-600">
           <span>ថ្លៃទំនិញសរុប៖</span>
-          <span id="itemsTotalText" class="text-slate-800 font-bold">$0.00</span>
+          <span id="itemsTotalText" class="text-slate-800">$0.00</span>
         </div>
-        <div class="flex justify-between text-slate-500 text-[11px]">
+        <div class="flex justify-between text-slate-600">
           <span>ថ្លៃដឹកជញ្ជូន៖</span>
-          <span id="deliveryFeeText" class="text-slate-800 font-bold">$1.50</span>
+          <span id="deliveryFeeText" class="text-slate-800">$1.50</span>
         </div>
-        <div class="flex justify-between text-xs text-blue-600 pt-2 border-t border-slate-200/80 items-center">
-          <span class="font-extrabold text-slate-800">សរុបទឹកប្រាក់ត្រូវបង់៖</span>
-          <span id="grandTotalText" class="text-lg text-blue-600 font-black tracking-tight">$0.00</span>
+        <div class="flex justify-between text-sm text-blue-600 pt-2 border-t border-slate-200">
+          <span class="font-extrabold text-slate-900">សរុបទឹកប្រាក់ត្រូវបង់៖</span>
+          <span id="grandTotalText" class="text-xl text-blue-600 font-black">$0.00</span>
         </div>
       </div>
 
-      <!-- 🚀 Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex gap-2 pt-1">
         <button type="button" onclick="goBack()" 
-                class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold py-3 rounded-2xl text-center transition active:scale-95 border border-slate-200/60 shadow-xs">
+                class="w-1/3 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-extrabold py-3.5 rounded-2xl text-center transition shadow-xs">
           ❌ បោះបង់
         </button>
         <button type="submit" 
-                class="w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-2xl shadow-lg shadow-blue-500/25 transition active:scale-95 flex items-center justify-center gap-1.5">
-          <span>🚀 បន្តទៅការបង់ប្រាក់</span>
+                class="w-2/3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-blue-500/30 transition flex items-center justify-center gap-1.5">
+          <span class="animate-rocket">🚀</span> <span>បន្តទៅការបង់ប្រាក់</span>
         </button>
       </div>
 
@@ -262,9 +274,8 @@
     // 2️⃣ Render បញ្ជីទំនិញ
     function renderCheckoutSummary() {
       const container = document.getElementById('selectedItems');
+      document.getElementById('itemsBadge').innerText = `${checkoutItems.length} មុខ`;
       itemsSubtotal = 0;
-
-      document.getElementById('itemsBadgeCount').innerText = `${checkoutItems.length} មុខ`;
 
       container.innerHTML = checkoutItems.map((item, index) => {
         const price = parseFloat(item.price || 0);
@@ -274,12 +285,12 @@
         const itemCode = codeMatch ? codeMatch[1] : (item.code || 'N/A');
 
         return `
-          <div class="flex justify-between items-center border-b border-blue-100/60 pb-1 last:border-none">
-            <div class="flex items-center gap-1.5 truncate max-w-[210px]">
-              <span class="font-extrabold text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded-md">#${itemCode}</span>
-              <span class="font-medium text-slate-700 truncate">${item.title}</span>
+          <div class="flex justify-between items-center bg-white/70 p-2 rounded-xl border border-blue-100/50 shadow-2xs">
+            <div class="flex items-center gap-1.5 truncate pr-2">
+              <span class="font-black bg-blue-100 text-blue-700 text-[9px] px-1.5 py-0.5 rounded-md">#${itemCode}</span>
+              <span class="font-bold text-slate-800 truncate">${item.title}</span>
             </div>
-            <span class="font-extrabold text-slate-900">$${price.toFixed(2)}</span>
+            <span class="font-black text-slate-900">$${price.toFixed(2)}</span>
           </div>
         `;
       }).join('');
@@ -288,46 +299,45 @@
       calculateTotal();
     }
 
-    // 3️⃣ Animated Dropdown Logic
-    function toggleDropdown() {
+    // 3️⃣ Custom Animated Dropdown Logic
+    function toggleCustomDropdown() {
       const menu = document.getElementById('dropdownMenu');
       const arrow = document.getElementById('dropdownArrow');
-      const isOpen = menu.classList.contains('open');
+      const isHidden = menu.classList.contains('hidden');
 
-      if (isOpen) {
-        menu.classList.remove('open');
-        arrow.style.transform = 'rotate(0deg)';
-      } else {
-        menu.classList.add('open');
+      if (isHidden) {
+        menu.classList.remove('hidden');
         arrow.style.transform = 'rotate(180deg)';
+      } else {
+        menu.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
       }
     }
 
-    function selectLocation(val, labelText, icon) {
-      document.getElementById('deliveryLocationValue').value = val;
-      document.getElementById('selectedLocationText').innerText = labelText;
-      document.getElementById('selectedLocationIcon').innerText = icon;
+    function selectLocation(val, label) {
+      document.getElementById('deliveryLocation').value = val;
+      document.getElementById('dropdownSelectedText').innerHTML = label;
+      
+      document.getElementById('check-1.5').classList.toggle('hidden', val !== '1.5');
+      document.getElementById('check-2.5').classList.toggle('hidden', val !== '2.5');
 
-      // Close Menu
-      toggleDropdown();
-
-      // Recalculate Totals
+      toggleCustomDropdown();
       calculateTotal();
     }
 
-    // Close Dropdown when clicking outside
+    // Close dropdown on outside click
     document.addEventListener('click', (e) => {
       const trigger = document.getElementById('dropdownTrigger');
       const menu = document.getElementById('dropdownMenu');
-      if (!trigger.contains(e.target) && !menu.contains(e.target)) {
-        menu.classList.remove('open');
+      if (trigger && menu && !trigger.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
         document.getElementById('dropdownArrow').style.transform = 'rotate(0deg)';
       }
     });
 
     // 4️⃣ គណនាប្រាក់សរុប
     function calculateTotal() {
-      const deliveryFee = parseFloat(document.getElementById('deliveryLocationValue').value || 1.5);
+      const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
       const grandTotal = itemsSubtotal + deliveryFee;
 
       document.getElementById('deliveryFeeText').innerText = `$${deliveryFee.toFixed(2)}`;
@@ -344,7 +354,7 @@
     function submitOrder(event) {
       event.preventDefault();
 
-      const deliveryFee = parseFloat(document.getElementById('deliveryLocationValue').value || 1.5);
+      const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
       const grandTotal = itemsSubtotal + deliveryFee;
 
       const orderData = {
