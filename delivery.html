@@ -3,373 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ព័ត៌មានដឹកជញ្ជូន និងការទូទាត់ - តូបជជុស Online</title>
+  <title>delivery.html - Dark Neon</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    body { 
-      font-family: 'Kantumruy Pro', sans-serif; 
-      background-color: #f1f5f9;
-    }
-
-    /* ៤. Dynamic Slide-In Animation & Backdrop */
-    @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(40px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .slide-in-card {
-      animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    /* ១. Input Focus, Glow & Shake Animations */
-    .custom-input {
-      transition: all 0.25s ease-in-out;
-      border: 1.5px solid #e2e8f0;
-    }
-    .custom-input:focus {
-      border-color: #2563eb !important;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15) !important;
-      background-color: #ffffff !important;
-    }
-
-    @keyframes shakeError {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
-    }
-    .input-error {
-      animation: shakeError 0.4s ease-in-out;
-      border-color: #ef4444 !important;
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
-    }
-
-    /* ២. Interactive Selection Card (Scale & Pop Effect) */
-    .option-card {
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .option-card:active {
-      transform: scale(0.98);
-    }
-    .option-card.selected {
-      transform: scale(1.02);
-      border-color: #2563eb;
-      background-color: #eff6ff;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
-    }
-
-    @keyframes radioPop {
-      0% { transform: scale(0); }
-      70% { transform: scale(1.25); }
-      100% { transform: scale(1); }
-    }
-    .radio-pop {
-      animation: radioPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-
-    /* ៣. Submit Button Lift & Loading Spinner */
-    .btn-submit {
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-    }
-    .btn-submit:active {
-      transform: translateY(1px) scale(0.98);
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
-    }
-
-    /* Loading Spinner */
-    .spinner {
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: #ffffff;
-      width: 16 h;
-      height: 16px;
-      animation: spin 0.6s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <style> 
+    body { font-family: 'Kantumruy Pro', sans-serif; background-color: #0f172a; color: #f8fafc; }
+    .neon-input { background: #1e293b; border: 1px solid #334155; color: white; transition: 0.3s; }
+    .neon-input:focus { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.3); }
   </style>
 </head>
-<body class="min-h-screen p-3 flex flex-col items-center justify-center">
+<body class="min-h-screen p-3 flex justify-center items-center">
 
-  <!-- ៤. Slide-In Main Container -->
-  <div class="slide-in-card bg-white/95 backdrop-blur-md w-full max-w-md p-5 rounded-3xl shadow-xl border border-slate-100 space-y-4">
-    
-    <!-- Header Page -->
-    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="goBack()" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl transition active:scale-90 flex items-center justify-center">
-          ⬅️
-        </button>
-        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-             onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-2xl object-cover border border-slate-200 shadow-xs">
-        <div>
-          <h1 class="font-extrabold text-sm text-slate-900 leading-tight">🚚 ព័ត៌មានដឹកជញ្ជូន និងទូទាត់</h1>
-          <p class="text-[10px] text-slate-400 font-medium mt-0.5">បំពេញព័ត៌មានដើម្បីបន្តទៅការបង់ប្រាក់</p>
-        </div>
-      </div>
+  <div class="w-full max-w-md bg-slate-900/90 border border-slate-800 p-5 rounded-3xl space-y-4 shadow-2xl">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h1 class="font-extrabold text-sm text-cyan-400">🚚 ព័ត៌មានដឹកជញ្ជូន និងទូទាត់</h1>
+      <button onclick="goBack()" class="p-2 bg-slate-800 text-slate-300 rounded-xl text-xs">⬅️</button>
     </div>
 
-    <!-- Selected Items Summary -->
-    <div class="bg-blue-50/60 border border-blue-100/80 p-3 rounded-2xl space-y-1.5 text-xs">
-      <p class="font-extrabold text-blue-900 border-b border-blue-100/80 pb-1 flex items-center gap-1">
-        <span>📦</span> ទំនិញដែលបានជ្រើសរើស៖
-      </p>
-      <div id="selectedItems" class="space-y-1 pt-0.5 text-slate-700"></div>
-    </div>
+    <div id="selectedItems" class="bg-slate-800/60 border border-slate-700/50 p-3 rounded-2xl text-xs space-y-1"></div>
 
-    <!-- Form Section -->
-    <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-3.5 text-xs" novalidate>
-      
-      <div class="space-y-2.5">
-        <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1">
-          <span>📍</span> ព័ត៌មានអ្នកទទួល និងទីតាំង
-        </p>
-
-        <!-- 1. Customer Name Input -->
-        <div>
-          <label class="font-semibold block mb-1 text-slate-700">👤 ឈ្មោះអតិថិជន *</label>
-          <input type="text" id="custName" required placeholder="ឧទាហរណ៍៖ សុខ ជា" 
-                 oninput="removeError(this)"
-                 class="custom-input w-full p-3 bg-slate-50/80 rounded-2xl outline-none font-medium placeholder:text-slate-400">
-        </div>
-
-        <!-- 2. Phone Input -->
-        <div>
-          <label class="font-semibold block mb-1 text-slate-700">📞 លេខទូរស័ព្ទ *</label>
-          <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012 345 678" 
-                 oninput="removeError(this)"
-                 class="custom-input w-full p-3 bg-slate-50/80 rounded-2xl outline-none font-medium placeholder:text-slate-400">
-        </div>
-
-        <!-- 3. Address Textarea -->
-        <div>
-          <label class="font-semibold block mb-1 text-slate-700">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង *</label>
-          <textarea id="custAddress" required rows="2" placeholder="ឧទាហរណ៍៖ ភ្នំពេញ, ផ្ទះលេខ..., ផ្លូវ..." 
-                    oninput="removeError(this)"
-                    class="custom-input w-full p-3 bg-slate-50/80 rounded-2xl outline-none font-medium placeholder:text-slate-400"></textarea>
-        </div>
-
-        <!-- 4. Location Select -->
-        <div>
-          <label class="font-semibold block mb-1 text-slate-700">🚚 តំបន់ដឹកជញ្ជូន</label>
-          <select id="deliveryLocation" onchange="calculateTotal()" 
-                  class="custom-input w-full p-3 bg-slate-50/80 rounded-2xl outline-none font-bold text-slate-800 cursor-pointer">
-            <option value="1.5">ភ្នំពេញ ($1.50)</option>
-            <option value="2.5">តាមខេត្ត ($2.50)</option>
-          </select>
-        </div>
+    <form onsubmit="submitOrder(event)" class="space-y-3 text-xs">
+      <div>
+        <label class="font-semibold text-slate-300 mb-1 block">👤 ឈ្មោះអតិថិជន *</label>
+        <input type="text" id="custName" required placeholder="ឈ្មោះ..." class="neon-input w-full p-3 rounded-xl outline-none">
+      </div>
+      <div>
+        <label class="font-semibold text-slate-300 mb-1 block">📞 លេខទូរស័ព្ទ *</label>
+        <input type="tel" id="custPhone" required placeholder="លេខទូរស័ព្ទ..." class="neon-input w-full p-3 rounded-xl outline-none">
+      </div>
+      <div>
+        <label class="font-semibold text-slate-300 mb-1 block">📍 អាសយដ្ឋាន *</label>
+        <textarea id="custAddress" required rows="2" placeholder="អាសយដ្ឋាន..." class="neon-input w-full p-3 rounded-xl outline-none"></textarea>
+      </div>
+      <div>
+        <label class="font-semibold text-slate-300 mb-1 block">🚚 តំបន់ដឹក</label>
+        <select id="deliveryLocation" onchange="calculateTotal()" class="neon-input w-full p-3 rounded-xl font-bold outline-none">
+          <option value="1.5">ភ្នំពេញ ($1.50)</option>
+          <option value="2.5">តាមខេត្ត ($2.50)</option>
+        </select>
       </div>
 
-      <!-- ២. Payment Method Selection Card -->
-      <div class="pt-2 border-t border-slate-100 space-y-2">
-        <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1">
-          <span>💳</span> ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់
-        </p>
-
-        <div class="grid grid-cols-1 gap-2">
-          <label id="paymentCard" onclick="selectPaymentMethod()" 
-                 class="option-card selected flex items-center justify-between p-3.5 border-2 rounded-2xl cursor-pointer">
-            <div class="flex items-center gap-3">
-              <!-- Animated Custom Radio Dot -->
-              <div class="relative flex items-center justify-center">
-                <input type="radio" name="paymentMethod" value="ABA_KHQR" checked class="sr-only">
-                <div class="w-5 h-5 rounded-full border-2 border-blue-600 flex items-center justify-center bg-white">
-                  <div id="radioDot" class="w-2.5 h-2.5 rounded-full bg-blue-600 radio-pop"></div>
-                </div>
-              </div>
-              <div>
-                <p class="font-extrabold text-slate-900 text-xs">ABA KHQR (ទូទាត់ភ្លាមៗ)</p>
-                <p class="text-[10px] text-slate-500 font-medium">ស្កែន ABA Mobile App ស្វ័យប្រវត្តិ</p>
-              </div>
-            </div>
-            <span class="text-[10px] bg-rose-600 text-white font-black px-2 py-0.5 rounded-lg shadow-xs">ABA</span>
-          </label>
-        </div>
+      <div class="bg-slate-800/80 p-3.5 rounded-2xl space-y-1.5 border border-slate-700 font-bold">
+        <div class="flex justify-between text-slate-400"><span>ថ្លៃទំនិញ៖</span><span id="itemsTotalText">$0.00</span></div>
+        <div class="flex justify-between text-slate-400"><span>ថ្លៃដឹក៖</span><span id="deliveryFeeText">$1.50</span></div>
+        <div class="flex justify-between text-base text-cyan-400 pt-1 border-t border-slate-700"><span class="text-white">សរុបត្រូវបង់៖</span><span id="grandTotalText" class="font-black">$0.00</span></div>
       </div>
 
-      <!-- Pricing Summary Box -->
-      <div class="border border-slate-100 pt-3 space-y-1.5 font-bold bg-slate-50/90 p-3.5 rounded-2xl shadow-inner">
-        <div class="flex justify-between text-slate-500">
-          <span>ថ្លៃទំនិញសរុប៖</span>
-          <span id="itemsTotalText" class="text-slate-800">$0.00</span>
-        </div>
-        <div class="flex justify-between text-slate-500">
-          <span>ថ្លៃដឹកជញ្ជូន៖</span>
-          <span id="deliveryFeeText" class="text-slate-800">$1.50</span>
-        </div>
-        <div class="flex justify-between text-base text-blue-600 pt-1.5 border-t border-slate-200/80">
-          <span class="font-extrabold text-slate-800">សរុបទឹកប្រាក់ត្រូវបង់៖</span>
-          <span id="grandTotalText" class="text-lg text-blue-600 font-black">$0.00</span>
-        </div>
-      </div>
-
-      <!-- ៣. Action Buttons with Lift & Spinner -->
-      <div class="flex gap-2 pt-1">
-        <button type="button" onclick="goBack()" 
-                class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-2xl text-center transition active:scale-95">
-          ❌ បោះបង់
-        </button>
-        <button type="submit" id="submitBtn" 
-                class="btn-submit w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
-          <span id="btnIcon">🚀</span>
-          <span id="btnText">បន្តទៅការបង់ប្រាក់</span>
-        </button>
-      </div>
-
+      <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-cyan-500/20 active:scale-95 transition">
+        🚀 បន្តទៅការបង់ប្រាក់
+      </button>
     </form>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
   <script>
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
-
-    // 1. ទាញយកទិន្នន័យពី LocalStorage
     const buyNowItem = JSON.parse(localStorage.getItem('buyNowItem'));
     const cartItems = JSON.parse(localStorage.getItem('cartData')) || [];
     let checkoutItems = buyNowItem ? [buyNowItem] : cartItems;
-
-    if (checkoutItems.length === 0) {
-      window.location.href = 'index.html';
-    }
+    if (checkoutItems.length === 0) window.location.href = 'index.html';
 
     let itemsSubtotal = 0;
-
-    // 2. Render បញ្ជីទំនិញ
     function renderCheckoutSummary() {
       const container = document.getElementById('selectedItems');
       itemsSubtotal = 0;
-
-      container.innerHTML = checkoutItems.map((item, index) => {
+      container.innerHTML = checkoutItems.map((item, idx) => {
         const price = parseFloat(item.price || 0);
         itemsSubtotal += price;
-
-        const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
-        const itemCode = codeMatch ? codeMatch[1] : (item.code || 'N/A');
-
-        return `
-          <div class="flex justify-between items-center border-b border-blue-100/60 pb-1 last:border-none">
-            <span>${index + 1}. <b>#${itemCode}</b> - ${item.title}</span>
-            <span class="font-extrabold text-slate-900">$${price.toFixed(2)}</span>
-          </div>
-        `;
+        return `<div class="flex justify-between"><span>${idx+1}. ${item.title}</span><span class="font-bold">$${price.toFixed(2)}</span></div>`;
       }).join('');
-
       document.getElementById('itemsTotalText').innerText = `$${itemsSubtotal.toFixed(2)}`;
       calculateTotal();
     }
-
-    // 3. គណនាប្រាក់សរុប
     function calculateTotal() {
-      const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
-      const grandTotal = itemsSubtotal + deliveryFee;
-
-      document.getElementById('deliveryFeeText').innerText = `$${deliveryFee.toFixed(2)}`;
-      document.getElementById('grandTotalText').innerText = `$${grandTotal.toFixed(2)}`;
+      const fee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
+      document.getElementById('deliveryFeeText').innerText = `$${fee.toFixed(2)}`;
+      document.getElementById('grandTotalText').innerText = `$${(itemsSubtotal + fee).toFixed(2)}`;
     }
-
-    // 4. Interactive Selection Card Logic
-    function selectPaymentMethod() {
-      const card = document.getElementById('paymentCard');
-      const dot = document.getElementById('radioDot');
-      
-      card.classList.add('selected');
-      dot.classList.remove('radio-pop');
-      void dot.offsetWidth; // Trigger reflow for re-animation
-      dot.classList.add('radio-pop');
-    }
-
-    // 5. Input Validation & Error Shake
-    function removeError(input) {
-      input.classList.remove('input-error');
-    }
-
-    function validateForm() {
-      let isValid = true;
-      const requiredInputs = ['custName', 'custPhone', 'custAddress'];
-
-      requiredInputs.forEach(id => {
-        const input = document.getElementById(id);
-        if (!input.value.trim()) {
-          isValid = false;
-          input.classList.remove('input-error');
-          void input.offsetWidth; // Trigger Reflow
-          input.classList.add('input-error');
-        }
-      });
-
-      return isValid;
-    }
-
-    // 6. Form Submission with Loading Spinner Effect
-    function submitOrder(event) {
-      event.preventDefault();
-
-      if (!validateForm()) return;
-
-      // Enable Loading State on Button
-      const btn = document.getElementById('submitBtn');
-      const btnText = document.getElementById('btnText');
-      const btnIcon = document.getElementById('btnIcon');
-
-      btn.disabled = true;
-      btnText.innerText = "កំពុងដំណើរការ...";
-      btnIcon.innerHTML = `<div class="spinner"></div>`;
-
-      const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
-      const grandTotal = itemsSubtotal + deliveryFee;
-
-      const orderData = {
-        cart: checkoutItems,
-        details: {
-          customer: {
-            name: document.getElementById('custName').value.trim(),
-            phone: document.getElementById('custPhone').value.trim(),
-            address: document.getElementById('custAddress').value.trim()
-          },
-          deliveryFee: deliveryFee,
-          grandTotal: grandTotal,
-          paymentMethod: 'ABA_KHQR'
-        }
-      };
-
-      localStorage.setItem('pendingOrder', JSON.stringify(orderData));
-
-      // Simulate smooth transition delay
-      setTimeout(() => {
-        onOrderSuccess();
-      }, 600);
-    }
-
-    function onOrderSuccess() {
-      if (localStorage.getItem('buyNowItem')) {
-        localStorage.removeItem('buyNowItem');
-      } else {
-        localStorage.removeItem('cartData');
-      }
-      
-      window.location.href = 'waiting-payment.html';
-    }
-
-    function goBack() {
-      localStorage.removeItem('buyNowItem');
-      window.location.href = 'index.html';
-    }
-
+    function goBack() { localStorage.removeItem('buyNowItem'); window.location.href = 'index.html'; }
+    function submitOrder(e) { e.preventDefault(); window.location.href = 'waiting-payment.html'; }
     renderCheckoutSummary();
   </script>
 </body>
