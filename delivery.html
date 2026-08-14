@@ -16,221 +16,257 @@
 
     body { 
       font-family: 'Kantumruy Pro', sans-serif; 
-      background-color: #f1f5f9;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e0eefd 50%, #f8fafc 100%);
+      min-height: 100vh;
     }
 
-    /* ៤. Dynamic Slide-In Animation & Backdrop */
-    @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(40px); }
-      to { opacity: 1; transform: translateX(0); }
+    /* Floating Background Blob */
+    .blob {
+      position: absolute;
+      filter: blur(50px);
+      z-index: 0;
+      opacity: 0.6;
+      animation: floatBlob 8s infinite alternate ease-in-out;
     }
-    .slide-in-card {
-      animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    @keyframes floatBlob {
+      0% { transform: translate(0px, 0px) scale(1); }
+      100% { transform: translate(20px, -30px) scale(1.1); }
     }
 
-    /* ១. Input Focus, Glow & Shake Animations */
+    /* Animated Entry */
+    @keyframes cardEntrance {
+      from { opacity: 0; transform: translateY(20px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .main-card {
+      animation: cardEntrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    /* Input Focus Glow & Smooth Transition */
     .custom-input {
-      transition: all 0.25s ease-in-out;
-      border: 1.5px solid #e2e8f0;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1.5px solid #cbd5e1;
     }
     .custom-input:focus {
       border-color: #2563eb !important;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15) !important;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18) !important;
       background-color: #ffffff !important;
+      transform: translateY(-1px);
     }
 
+    /* Payment Card Animation */
+    .payment-card {
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .payment-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.15);
+    }
+    .payment-card.selected {
+      border-color: #2563eb;
+      background-color: rgba(239, 246, 255, 0.9);
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.12);
+    }
+
+    /* Pulse Glow Radio Badge */
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.9; }
+    }
+    .badge-pulse {
+      animation: badgePulse 2s infinite ease-in-out;
+    }
+
+    /* Button Light Sweep Animation */
+    .btn-glow {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-glow::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 50%;
+      height: 200%;
+      background: linear-gradient(
+        60deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: rotate(25deg);
+      animation: sweep 3.5s infinite;
+    }
+    @keyframes sweep {
+      0% { left: -60%; }
+      30% { left: 140%; }
+      100% { left: 140%; }
+    }
+
+    .btn-glow:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+    }
+    .btn-glow:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* Shake Animation for Invalid Inputs */
     @keyframes shakeError {
       0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
     }
     .input-error {
-      animation: shakeError 0.4s ease-in-out;
+      animation: shakeError 0.35s ease-in-out;
       border-color: #ef4444 !important;
       box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
     }
-
-    /* ២. Interactive Selection Card (Scale & Pop Effect) */
-    .option-card {
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .option-card:active {
-      transform: scale(0.98);
-    }
-    .option-card.selected {
-      transform: scale(1.02);
-      border-color: #2563eb;
-      background-color: #eff6ff;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
-    }
-
-    @keyframes radioPop {
-      0% { transform: scale(0); }
-      70% { transform: scale(1.25); }
-      100% { transform: scale(1); }
-    }
-    .radio-pop {
-      animation: radioPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-
-    /* ៣. Submit Button Lift & Loading Spinner */
-    .btn-submit {
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-    }
-    .btn-submit:active {
-      transform: translateY(1px) scale(0.98);
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
-    }
-
-    /* Loading Spinner */
-    .spinner {
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: #ffffff;
-      width: 16 h;
-      height: 16px;
-      animation: spin 0.6s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
   </style>
 </head>
-<body class="min-h-screen p-3 flex flex-col items-center justify-center">
+<body class="p-3 flex items-center justify-center relative overflow-x-hidden">
 
-  <!-- ៤. Slide-In Main Container -->
-  <div class="slide-in-card bg-white/95 backdrop-blur-md w-full max-w-md p-5 rounded-3xl shadow-xl border border-slate-100 space-y-4">
+  <!-- Floating Background Effects -->
+  <div class="blob w-64 h-64 bg-blue-300 rounded-full -top-10 -left-10"></div>
+  <div class="blob w-64 h-64 bg-indigo-200 rounded-full -bottom-10 -right-10"></div>
+
+  <!-- Main Animated Container -->
+  <div class="main-card relative z-10 w-full max-w-md p-5 rounded-3xl shadow-2xl border border-white/80 space-y-4">
     
-    <!-- Header Page -->
-    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="goBack()" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl transition active:scale-90 flex items-center justify-center">
+    <!-- Top Header -->
+    <div class="flex items-center justify-between border-b border-slate-200/80 pb-3.5">
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="goBack()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl transition active:scale-90 flex items-center justify-center shadow-xs">
           ⬅️
         </button>
-        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-             onerror="this.src='https://via.placeholder.com/50';" class="w-10 h-10 rounded-2xl object-cover border border-slate-200 shadow-xs">
+        <div class="relative">
+          <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
+               onerror="this.src='https://via.placeholder.com/50';" class="w-11 h-11 rounded-2xl object-cover border-2 border-white shadow-md">
+          <span class="absolute -bottom-1 -right-1 flex h-3.5 w-3.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white"></span>
+          </span>
+        </div>
         <div>
-          <h1 class="font-extrabold text-sm text-slate-900 leading-tight">🚚 ព័ត៌មានដឹកជញ្ជូន និងទូទាត់</h1>
-          <p class="text-[10px] text-slate-400 font-medium mt-0.5">បំពេញព័ត៌មានដើម្បីបន្តទៅការបង់ប្រាក់</p>
+          <h1 class="font-extrabold text-sm text-slate-900 leading-tight flex items-center gap-1.5">
+            🚚 ព័ត៌មានដឹកជញ្ជូន និងទូទាត់
+          </h1>
+          <p class="text-[10px] text-slate-500 font-semibold mt-0.5">បំពេញព័ត៌មានខាងក្រោមដើម្បីបញ្ចប់ការបញ្ជាទិញ</p>
         </div>
       </div>
     </div>
 
-    <!-- Selected Items Summary -->
-    <div class="bg-blue-50/60 border border-blue-100/80 p-3 rounded-2xl space-y-1.5 text-xs">
-      <p class="font-extrabold text-blue-900 border-b border-blue-100/80 pb-1 flex items-center gap-1">
-        <span>📦</span> ទំនិញដែលបានជ្រើសរើស៖
+    <!-- Items Summary Box -->
+    <div class="bg-gradient-to-r from-blue-50/90 to-indigo-50/90 border border-blue-200/70 p-3.5 rounded-2xl space-y-1.5 text-xs shadow-sm">
+      <p class="font-extrabold text-blue-900 border-b border-blue-200/60 pb-1 flex items-center justify-between">
+        <span class="flex items-center gap-1.5">📦 ទំនិញដែលបានជ្រើសរើស</span>
+        <span class="text-[10px] bg-blue-200/60 text-blue-800 px-2 py-0.5 rounded-full font-bold">តូបជជុស</span>
       </p>
-      <div id="selectedItems" class="space-y-1 pt-0.5 text-slate-700"></div>
+      <div id="selectedItems" class="space-y-1.5 pt-1 text-slate-700"></div>
     </div>
 
-    <!-- Form Section -->
+    <!-- Main Delivery Form -->
     <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-3.5 text-xs" novalidate>
       
       <div class="space-y-2.5">
-        <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1">
+        <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1.5">
           <span>📍</span> ព័ត៌មានអ្នកទទួល និងទីតាំង
         </p>
 
-        <!-- 1. Customer Name Input -->
+        <!-- Customer Name -->
         <div>
-          <label class="font-semibold block mb-1 text-slate-700">👤 ឈ្មោះអតិថិជន *</label>
+          <label class="font-semibold block mb-1 text-slate-700">👤 ឈ្មោះអតិថិជន <span class="text-rose-500">*</span></label>
           <input type="text" id="custName" required placeholder="ឧទាហរណ៍៖ សុខ ជា" 
                  oninput="removeError(this)"
-                 class="custom-input w-full p-3 bg-slate-50/80 rounded-2xl outline-none font-medium placeholder:text-slate-400">
+                 class="custom-input w-full p-3 bg-white/80 rounded-2xl outline-none font-medium text-slate-800 placeholder:text-slate-400 shadow-xs">
         </div>
 
-        <!-- 2. Phone Input -->
+        <!-- Phone Number -->
         <div>
-          <label class="font-semibold block mb-1 text-slate-700">📞 លេខទូរស័ព្ទ *</label>
+          <label class="font-semibold block mb-1 text-slate-700">📞 លេខទូរស័ព្ទ <span class="text-rose-500">*</span></label>
           <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012 345 678" 
                  oninput="removeError(this)"
-                 class="custom-input w-full p-3 bg-slate-50/80 rounded-2xl outline-none font-medium placeholder:text-slate-400">
+                 class="custom-input w-full p-3 bg-white/80 rounded-2xl outline-none font-medium text-slate-800 placeholder:text-slate-400 shadow-xs">
         </div>
 
-        <!-- 3. Address Textarea -->
+        <!-- Delivery Address -->
         <div>
-          <label class="font-semibold block mb-1 text-slate-700">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង *</label>
+          <label class="font-semibold block mb-1 text-slate-700">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង <span class="text-rose-500">*</span></label>
           <textarea id="custAddress" required rows="2" placeholder="ឧទាហរណ៍៖ ភ្នំពេញ, ផ្ទះលេខ..., ផ្លូវ..." 
                     oninput="removeError(this)"
-                    class="custom-input w-full p-3 bg-slate-50/80 rounded-2xl outline-none font-medium placeholder:text-slate-400"></textarea>
+                    class="custom-input w-full p-3 bg-white/80 rounded-2xl outline-none font-medium text-slate-800 placeholder:text-slate-400 shadow-xs"></textarea>
         </div>
 
-        <!-- 4. Location Select -->
+        <!-- Location Dropdown -->
         <div>
           <label class="font-semibold block mb-1 text-slate-700">🚚 តំបន់ដឹកជញ្ជូន</label>
           <select id="deliveryLocation" onchange="calculateTotal()" 
-                  class="custom-input w-full p-3 bg-slate-50/80 rounded-2xl outline-none font-bold text-slate-800 cursor-pointer">
+                  class="custom-input w-full p-3 bg-white/80 rounded-2xl outline-none font-bold text-slate-800 cursor-pointer shadow-xs">
             <option value="1.5">ភ្នំពេញ ($1.50)</option>
             <option value="2.5">តាមខេត្ត ($2.50)</option>
           </select>
         </div>
       </div>
 
-      <!-- ២. Payment Method Selection Card -->
-      <div class="pt-2 border-t border-slate-100 space-y-2">
-        <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1">
-          <span>💳</span> ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់
+      <!-- Payment Option Section -->
+      <div class="pt-2 border-t border-slate-200/80 space-y-2">
+        <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1.5">
+          <span>💳</span> វិធីសាស្ត្រទូទាត់ប្រាក់
         </p>
 
         <div class="grid grid-cols-1 gap-2">
-          <label id="paymentCard" onclick="selectPaymentMethod()" 
-                 class="option-card selected flex items-center justify-between p-3.5 border-2 rounded-2xl cursor-pointer">
+          <label class="payment-card selected flex items-center justify-between p-3.5 border-2 rounded-2xl">
             <div class="flex items-center gap-3">
-              <!-- Animated Custom Radio Dot -->
-              <div class="relative flex items-center justify-center">
-                <input type="radio" name="paymentMethod" value="ABA_KHQR" checked class="sr-only">
-                <div class="w-5 h-5 rounded-full border-2 border-blue-600 flex items-center justify-center bg-white">
-                  <div id="radioDot" class="w-2.5 h-2.5 rounded-full bg-blue-600 radio-pop"></div>
-                </div>
-              </div>
+              <input type="radio" name="paymentMethod" value="ABA_KHQR" checked class="w-4 h-4 text-blue-600 focus:ring-blue-500">
               <div>
                 <p class="font-extrabold text-slate-900 text-xs">ABA KHQR (ទូទាត់ភ្លាមៗ)</p>
                 <p class="text-[10px] text-slate-500 font-medium">ស្កែន ABA Mobile App ស្វ័យប្រវត្តិ</p>
               </div>
             </div>
-            <span class="text-[10px] bg-rose-600 text-white font-black px-2 py-0.5 rounded-lg shadow-xs">ABA</span>
+            <span class="badge-pulse text-[10px] bg-gradient-to-r from-rose-600 to-red-600 text-white font-black px-2.5 py-1 rounded-xl shadow-xs">ABA KHQR</span>
           </label>
         </div>
       </div>
 
-      <!-- Pricing Summary Box -->
-      <div class="border border-slate-100 pt-3 space-y-1.5 font-bold bg-slate-50/90 p-3.5 rounded-2xl shadow-inner">
-        <div class="flex justify-between text-slate-500">
+      <!-- Price Breakdown Card -->
+      <div class="bg-gradient-to-br from-slate-50 to-slate-100/90 border border-slate-200/80 p-4 rounded-2xl space-y-2 font-bold shadow-inner">
+        <div class="flex justify-between text-slate-500 text-xs">
           <span>ថ្លៃទំនិញសរុប៖</span>
-          <span id="itemsTotalText" class="text-slate-800">$0.00</span>
+          <span id="itemsTotalText" class="text-slate-800 font-extrabold">$0.00</span>
         </div>
-        <div class="flex justify-between text-slate-500">
+        <div class="flex justify-between text-slate-500 text-xs">
           <span>ថ្លៃដឹកជញ្ជូន៖</span>
-          <span id="deliveryFeeText" class="text-slate-800">$1.50</span>
+          <span id="deliveryFeeText" class="text-slate-800 font-extrabold">$1.50</span>
         </div>
-        <div class="flex justify-between text-base text-blue-600 pt-1.5 border-t border-slate-200/80">
-          <span class="font-extrabold text-slate-800">សរុបទឹកប្រាក់ត្រូវបង់៖</span>
+        <div class="flex justify-between text-base text-blue-600 pt-2 border-t border-slate-200">
+          <span class="font-extrabold text-slate-900">សរុបទឹកប្រាក់ត្រូវបង់៖</span>
           <span id="grandTotalText" class="text-lg text-blue-600 font-black">$0.00</span>
         </div>
       </div>
 
-      <!-- ៣. Action Buttons with Lift & Spinner -->
-      <div class="flex gap-2 pt-1">
+      <!-- Action Buttons -->
+      <div class="flex gap-2.5 pt-1">
         <button type="button" onclick="goBack()" 
-                class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-2xl text-center transition active:scale-95">
+                class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-2xl text-center transition active:scale-95 border border-slate-200/60 shadow-xs">
           ❌ បោះបង់
         </button>
         <button type="submit" id="submitBtn" 
-                class="btn-submit w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
-          <span id="btnIcon">🚀</span>
-          <span id="btnText">បន្តទៅការបង់ប្រាក់</span>
+                class="btn-glow w-2/3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2">
+          <span>🚀</span>
+          <span>បន្តទៅការបង់ប្រាក់</span>
         </button>
       </div>
 
     </form>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- JavaScript Logic -->
   <script>
     const tg = window.Telegram?.WebApp;
     if (tg) {
@@ -238,7 +274,6 @@
       tg.expand();
     }
 
-    // 1. ទាញយកទិន្នន័យពី LocalStorage
     const buyNowItem = JSON.parse(localStorage.getItem('buyNowItem'));
     const cartItems = JSON.parse(localStorage.getItem('cartData')) || [];
     let checkoutItems = buyNowItem ? [buyNowItem] : cartItems;
@@ -249,7 +284,6 @@
 
     let itemsSubtotal = 0;
 
-    // 2. Render បញ្ជីទំនិញ
     function renderCheckoutSummary() {
       const container = document.getElementById('selectedItems');
       itemsSubtotal = 0;
@@ -262,8 +296,8 @@
         const itemCode = codeMatch ? codeMatch[1] : (item.code || 'N/A');
 
         return `
-          <div class="flex justify-between items-center border-b border-blue-100/60 pb-1 last:border-none">
-            <span>${index + 1}. <b>#${itemCode}</b> - ${item.title}</span>
+          <div class="flex justify-between items-center border-b border-blue-200/50 pb-1.5 last:border-none last:pb-0">
+            <span class="font-medium">${index + 1}. <b>#${itemCode}</b> - ${item.title}</span>
             <span class="font-extrabold text-slate-900">$${price.toFixed(2)}</span>
           </div>
         `;
@@ -273,7 +307,6 @@
       calculateTotal();
     }
 
-    // 3. គណនាប្រាក់សរុប
     function calculateTotal() {
       const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
       const grandTotal = itemsSubtotal + deliveryFee;
@@ -282,18 +315,6 @@
       document.getElementById('grandTotalText').innerText = `$${grandTotal.toFixed(2)}`;
     }
 
-    // 4. Interactive Selection Card Logic
-    function selectPaymentMethod() {
-      const card = document.getElementById('paymentCard');
-      const dot = document.getElementById('radioDot');
-      
-      card.classList.add('selected');
-      dot.classList.remove('radio-pop');
-      void dot.offsetWidth; // Trigger reflow for re-animation
-      dot.classList.add('radio-pop');
-    }
-
-    // 5. Input Validation & Error Shake
     function removeError(input) {
       input.classList.remove('input-error');
     }
@@ -307,7 +328,7 @@
         if (!input.value.trim()) {
           isValid = false;
           input.classList.remove('input-error');
-          void input.offsetWidth; // Trigger Reflow
+          void input.offsetWidth;
           input.classList.add('input-error');
         }
       });
@@ -315,20 +336,10 @@
       return isValid;
     }
 
-    // 6. Form Submission with Loading Spinner Effect
     function submitOrder(event) {
       event.preventDefault();
 
       if (!validateForm()) return;
-
-      // Enable Loading State on Button
-      const btn = document.getElementById('submitBtn');
-      const btnText = document.getElementById('btnText');
-      const btnIcon = document.getElementById('btnIcon');
-
-      btn.disabled = true;
-      btnText.innerText = "កំពុងដំណើរការ...";
-      btnIcon.innerHTML = `<div class="spinner"></div>`;
 
       const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
       const grandTotal = itemsSubtotal + deliveryFee;
@@ -349,13 +360,6 @@
 
       localStorage.setItem('pendingOrder', JSON.stringify(orderData));
 
-      // Simulate smooth transition delay
-      setTimeout(() => {
-        onOrderSuccess();
-      }, 600);
-    }
-
-    function onOrderSuccess() {
       if (localStorage.getItem('buyNowItem')) {
         localStorage.removeItem('buyNowItem');
       } else {
