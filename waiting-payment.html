@@ -152,12 +152,22 @@
       </div>
     </div>
 
+    <!-- Instructions Box -->
+    <div class="bg-blue-50/80 border border-blue-200/80 p-3 rounded-2xl text-[11px] text-blue-900 space-y-1 shadow-xs">
+      <p class="font-extrabold flex items-center gap-1">💡 ជំហានបញ្ជូនការបញ្ជាទិញ៖</p>
+      <ol class="list-decimal list-inside space-y-1 text-[10px] text-blue-950 font-medium pl-1">
+        <li>ទូទាត់ប្រាក់តាម ABA ខាងលើ រួចថតទុកបង្កាន់ដៃ (Screenshot)</li>
+        <li>ចុចប៊ូតុង <b class="text-blue-600">"បើក Telegram Bot ឥឡូវនេះ"</b> ខាងក្រោម</li>
+        <li>ភ្ជាប់រូបភាពបង្កាន់ដៃ (Screenshot) រួចចុចផ្ញើជាការស្រេច។</li>
+      </ol>
+    </div>
+
     <!-- Actions -->
     <div class="space-y-2 pt-1">
       <button type="button" onclick="sendOrderToBot()" 
               class="btn-glow w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25">
         <span>🤖</span>
-        <span>បាញ់ទិន្នន័យបញ្ជាទិញចូល Telegram Bot</span>
+        <span>បើក Telegram Bot ឥឡូវនេះ</span>
       </button>
 
       <a href="index.html" class="block w-full text-center text-slate-500 text-xs py-2 hover:text-slate-800 font-semibold transition">
@@ -184,30 +194,17 @@
     <div class="bg-white p-6 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate">
       <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">✅</div>
       <div class="space-y-1.5">
-        <h3 class="font-extrabold text-slate-900 text-base">ទិន្នន័យបញ្ជាទិញត្រូវបាន Copy រួចរាល់!</h3>
+        <h3 class="font-extrabold text-slate-900 text-base">ទិន្នន័យបញ្ជាទិញបានរៀបចំរួចរាល់!</h3>
         <p class="text-xs text-slate-600 leading-relaxed font-medium">
-          សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក <b>Telegram Bot Chat</b> រួចធ្វើការ <b class="text-blue-600">Paste (បិទភ្ជាប់)</b> សារបញ្ជាទិញ។
+          សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក Bot។ អត្ថបទនឹងលោតចូលប្រអប់សារស្រាប់ លោកអ្នកគ្រាន់តែ <b class="text-blue-600">ភ្ជាប់រូបភាពបង្កាន់ដៃ (Screenshot)</b> រួចចុចផ្ញើជាការស្រេច។
         </p>
       </div>
       <div class="space-y-2 pt-2">
         <button type="button" onclick="redirectToBotChat()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
           <span>💬</span>
-          <span>បើក Telegram Bot Chat ឥឡូវនេះ</span>
+          <span>ចូលទៅកាន់ Telegram Bot</span>
         </button>
         <button type="button" onclick="closeBotModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-4 rounded-2xl text-xs transition active:scale-95">បិទ (Close)</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Manual Copy Fallback Modal (លោតឡើងពេលទូរស័ព្ទ Block មិនអោយកូដ Copy អូតូ) -->
-  <div id="manualCopyModal" class="fixed inset-0 bg-slate-900/90 hidden items-center justify-center p-4 z-[60] backdrop-blur-sm">
-    <div class="bg-white p-5 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl relative modal-animate">
-      <h3 class="font-extrabold text-rose-600 text-sm">⚠️ ទូរស័ព្ទរារាំងការ Copy អូតូ</h3>
-      <p class="text-xs text-slate-600">សូមចុចសង្កត់លើអត្ថបទខាងក្រោម រួចយកពាក្យ Copy ដោយខ្លួនឯង បន្ទាប់មកចុចប៊ូតុងបើក Bot។</p>
-      <textarea id="manualOrderText" class="w-full h-32 p-3 text-xs border border-slate-300 rounded-xl bg-slate-50 focus:outline-none" readonly></textarea>
-      <div class="flex gap-2">
-        <button type="button" onclick="closeManualCopyModal()" class="w-1/2 bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs active:scale-95">បិទ</button>
-        <button type="button" onclick="redirectToBotChat()" class="w-1/2 bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs active:scale-95">បើក Bot</button>
       </div>
     </div>
   </div>
@@ -224,6 +221,7 @@
     }
 
     const botUsername = "TobChuchusAuto_bot";
+    let currentOrderText = ""; // សម្រាប់ផ្ទុកអត្ថបទបញ្ជាទិញ
 
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
@@ -286,62 +284,17 @@
       document.getElementById('botActionModal').classList.add('hidden');
       document.getElementById('botActionModal').classList.remove('flex');
     }
-    function closeManualCopyModal() {
-      document.getElementById('manualCopyModal').classList.add('hidden');
-      document.getElementById('manualCopyModal').classList.remove('flex');
-    }
     function copyABA() {
       const abaAcc = "017666209";
-      copyToClipboardMobile(abaAcc, () => {
-        showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`);
-      });
-    }
-
-    // SAFE COPY FUNCTION FOR MOBILE
-    function copyToClipboardMobile(textToCopy, onSuccess, onFail) {
       if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          if (onSuccess) onSuccess();
-        }).catch(() => {
-          executeFallbackCopy(textToCopy, onSuccess, onFail);
-        });
+        navigator.clipboard.writeText(abaAcc).then(() => showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`));
       } else {
-        executeFallbackCopy(textToCopy, onSuccess, onFail);
-      }
-    }
-
-    function executeFallbackCopy(text, onSuccess, onFail) {
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      
-      // Styling ពិសេសកុំអោយលោតអេក្រង់និងអោយ Mobile អាច Select ជាប់
-      textArea.style.position = "fixed";
-      textArea.style.top = "0";
-      textArea.style.left = "0";
-      textArea.style.opacity = "0"; // ដាក់ 0 មិនមែន display: none ទេដើម្បីអោយកូដដើរ
-      
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      
-      // Trick សម្រាប់ iOS & Android អោយ Select Text បាន
-      try {
-        textArea.setSelectionRange(0, 99999);
-      } catch(e) {}
-
-      let successful = false;
-      try {
-        successful = document.execCommand('copy');
-      } catch (err) {
-        console.error('Fallback Copy Failed', err);
-      }
-      
-      document.body.removeChild(textArea);
-      
-      if (successful) {
-        if (onSuccess) onSuccess();
-      } else {
-        if (onFail) onFail(text);
+        const textArea = document.createElement("textarea");
+        textArea.value = abaAcc;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try { document.execCommand('copy'); showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`); } catch (e) {}
+        document.body.removeChild(textArea);
       }
     }
 
@@ -367,30 +320,29 @@
 
       orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${totalGrand.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
-      orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
+      orderText += `📸 ភ្ជាប់រូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
 
-      // ហៅមុខងារ Copy ពិសេស
-      copyToClipboardMobile(orderText, 
-        // ជោគជ័យ
-        () => {
-          localStorage.removeItem('pendingOrder');
-          localStorage.removeItem('pendingOrdersList');
-          localStorage.removeItem('cartData');
-          document.getElementById('botActionModal').classList.remove('hidden');
-          document.getElementById('botActionModal').classList.add('flex');
-        },
-        // បរាជ័យ (Block ដោយទូរស័ព្ទ)
-        (failedText) => {
-          document.getElementById('manualOrderText').value = failedText;
-          document.getElementById('manualCopyModal').classList.remove('hidden');
-          document.getElementById('manualCopyModal').classList.add('flex');
-        }
-      );
+      // រក្សាទុកអត្ថបទទៅក្នុង Variable សម្រាប់ផ្ញើតាម Link
+      currentOrderText = orderText;
+
+      // Clear Data 
+      localStorage.removeItem('pendingOrder');
+      localStorage.removeItem('pendingOrdersList');
+      localStorage.removeItem('cartData');
+
+      // បង្ហាញ Modal ប្រាប់ភ្ញៀវ
+      document.getElementById('botActionModal').classList.remove('hidden');
+      document.getElementById('botActionModal').classList.add('flex');
     }
 
-    // REDIRECT
+    // REDIRECT រួមបញ្ចូលជាមួយ PARAMETER ?text=
     function redirectToBotChat() {
-      const directBotUrl = `https://t.me/${botUsername}`;
+      // បម្លែងអត្ថបទឱ្យទៅជាទម្រង់ដែលអាចបញ្ជូនតាម URL បាន (URL Encoding)
+      const encodedText = encodeURIComponent(currentOrderText);
+      
+      // បញ្ចូលអត្ថបទទៅក្នុង Link របស់ Bot 
+      const directBotUrl = `https://t.me/${botUsername}?text=${encodedText}`;
+      
       if (tg) {
         if (typeof tg.openTelegramLink === 'function') {
           tg.openTelegramLink(directBotUrl);
