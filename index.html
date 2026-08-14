@@ -21,7 +21,6 @@
       -webkit-touch-callout: none;
     }
 
-    /* បិទការ Drag ឬ Save រូបភាព */
     img {
       -webkit-user-drag: none;
       -khtml-user-drag: none;
@@ -30,19 +29,16 @@
       pointer-events: auto;
     }
 
-    /* Modern Glassmorphism & Effects */
     .glass-header {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
 
-    /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 3px; height: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-    /* Animations */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(12px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
@@ -57,21 +53,39 @@
     }
     .pulse-cute { animation: softPulse 2.5s infinite ease-in-out; }
 
-    /* Touch Swipe Transition for Mobile Album */
     .slider-track {
       display: flex;
       transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
       will-change: transform;
     }
+
+    /* Modal Controls */
+    #imageViewerModal {
+      display: none;
+    }
+    #imageViewerModal.flex {
+      display: flex;
+    }
+    #cartModal {
+      display: none;
+    }
+    #cartModal.flex {
+      display: flex;
+    }
+    #toastNotification {
+      display: none;
+    }
+    #toastNotification.show {
+      display: block;
+    }
   </style>
 </head>
 <body class="min-h-screen pb-14 text-slate-800">
 
-  <!-- 🌟 Header Section with Glassmorphism -->
+  <!-- Header -->
   <header class="sticky top-0 z-40 glass-header border-b border-slate-200/80 shadow-xs transition-all">
     <div class="max-w-md mx-auto p-3 space-y-2.5">
       
-      <!-- Top Branding Bar -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="relative">
@@ -93,19 +107,17 @@
           </div>
         </div>
 
-        <!-- Header Cart Button -->
         <button onclick="openCartModal()" 
                 class="relative p-2.5 bg-slate-100/80 hover:bg-blue-50 text-slate-700 hover:text-blue-600 rounded-2xl border border-slate-200/70 active:scale-90 transition-all shadow-xs">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
           </svg>
-          <span id="cartCountBadge" class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-md hidden animate-bounce">
+          <span id="cartCountBadge" class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-md hidden">
             0
           </span>
         </button>
       </div>
 
-      <!-- Search Bar -->
       <div class="relative">
         <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="🔍 ស្វែងរកតាមកូដ (#J01) ឬឈ្មោះខោ..." 
                class="w-full pl-9 pr-8 py-2.5 text-xs bg-slate-100/90 border border-slate-200/80 rounded-2xl outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-inner placeholder:text-slate-400">
@@ -115,31 +127,23 @@
     </div>
   </header>
 
-  <!-- 🛍️ Main Content Container -->
+  <!-- Main Content -->
   <main class="max-w-md mx-auto p-3 space-y-3">
     
-    <!-- Controls Header: Total Items Count & Cute View Switcher Buttons -->
     <div class="flex justify-between items-center bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs">
-      
       <div class="flex items-center gap-1.5">
         <span class="text-xs pulse-cute">✨</span>
         <span class="text-xs font-bold text-slate-700">ស្តុកទំនិញ</span>
-        <span id="totalItemsCount" class="text-[10px] font-extrabold bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full border border-blue-100/80">
-          0 មុខ
-        </span>
+        <span id="totalItemsCount" class="text-[10px] font-extrabold bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full border border-blue-100/80">0 មុខ</span>
       </div>
 
-      <!-- Cute Switch Layout Controls (1, 2, 3 Columns) -->
       <div class="flex items-center gap-1 bg-slate-100/90 p-1 rounded-2xl border border-slate-200/60 shadow-inner">
-        <!-- 1 Column Button -->
         <button id="viewBtn1" onclick="changeGridView(1)" title="1 Column View"
                 class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 transition-all active:scale-90 flex items-center justify-center">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <rect x="3" y="4" width="18" height="16" rx="3" />
           </svg>
         </button>
-
-        <!-- 2 Columns Button (Default) -->
         <button id="viewBtn2" onclick="changeGridView(2)" title="2 Columns View"
                 class="p-1.5 rounded-xl bg-white text-blue-600 shadow-sm font-bold transition-all active:scale-90 flex items-center justify-center">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -147,8 +151,6 @@
             <rect x="12.5" y="4" width="8.5" height="16" rx="2" />
           </svg>
         </button>
-
-        <!-- 3 Columns Button -->
         <button id="viewBtn3" onclick="changeGridView(3)" title="3 Columns View"
                 class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 transition-all active:scale-90 flex items-center justify-center">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -158,12 +160,9 @@
           </svg>
         </button>
       </div>
-
     </div>
 
-    <!-- Product Grid -->
     <div id="productGrid" class="grid grid-cols-2 gap-2.5 transition-all">
-      <!-- Skeleton Loaders -->
       <div class="bg-white rounded-2xl p-2.5 border border-slate-200/60 animate-pulse space-y-2">
         <div class="bg-slate-200 aspect-square rounded-xl"></div>
         <div class="h-3 bg-slate-200 rounded w-3/4"></div>
@@ -178,10 +177,8 @@
 
   </main>
 
-  <!-- 🖼️ Image Viewer / Touch Slide Album Modal (មើលរូបស្ទាប Slide លើ Mobile) -->
-  <div id="imageViewerModal" class="fixed inset-0 bg-black/95 hidden flex-col justify-between p-3 z-50 backdrop-blur-lg select-none" onclick="closeImageViewer()">
-    
-    <!-- Top Modal Header -->
+  <!-- Image Viewer Modal -->
+  <div id="imageViewerModal" class="fixed inset-0 bg-black/95 flex-col justify-between p-3 z-50 backdrop-blur-lg select-none" onclick="closeImageViewer()">
     <div class="w-full max-w-md mx-auto flex justify-between items-center text-white z-20 pt-2 px-2" onclick="event.stopPropagation()">
       <div class="flex items-center gap-2">
         <span id="albumCodeTag" class="bg-blue-600/90 text-white font-extrabold text-xs px-3 py-1 rounded-xl shadow-md border border-blue-400/30">#CODE</span>
@@ -189,30 +186,17 @@
       </div>
       <button onclick="closeImageViewer()" class="w-9 h-9 rounded-full bg-white/20 text-white flex items-center justify-center font-bold hover:bg-white/30 active:scale-90 transition">✕</button>
     </div>
-
-    <!-- Touch Swipeable Image Viewport -->
     <div class="relative w-full max-w-md mx-auto flex-1 flex items-center overflow-hidden my-auto" id="sliderViewport" onclick="event.stopPropagation()">
-      <div id="sliderTrack" class="slider-track w-full h-full items-center">
-        <!-- Rendered Images dynamically -->
-      </div>
-
-      <!-- Navigation Arrows for Desktop -->
-      <button id="prevImgBtn" onclick="navigateImage(-1)" class="absolute left-2 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full border border-white/20 backdrop-blur-md transition hidden sm:block">
-        ❮
-      </button>
-      <button id="nextImgBtn" onclick="navigateImage(1)" class="absolute right-2 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full border border-white/20 backdrop-blur-md transition hidden sm:block">
-        ❯
-      </button>
+      <div id="sliderTrack" class="slider-track w-full h-full items-center"></div>
+      <button id="prevImgBtn" onclick="navigateImage(-1)" class="absolute left-2 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full border border-white/20 backdrop-blur-md transition hidden sm:block">❮</button>
+      <button id="nextImgBtn" onclick="navigateImage(1)" class="absolute right-2 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full border border-white/20 backdrop-blur-md transition hidden sm:block">❯</button>
     </div>
-
-    <!-- Bottom Thumbnail Strip -->
     <div class="w-full max-w-md mx-auto flex justify-center gap-2 overflow-x-auto py-2 z-20" id="thumbnailContainer" onclick="event.stopPropagation()"></div>
   </div>
 
-  <!-- 🛒 Modal កន្ត្រកទំនិញ (Cart Drawer Modal) -->
-  <div id="cartModal" class="fixed inset-0 bg-black/60 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm" onclick="closeCartModal()">
+  <!-- Cart Modal -->
+  <div id="cartModal" class="fixed inset-0 bg-black/60 items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm" onclick="closeCartModal()">
     <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-4 space-y-3 shadow-2xl max-h-[85vh] flex flex-col transition-transform duration-300" onclick="event.stopPropagation()">
-      
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-extrabold text-sm text-slate-800 flex items-center gap-2">
           <span class="p-1.5 bg-blue-50 text-blue-600 rounded-xl text-xs">🛒</span> 
@@ -220,34 +204,23 @@
         </h3>
         <button onclick="closeCartModal()" class="text-slate-400 hover:text-slate-600 font-bold bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center text-xs">✕</button>
       </div>
-
       <div id="cartModalItems" class="overflow-y-auto flex-1 space-y-2 pr-1 min-h-[120px]"></div>
-
       <div class="border-t pt-3 space-y-3">
         <div class="flex justify-between items-center font-bold text-sm">
           <span class="text-slate-600">សរុបទឹកប្រាក់៖</span>
           <span id="cartModalTotal" class="text-blue-600 font-black text-xl">$0.00</span>
         </div>
-
         <div class="grid grid-cols-2 gap-2 pt-1">
-          <button onclick="clearCart()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3 rounded-2xl text-xs transition active:scale-95">
-            🗑️ សម្អាតកន្ត្រក
-          </button>
-          <button onclick="goToCheckout()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg shadow-blue-500/30 transition active:scale-95">
-            🚀 ទៅបង់ប្រាក់
-          </button>
+          <button onclick="clearCart()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3 rounded-2xl text-xs transition active:scale-95">🗑️ សម្អាតកន្ត្រក</button>
+          <button onclick="goToCheckout()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg shadow-blue-500/30 transition active:scale-95">🚀 ទៅបង់ប្រាក់</button>
         </div>
       </div>
-
     </div>
   </div>
 
   <!-- Toast Notification -->
-  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs font-semibold px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 hidden z-50 transition-all">
-    ✅ បានបន្ថែមទំនិញចូលកន្ត្រក!
-  </div>
+  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs font-semibold px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 z-50 transition-all">✅ បានបន្ថែមទំនិញចូលកន្ត្រក!</div>
 
-  <!-- JAVASCRIPT LOGIC -->
   <script>
     // 1. Setup Telegram WebApp
     const tg = window.Telegram?.WebApp;
@@ -256,14 +229,12 @@
       tg.expand();
     }
 
-    localStorage.removeItem('buyNowItem');
-
     // 2. Supabase Config
     const SUPABASE_URL = "https://gzclvhcvsfcslilxaiyg.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE";
 
     let productsList = [];
-    let currentLayoutColumns = 2; // Default 2 Columns
+    let currentLayoutColumns = 2;
 
     async function loadProducts() {
       try {
@@ -273,20 +244,28 @@
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           }
         });
+        if (!response.ok) throw new Error('Failed to fetch products');
         productsList = await response.json();
         renderProducts(productsList);
       } catch (err) {
         console.error("Error loading products:", err);
+        const container = document.getElementById('productGrid');
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 space-y-2">
+            <span class="text-4xl">⚠️</span>
+            <p class="text-xs text-slate-400">មិនអាចផ្ទុកទំនិញបានទេ</p>
+            <button onclick="loadProducts()" class="text-xs text-blue-500 underline">ព្យាយាមម្តងទៀត</button>
+          </div>`;
       }
     }
 
-    // 3. Cute Grid View Switcher (1, 2, 3 Cols)
     function changeGridView(cols) {
       currentLayoutColumns = cols;
       const grid = document.getElementById('productGrid');
       
       [1, 2, 3].forEach(c => {
         const btn = document.getElementById(`viewBtn${c}`);
+        if (!btn) return;
         if (c === cols) {
           btn.className = "p-1.5 rounded-xl bg-white text-blue-600 shadow-sm font-bold transition-all active:scale-90 flex items-center justify-center";
         } else {
@@ -301,12 +280,12 @@
       renderProducts(productsList);
     }
 
-    // 4. Render Product Cards Dynamically
     function renderProducts(items) {
       const container = document.getElementById('productGrid');
-      document.getElementById('totalItemsCount').innerText = `${items.length} មុខ`;
+      const countElement = document.getElementById('totalItemsCount');
+      if (countElement) countElement.innerText = `${items.length} មុខ`;
 
-      if (items.length === 0) {
+      if (!items || items.length === 0) {
         container.innerHTML = `
           <div class="col-span-full text-center py-12 space-y-2">
             <span class="text-4xl">🔍</span>
@@ -325,55 +304,38 @@
 
         return `
           <div class="bg-white rounded-2xl p-2 sm:p-2.5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group animate-card" style="animation-delay: ${index * 0.03}s">
-            
             <div class="space-y-1.5">
-              <!-- Protected Image Box -->
               <div onclick="openAlbumModal('${item.id}')" 
                    class="relative rounded-xl overflow-hidden bg-slate-100 aspect-square cursor-pointer group-hover:opacity-95 transition-opacity">
                 <img src="${imageList[0]}" 
                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
                      oncontextmenu="return false;" 
                      ondragstart="return false;">
-                
-                <!-- Code Badge -->
-                <span class="absolute top-1.5 left-1.5 bg-blue-600/90 backdrop-blur-md text-white font-extrabold text-[9px] ${isCompact3Cols ? 'px-1.5 py-0.2' : 'px-2 py-0.5'} rounded-md shadow-xs">
-                  #${itemCode}
-                </span>
-
-                <!-- Album Badge -->
+                <span class="absolute top-1.5 left-1.5 bg-blue-600/90 backdrop-blur-md text-white font-extrabold text-[9px] ${isCompact3Cols ? 'px-1.5 py-0.2' : 'px-2 py-0.5'} rounded-md shadow-xs">#${itemCode}</span>
                 ${imageList.length > 1 ? `
-                  <span class="absolute bottom-1.5 right-1.5 bg-black/60 backdrop-blur-md text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
-                    📷 ${imageList.length}
-                  </span>
+                  <span class="absolute bottom-1.5 right-1.5 bg-black/60 backdrop-blur-md text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-md flex items-center gap-0.5">📷 ${imageList.length}</span>
                 ` : ''}
               </div>
-
-              <!-- Titles & Info -->
               <div class="pt-0.5">
-                <h2 class="font-bold text-slate-800 ${isCompact3Cols ? 'text-[10px] truncate' : isLarge1Col ? 'text-sm' : 'text-xs truncate'}">${item.title}</h2>
+                <h2 class="font-bold text-slate-800 ${isCompact3Cols ? 'text-[10px] truncate' : isLarge1Col ? 'text-sm' : 'text-xs truncate'}">${item.title || 'ទំនិញ'}</h2>
                 ${!isCompact3Cols && item.description ? `<p class="text-[10px] text-slate-400 line-clamp-1">${item.description}</p>` : ''}
               </div>
             </div>
-
-            <!-- Price & Action Buttons -->
             <div class="pt-1.5 space-y-1.5">
               <div class="flex justify-between items-center">
                 <span class="font-black text-blue-600 ${isCompact3Cols ? 'text-xs' : 'text-sm'}">$${parseFloat(item.price || 0).toFixed(2)}</span>
               </div>
-
               <div class="grid ${isCompact3Cols ? 'grid-cols-1' : 'grid-cols-2'} gap-1">
                 <button onclick="addToCart('${item.id}', true)" 
                         class="bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold ${isCompact3Cols ? 'py-1 text-[9px]' : 'py-2 text-[11px]'} rounded-xl flex items-center justify-center gap-0.5 transition active:scale-95 border border-amber-200/50">
                   🛒 <span>កន្ត្រក</span>
                 </button>
-                
                 <button onclick="buyNow('${item.id}')" 
                         class="bg-blue-600 hover:bg-blue-700 text-white font-bold ${isCompact3Cols ? 'py-1 text-[9px]' : 'py-2 text-[11px]'} rounded-xl flex items-center justify-center gap-0.5 shadow-xs transition active:scale-95">
                   ⚡ <span>ទិញ</span>
                 </button>
               </div>
             </div>
-
           </div>
         `;
       }).join('');
@@ -381,7 +343,7 @@
       updateCartBadge();
     }
 
-    // 5. Protected Touch-Slide Album Modal Implementation
+    // Image Viewer Functions
     let currentAlbumImages = [];
     let currentImageIndex = 0;
     let touchStartX = 0;
@@ -403,7 +365,6 @@
       updateImageViewerPosition();
 
       const modal = document.getElementById('imageViewerModal');
-      modal.classList.remove('hidden');
       modal.classList.add('flex');
 
       setupTouchSwipe();
@@ -427,7 +388,6 @@
 
       document.getElementById('albumCounter').innerText = `${currentImageIndex + 1} / ${currentAlbumImages.length}`;
 
-      // Render Thumbnails
       const thumbContainer = document.getElementById('thumbnailContainer');
       if (currentAlbumImages.length > 1) {
         thumbContainer.innerHTML = currentAlbumImages.map((img, idx) => `
@@ -442,6 +402,7 @@
     }
 
     function navigateImage(direction) {
+      if (!currentAlbumImages.length) return;
       currentImageIndex += direction;
       if (currentImageIndex < 0) currentImageIndex = currentAlbumImages.length - 1;
       if (currentImageIndex >= currentAlbumImages.length) currentImageIndex = 0;
@@ -453,9 +414,9 @@
       updateImageViewerPosition();
     }
 
-    // Mobile Swipe Handler
     function setupTouchSwipe() {
       const viewport = document.getElementById('sliderViewport');
+      if (!viewport) return;
 
       viewport.ontouchstart = (e) => {
         touchStartX = e.changedTouches[0].screenX;
@@ -463,37 +424,36 @@
 
       viewport.ontouchend = (e) => {
         touchEndX = e.changedTouches[0].screenX;
-        handleSwipeGesture();
+        const swipeThreshold = 40;
+        if (touchEndX < touchStartX - swipeThreshold) {
+          navigateImage(1);
+        }
+        if (touchEndX > touchStartX + swipeThreshold) {
+          navigateImage(-1);
+        }
       };
-    }
-
-    function handleSwipeGesture() {
-      const swipeThreshold = 40;
-      if (touchEndX < touchStartX - swipeThreshold) {
-        navigateImage(1); // Swipe Left -> Next
-      }
-      if (touchEndX > touchStartX + swipeThreshold) {
-        navigateImage(-1); // Swipe Right -> Prev
-      }
     }
 
     function closeImageViewer() {
       const modal = document.getElementById('imageViewerModal');
-      modal.classList.add('hidden');
       modal.classList.remove('flex');
     }
 
-    // 6. Toast Notification
+    // Toast Notification
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
       toast.innerText = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => { toast.classList.add('hidden'); }, 2000);
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 2000);
     }
 
-    // 7. Cart Handler
+    // Cart Handler
     function getCart() {
-      return JSON.parse(localStorage.getItem('cartData')) || [];
+      try {
+        return JSON.parse(localStorage.getItem('cartData')) || [];
+      } catch {
+        return [];
+      }
     }
 
     function saveCart(cart) {
@@ -504,6 +464,7 @@
     function updateCartBadge() {
       const cart = getCart();
       const badge = document.getElementById('cartCountBadge');
+      if (!badge) return;
       if (cart.length > 0) {
         badge.innerText = cart.length;
         badge.classList.remove('hidden');
@@ -535,6 +496,10 @@
 
     function filterProducts() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (!query) {
+        renderProducts(productsList);
+        return;
+      }
       const filtered = productsList.filter(p => {
         const title = (p.title || '').toLowerCase();
         const desc = (p.description || '').toLowerCase();
@@ -545,21 +510,20 @@
     }
 
     function clearSearch() {
-      document.getElementById('searchInput').value = '';
+      const input = document.getElementById('searchInput');
+      if (input) input.value = '';
       renderProducts(productsList);
     }
 
-    // 8. Cart Modal Controls
+    // Cart Modal Controls
     function openCartModal() {
       renderCartModalItems();
       const modal = document.getElementById('cartModal');
-      modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
 
     function closeCartModal() {
       const modal = document.getElementById('cartModal');
-      modal.classList.add('hidden');
       modal.classList.remove('flex');
     }
 
@@ -589,7 +553,7 @@
           <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-2xl border border-slate-200/60 text-xs">
             <div class="flex items-center gap-2">
               <span class="font-extrabold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-lg text-[10px]">#${itemCode}</span>
-              <span class="font-semibold text-slate-800 truncate max-w-[150px]">${item.title}</span>
+              <span class="font-semibold text-slate-800 truncate max-w-[150px]">${item.title || 'ទំនិញ'}</span>
             </div>
             <div class="flex items-center gap-2">
               <span class="font-bold text-slate-700">$${price.toFixed(2)}</span>
@@ -626,8 +590,9 @@
       window.location.href = 'delivery.html';
     }
 
-    // Initialize Page Data
+    // Initialize
     loadProducts();
+    updateCartBadge();
   </script>
 </body>
 </html>
