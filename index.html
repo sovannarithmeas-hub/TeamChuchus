@@ -6,84 +6,138 @@
   <title>តូបជជុស Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Kantumruy Pro', sans-serif; }
+    body {
+      font-family: 'Kantumruy Pro', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Hide Scrollbar for category list */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen pb-10">
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-20 selection:bg-blue-500 selection:text-white">
 
-  <!-- Header Section -->
-  <header class="sticky top-0 bg-white/90 backdrop-blur-md z-40 border-b p-3 shadow-sm">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-             onerror="this.src='https://via.placeholder.com/40';" 
-             class="w-10 h-10 rounded-full border">
+  <!-- 🌟 Top Navigation Bar -->
+  <header class="sticky top-0 bg-white/90 backdrop-blur-xl z-40 border-b border-slate-100 shadow-sm transition-all">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      
+      <!-- Brand Logo & Info -->
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
+               onerror="this.src='https://via.placeholder.com/80';" 
+               class="w-11 h-11 rounded-2xl object-cover ring-2 ring-blue-500/20 shadow-sm">
+          <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+        </div>
         <div>
-          <h1 class="font-bold text-sm text-gray-800">តូបជជុស Online</h1>
-          <p class="text-[10px] text-gray-500">ខោជជុសគុណភាពខ្ពស់</p>
+          <h1 class="font-bold text-base text-slate-900 leading-tight">តូបជជុស Online</h1>
+          <p class="text-[11px] text-slate-500 font-medium">ខោជជុស ខូវប៊យ គុណភាព ១ទឹក</p>
         </div>
       </div>
 
-      <!-- ប៊ូតុងកន្ត្រកខាងលើ (Header Cart) -->
-      <button onclick="openCartModal()" class="relative p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition">
-        🛒
-        <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center hidden">
+      <!-- Header Cart Button -->
+      <button onclick="openCartModal()" 
+              class="relative p-2.5 bg-slate-100 active:bg-blue-50 text-slate-700 active:text-blue-600 rounded-2xl transition-all duration-200">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+        <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-rose-500 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm hidden">
           0
         </span>
       </button>
+
     </div>
 
-    <!-- Search Input -->
-    <div class="max-w-md mx-auto mt-2">
-      <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="🔍 ស្វែងរកតាមលេខកូដ ឬប្រភេទខោ..." 
-             class="w-full p-2.5 text-xs bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+    <!-- 🔍 Search Box Section -->
+    <div class="max-w-md mx-auto px-4 pb-3">
+      <div class="relative flex items-center">
+        <svg class="w-4 h-4 absolute left-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text" id="searchInput" onkeyup="filterProducts()" 
+               placeholder="ស្វែងរកតាមលេខកូដ (#J01) ឬឈ្មោះខោ..." 
+               class="w-full pl-10 pr-4 py-2.5 text-xs bg-slate-100/80 border border-slate-200/80 rounded-2xl outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400">
+      </div>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="max-w-md mx-auto p-3 space-y-3">
+  <!-- 📱 Main Body Content -->
+  <main class="max-w-md mx-auto px-4 pt-3 space-y-4">
+
+    <!-- 🎁 Banner Promo / Announcement Card -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white p-4 rounded-3xl shadow-lg shadow-blue-500/15">
+      <div class="relative z-10 space-y-1">
+        <span class="inline-block bg-white/20 backdrop-blur-md text-[10px] font-bold px-2.5 py-0.5 rounded-full text-blue-100">
+          🔥 ស្តុកទើបមកដល់ថ្មី
+        </span>
+        <h2 class="text-sm font-bold tracking-wide">ខោជជុសជ្រើសរើសពិសេស គុណភាព 95%+</h2>
+        <p class="text-[11px] text-blue-100 opacity-90">រើសបានមុន ទទួលបានម៉ូតស្អាតៗមុនគេ!</p>
+      </div>
+      <!-- Decorative circle -->
+      <div class="absolute -right-6 -bottom-8 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+      <button onclick="filterCategory('all', this)" class="cat-btn active bg-blue-600 text-white text-xs font-semibold px-3.5 py-1.5 rounded-full shadow-sm whitespace-nowrap transition-all">
+        ទាំងអស់
+      </button>
+      <button onclick="filterCategory('jeans', this)" class="cat-btn bg-white border border-slate-200 text-slate-600 text-xs font-semibold px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all">
+        👖 ខោជជុស/Jeans
+      </button>
+      <button onclick="filterCategory('short', this)" class="cat-btn bg-white border border-slate-200 text-slate-600 text-xs font-semibold px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all">
+        🩳 ខោខ្លី
+      </button>
+    </div>
+
+    <!-- Section Title & Counter -->
     <div class="flex justify-between items-center px-1">
-      <p class="text-xs font-bold text-gray-700 flex items-center gap-1">
-        <span>📦</span> ឥវ៉ាន់ដែលមានក្នុងស្តុក
-      </p>
-      <span id="totalItemsCount" class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+      <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+        ទំនិញក្នុងស្តុក
+      </h3>
+      <span id="totalItemsCount" class="text-[10px] font-bold bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full border border-blue-100">
         0 មុខ
       </span>
     </div>
 
-    <!-- Product Feed Grid -->
+    <!-- 📦 Product Feed Grid -->
     <div id="productGrid" class="space-y-4"></div>
+
   </main>
 
-  <!-- 🛒 Modal បង្ហាញកន្ត្រកទំនិញ (Cart Modal Popup) -->
-  <div id="cartModal" class="fixed inset-0 bg-black/60 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm" onclick="closeCartModal()">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-4 space-y-3 shadow-2xl max-h-[85vh] flex flex-col" onclick="event.stopPropagation()">
+  <!-- 🛒 Cart Modal Sheet (Bottom Sheet Popup) -->
+  <div id="cartModal" class="fixed inset-0 bg-slate-900/60 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm transition-all" onclick="closeCartModal()">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom duration-200" onclick="event.stopPropagation()">
       
-      <!-- Header Modal -->
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-bold text-sm text-gray-800 flex items-center gap-1.5">
-          <span>🛒</span> កន្ត្រកទំនិញរបស់អ្នក
-        </h3>
-        <button onclick="closeCartModal()" class="text-gray-400 hover:text-gray-600 font-bold bg-gray-100 w-7 h-7 rounded-full flex items-center justify-center text-xs">✕</button>
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center border-b pb-3">
+        <div class="flex items-center gap-2">
+          <div class="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            🛒
+          </div>
+          <h3 class="font-bold text-sm text-slate-800">កន្ត្រកទំនិញរបស់អ្នក</h3>
+        </div>
+        <button onclick="closeCartModal()" class="text-slate-400 hover:text-slate-600 font-bold bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center text-xs active:scale-95 transition">✕</button>
       </div>
 
-      <!-- បញ្ជីទំនិញក្នុង Cart -->
-      <div id="cartModalItems" class="overflow-y-auto flex-1 space-y-2 pr-1 min-h-[120px]"></div>
+      <!-- Cart Items List -->
+      <div id="cartModalItems" class="overflow-y-auto flex-1 space-y-2.5 pr-1 min-h-[140px]"></div>
 
-      <!-- Footer Modal / Total & Action -->
-      <div class="border-t pt-3 space-y-2.5">
-        <div class="flex justify-between items-center font-bold text-sm">
-          <span class="text-gray-600">សរុបទឹកប្រាក់៖</span>
-          <span id="cartModalTotal" class="text-blue-600 font-extrabold text-base">$0.00</span>
+      <!-- Cart Summary & Actions -->
+      <div class="border-t pt-3 space-y-3">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-semibold text-slate-500">សរុបទឹកប្រាក់៖</span>
+          <span id="cartModalTotal" class="text-blue-600 font-extrabold text-lg">$0.00</span>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="clearCart()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-xl text-xs transition">
+        <div class="grid grid-cols-2 gap-2.5">
+          <button onclick="clearCart()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3 rounded-2xl text-xs active:scale-95 transition flex items-center justify-center gap-1">
             🗑️ សម្អាតកន្ត្រក
           </button>
-          <button onclick="goToCheckout()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition">
+          <button onclick="goToCheckout()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg shadow-blue-500/25 active:scale-95 transition flex items-center justify-center gap-1">
             🚀 ទៅបង់ប្រាក់
           </button>
         </div>
@@ -92,30 +146,54 @@
     </div>
   </div>
 
-  <!-- Toast Notification (ជំនួស alert() កុំឱ្យលោត Domain) -->
-  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg border border-gray-700 hidden z-50 transition-all">
-    ✅ បានបន្ថែមទំនិញចូលកន្ត្រក!
+  <!-- 🖼️ Image Zoom Modal Popup -->
+  <div id="imageModal" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50 backdrop-blur-md" onclick="closeImageModal()">
+    <div class="relative max-w-sm w-full bg-transparent text-center space-y-3" onclick="event.stopPropagation()">
+      <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white bg-white/20 hover:bg-white/40 w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm">✕</button>
+      
+      <div class="rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl">
+        <img id="zoomImageTarget" src="" class="w-full max-h-[70vh] object-contain mx-auto">
+      </div>
+      
+      <p id="zoomImageCaption" class="text-xs text-slate-300 font-medium pt-1"></p>
+    </div>
   </div>
 
-  <!-- JAVASCRIPT SECTION -->
+  <!-- 🔔 Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl border border-slate-700/80 hidden z-50 flex items-center gap-2 transition-all">
+    <span id="toastIcon">✅</span>
+    <span id="toastMessage">បានបន្ថែមទំនិញចូលកន្ត្រក!</span>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // 1. Setup Telegram WebApp
+    // 1. Initialize Telegram WebApp
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
     }
 
-    // 🧹 Clear ទិន្នន័យ buyNowItem ចាស់ចោល ពេលអ្នកប្រើត្រឡប់មក HomePage
+    // Clear temporary buyNowItem
     localStorage.removeItem('buyNowItem');
 
-    // 2. Fetch Products from Supabase
+    // 2. Supabase API Configuration
     const SUPABASE_URL = "https://gzclvhcvsfcslilxaiyg.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE";
 
     let productsList = [];
+    let activeCategory = 'all';
 
+    // Fetch Products
     async function loadProducts() {
+      const container = document.getElementById('productGrid');
+      container.innerHTML = `
+        <div class="text-center py-12 space-y-2">
+          <div class="w-7 h-7 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p class="text-xs text-slate-400 font-medium">កំពុងទាញយកទិន្នន័យទំនិញ...</p>
+        </div>
+      `;
+
       try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*`, {
           headers: {
@@ -127,16 +205,23 @@
         renderProducts(productsList);
       } catch (err) {
         console.error("Error loading products:", err);
+        container.innerHTML = `<p class="text-center text-xs text-rose-500 py-10">មានបញ្ហាក្នុងការទាញយកទិន្នន័យ! សូមព្យាយាមម្ដងទៀត។</p>`;
       }
     }
 
-    // 3. Render Product Cards
+    // Render Product Feed
     function renderProducts(items) {
       const container = document.getElementById('productGrid');
       document.getElementById('totalItemsCount').innerText = `${items.length} មុខ`;
 
       if (items.length === 0) {
-        container.innerHTML = `<p class="text-center text-xs text-gray-400 py-10">ពុំមានទំនិញក្នុងស្តុកទេ</p>`;
+        container.innerHTML = `
+          <div class="text-center py-12 bg-white rounded-3xl border border-slate-100 p-6 space-y-2">
+            <p class="text-3xl">🔍</p>
+            <p class="text-xs font-semibold text-slate-600">ពុំមានទំនិញស្វែងរកឃើញទេ</p>
+            <p class="text-[11px] text-slate-400">សូមព្យាយាមស្វែងរកជាមួយពាក្យ ឬលេខកូដផ្សេងទៀត</p>
+          </div>
+        `;
         return;
       }
 
@@ -146,38 +231,46 @@
         const imageList = item.images && item.images.length > 0 ? item.images : [item.image_url || 'https://via.placeholder.com/300'];
 
         return `
-          <div class="bg-white rounded-2xl p-3 border shadow-sm space-y-2">
-            <div class="relative rounded-xl overflow-hidden bg-gray-100 aspect-square">
-              <img src="${imageList[0]}" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-blue-600 text-white font-bold text-[11px] px-2.5 py-0.5 rounded-lg shadow">
+          <div class="bg-white rounded-3xl p-3.5 border border-slate-100 shadow-sm space-y-3 hover:shadow-md transition-all">
+            
+            <!-- Image Card & Badges -->
+            <div class="relative rounded-2xl overflow-hidden bg-slate-100 aspect-square group cursor-pointer" onclick="zoomImage('${imageList[0]}', '#${itemCode} - ${item.title}')">
+              <img src="${imageList[0]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+              
+              <!-- Code Tag -->
+              <span class="absolute top-2.5 left-2.5 bg-slate-900/80 backdrop-blur-md text-white font-bold text-[11px] px-2.5 py-1 rounded-xl shadow-sm tracking-wide">
                 #${itemCode}
               </span>
+
               ${imageList.length > 1 ? `
-                <span class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-0.5 rounded-full">
+                <span class="absolute bottom-2.5 right-2.5 bg-slate-900/70 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
                   📷 ${imageList.length} រូប
                 </span>
               ` : ''}
             </div>
 
-            <div class="flex justify-between items-start pt-1">
-              <div>
-                <h2 class="font-bold text-xs text-gray-800">${item.title}</h2>
-                <p class="text-[10px] text-gray-500">${item.description || ''}</p>
+            <!-- Title & Price Info -->
+            <div class="space-y-1">
+              <div class="flex justify-between items-start gap-2">
+                <h2 class="font-bold text-xs text-slate-800 leading-snug line-clamp-1">${item.title}</h2>
+                <span class="font-extrabold text-sm text-blue-600">$${parseFloat(item.price || 0).toFixed(2)}</span>
               </div>
-              <span class="font-bold text-sm text-blue-600">$${parseFloat(item.price || 0).toFixed(2)}</span>
+              <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">${item.description || 'ខោជជុសគុណភាពខ្ពស់ ជ្រើសរើសរួចរាល់'}</p>
             </div>
 
+            <!-- Action Buttons Grid -->
             <div class="grid grid-cols-2 gap-2 pt-1">
               <button onclick="addToCart('${item.id}', true)" 
-                      class="bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 transition">
+                      class="bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-700 font-bold py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all">
                 🛒 ចូលកន្ត្រក
               </button>
               
               <button onclick="buyNow('${item.id}')" 
-                      class="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md transition">
+                      class="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 active:scale-95 transition-all">
                 ⚡ ទិញភ្លាមៗ
               </button>
             </div>
+
           </div>
         `;
       }).join('');
@@ -185,12 +278,39 @@
       updateCartBadge();
     }
 
-    // Toast Notification Handler
-    function showToast(message) {
-      const toast = document.getElementById('toastNotification');
-      toast.innerText = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => { toast.classList.add('hidden'); }, 2000);
+    // 3. Category Filter
+    function filterCategory(cat, btn) {
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+        b.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+      });
+
+      btn.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+      btn.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+
+      activeCategory = cat;
+      filterProducts();
+    }
+
+    // Filter Products by Search and Category
+    function filterProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      const filtered = productsList.filter(p => {
+        const title = (p.title || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        const code = (p.code || '').toLowerCase();
+
+        const matchesQuery = title.includes(query) || desc.includes(query) || code.includes(query);
+        
+        if (activeCategory === 'all') return matchesQuery;
+        if (activeCategory === 'jeans') return matchesQuery && (title.includes('jeans') || title.includes('ខូវប៊យ') || desc.includes('ខូវប៊យ'));
+        if (activeCategory === 'short') return matchesQuery && (title.includes('ខ្លី') || desc.includes('ខ្លី'));
+        
+        return matchesQuery;
+      });
+
+      renderProducts(filtered);
     }
 
     // 4. Cart Operations
@@ -223,7 +343,7 @@
       saveCart(cart);
 
       if (showNotification) {
-        showToast('✅ បានបន្ថែមខោចូលកន្ត្រកហើយ!');
+        showToast('✅', 'បានបន្ថែមខោចូលកន្ត្រកហើយ!');
       }
     }
 
@@ -235,17 +355,7 @@
       window.location.href = 'delivery.html';
     }
 
-    function filterProducts() {
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      const filtered = productsList.filter(p => {
-        const title = (p.title || '').toLowerCase();
-        const desc = (p.description || '').toLowerCase();
-        const code = (p.code || '').toLowerCase();
-        return title.includes(query) || desc.includes(query) || code.includes(query);
-      });
-      renderProducts(filtered);
-    }
-
+    // 5. Cart Modal Logic
     function openCartModal() {
       renderCartModalItems();
       const modal = document.getElementById('cartModal');
@@ -266,9 +376,9 @@
 
       if (cart.length === 0) {
         container.innerHTML = `
-          <div class="text-center py-8 text-gray-400 space-y-1">
-            <p class="text-2xl">🛒</p>
-            <p class="text-xs">គ្មានទំនិញក្នុងកន្ត្រក់ទេ</p>
+          <div class="text-center py-10 text-slate-400 space-y-2">
+            <p class="text-3xl">🛒</p>
+            <p class="text-xs font-semibold">គ្មានទំនិញក្នុងកន្ត្រក់ទេ</p>
           </div>
         `;
         document.getElementById('cartModalTotal').innerText = '$0.00';
@@ -282,14 +392,14 @@
         const itemCode = codeMatch ? codeMatch[1] : (item.code || 'N/A');
 
         return `
-          <div class="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border text-xs">
-            <div class="flex items-center gap-2">
-              <span class="font-bold bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px]">#${itemCode}</span>
-              <span class="font-semibold text-gray-800">${item.title}</span>
+          <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-2xl border border-slate-100 text-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-lg text-[10px]">#${itemCode}</span>
+              <span class="font-semibold text-slate-800 line-clamp-1 max-w-[150px]">${item.title}</span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-gray-700">$${price.toFixed(2)}</span>
-              <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 font-bold p-1">✕</button>
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-slate-900">$${price.toFixed(2)}</span>
+              <button onclick="removeFromCart(${index})" class="text-slate-400 hover:text-rose-600 font-bold p-1 transition">✕</button>
             </div>
           </div>
         `;
@@ -309,20 +419,44 @@
       localStorage.removeItem('cartData');
       updateCartBadge();
       renderCartModalItems();
-      showToast('🗑️ បានសម្អាតកន្ត្រករួចរាល់');
+      showToast('🗑️', 'បានសម្អាតកន្ត្រករួចរាល់');
     }
 
     function goToCheckout() {
       const cart = getCart();
       if (cart.length === 0) {
-        showToast('⚠️ សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១!');
+        showToast('⚠️', 'សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១!');
         return;
       }
-      // ត្រូវ Clear buyNowItem ដើម្បីឱ្យវាទាញចេញពី Cart វិញ
       localStorage.removeItem('buyNowItem');
       window.location.href = 'delivery.html';
     }
 
+    // 6. Image Zoom Modal
+    function zoomImage(url, title) {
+      document.getElementById('zoomImageTarget').src = url;
+      document.getElementById('zoomImageCaption').innerText = title;
+      const modal = document.getElementById('imageModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeImageModal() {
+      const modal = document.getElementById('imageModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // 7. Toast Notification Handler
+    function showToast(icon, message) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastIcon').innerText = icon;
+      document.getElementById('toastMessage').innerText = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => { toast.classList.add('hidden'); }, 2200);
+    }
+
+    // Run Load
     loadProducts();
   </script>
 </body>
