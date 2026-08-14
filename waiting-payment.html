@@ -74,16 +74,33 @@
       from { opacity: 0; transform: scale(0.85); }
       to { opacity: 1; transform: scale(1); }
     }
+    
+    /* Modal Controls */
     #qrModal { display: none; }
     #qrModal.flex { display: flex; }
     #botActionModal { display: none; }
     #botActionModal.flex { display: flex; }
-    #manualCopyModal { display: none; }
-    #manualCopyModal.flex { display: flex; }
-    #toastNotification { display: none; }
-    #toastNotification.show { display: block; }
+    #uploadModal { display: none; }
+    #uploadModal.flex { display: flex; }
     #successModal { display: none; }
     #successModal.flex { display: flex; }
+    #toastNotification { display: none; }
+    #toastNotification.show { display: block; }
+
+    /* Upload Area Style */
+    .upload-zone {
+      border: 2px dashed #cbd5e1;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #2563eb;
+      background-color: #eff6ff;
+    }
+    .upload-zone.has-image {
+      border-color: #22c55e;
+      background-color: #f0fdf4;
+    }
 
     /* Success Animation */
     @keyframes checkmark {
@@ -93,6 +110,12 @@
     }
     .checkmark-animate {
       animation: checkmark 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Image Preview */
+    .image-preview {
+      max-height: 200px;
+      object-fit: contain;
     }
   </style>
 </head>
@@ -179,16 +202,61 @@
         <p class="text-xs text-slate-600 leading-relaxed font-medium">
           សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក <b>Telegram Bot Chat</b>។<br>
           <span class="text-blue-600 font-bold">អត្ថបទបញ្ជាទិញនឹងមានស្រាប់</span> ក្នុងឆាតរបស់អ្នក។<br>
-          ភ្ញៀវគ្រាន់តែ <b class="text-rose-600">ផ្ញើរូបភាពបង្កាន់ដៃទូទាត់</b> បន្ថែមមកកាន់ Bot ប៉ុណ្ណោះ!
+          បន្ទាប់មកភ្ញៀវគ្រាន់តែ <b class="text-rose-600">ផ្ញើរូបភាពបង្កាន់ដៃទូទាត់</b> បន្ថែមមកកាន់ Bot ប៉ុណ្ណោះ!
         </p>
       </div>
       <div class="space-y-2 pt-2">
-        <button type="button" onclick="redirectToBotChat()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
-          <span>💬</span>
-          <span>បើក Telegram Bot Chat ឥឡូវនេះ</span>
+        <button type="button" onclick="openUploadModal()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
+          <span>📤</span>
+          <span>បើក Telegram Bot និង Upload រូបភាព</span>
         </button>
         <button type="button" onclick="closeBotModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-4 rounded-2xl text-xs transition active:scale-95">បិទ (Close)</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Upload Modal (សម្រាប់ Upload រូបភាព) -->
+  <div id="uploadModal" class="fixed inset-0 bg-slate-900/80 items-center justify-center p-4 z-[55] backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-3xl space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate relative">
+      
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+          <span>📸</span> Upload បង្កាន់ដៃទូទាត់
+        </h3>
+        <button onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-600 font-bold bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center text-xs active:scale-90 transition">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <p class="text-xs text-slate-600 font-medium">សូមជ្រើសរើសរូបភាពបង្កាន់ដៃទូទាត់ពីទូរស័ព្ទរបស់អ្នក</p>
+
+        <!-- Upload Area -->
+        <div id="uploadZone" class="upload-zone rounded-2xl p-6 text-center space-y-2" onclick="document.getElementById('fileInput').click()">
+          <div id="uploadIcon" class="text-4xl">📤</div>
+          <p id="uploadText" class="text-xs text-slate-500 font-medium">ចុចដើម្បីជ្រើសរូបភាព<br><span class="text-[10px] text-slate-400">ឬទាញរូបភាពមកទីនេះ</span></p>
+          <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+        </div>
+
+        <!-- Image Preview -->
+        <div id="previewContainer" class="hidden">
+          <div class="bg-slate-50 rounded-2xl p-3 border border-slate-200">
+            <img id="imagePreview" class="image-preview w-full rounded-xl" alt="Preview">
+            <div class="flex justify-between items-center mt-2">
+              <span id="fileName" class="text-xs text-slate-600 font-medium truncate max-w-[150px]"></span>
+              <button onclick="removeImage()" class="text-rose-500 hover:text-rose-700 text-xs font-bold p-1">✕ លុបរូប</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeUploadModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs active:scale-95">បិទ</button>
+          <button type="button" onclick="sendImageToBot()" class="w-2/3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
+            <span>🚀</span>
+            <span>ផ្ញើរូបទៅ Bot</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -213,19 +281,6 @@
     </div>
   </div>
 
-  <!-- Manual Copy Modal (Fallback) -->
-  <div id="manualCopyModal" class="fixed inset-0 bg-slate-900/90 items-center justify-center p-4 z-[60] backdrop-blur-sm">
-    <div class="bg-white p-5 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl relative modal-animate">
-      <h3 class="font-extrabold text-rose-600 text-sm">⚠️ ទូរស័ព្ទរារាំងការ Copy អូតូ</h3>
-      <p class="text-xs text-slate-600">សូមចុចសង្កត់លើអត្ថបទខាងក្រោម រួចយកពាក្យ Copy ដោយខ្លួនឯង បន្ទាប់មកចុចប៊ូតុងបើក Bot។</p>
-      <textarea id="manualOrderText" class="w-full h-32 p-3 text-xs border border-slate-300 rounded-xl bg-slate-50 focus:outline-none" readonly></textarea>
-      <div class="flex gap-2">
-        <button type="button" onclick="closeManualCopyModal()" class="w-1/2 bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs active:scale-95">បិទ</button>
-        <button type="button" onclick="redirectToBotChat()" class="w-1/2 bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs active:scale-95">បើក Bot</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast -->
   <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 z-[70] transition-all font-medium"></div>
 
@@ -237,6 +292,8 @@
     }
 
     const botUsername = "TobChuchusAuto_bot";
+    let selectedImageFile = null;
+    let selectedImageDataUrl = null;
 
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
@@ -287,31 +344,42 @@
     }
     document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
 
+    // QR Modal
     function openQrModal() {
-      const modal = document.getElementById('qrModal');
-      modal.classList.add('flex');
+      document.getElementById('qrModal').classList.add('flex');
     }
-
     function closeQrModal() {
-      const modal = document.getElementById('qrModal');
-      modal.classList.remove('flex');
+      document.getElementById('qrModal').classList.remove('flex');
     }
 
+    // Bot Action Modal
     function closeBotModal() {
-      const modal = document.getElementById('botActionModal');
-      modal.classList.remove('flex');
+      document.getElementById('botActionModal').classList.remove('flex');
     }
 
+    // Upload Modal
+    function openUploadModal() {
+      closeBotModal();
+      // បើក Telegram Bot Chat
+      openTelegramBot();
+      // បង្ហាញ Upload Modal
+      setTimeout(() => {
+        document.getElementById('uploadModal').classList.add('flex');
+      }, 500);
+    }
+
+    function closeUploadModal() {
+      document.getElementById('uploadModal').classList.remove('flex');
+      // លុបរូបភាពដែលបានជ្រើស
+      removeImage();
+    }
+
+    // Success Modal
     function closeSuccessModal() {
-      const modal = document.getElementById('successModal');
-      modal.classList.remove('flex');
+      document.getElementById('successModal').classList.remove('flex');
     }
 
-    function closeManualCopyModal() {
-      const modal = document.getElementById('manualCopyModal');
-      modal.classList.remove('flex');
-    }
-
+    // Copy ABA
     function copyABA() {
       const abaAcc = "017666209";
       copyToClipboardMobile(abaAcc, () => {
@@ -319,7 +387,7 @@
       });
     }
 
-    // SAFE COPY FUNCTION FOR MOBILE
+    // Copy to Clipboard
     function copyToClipboardMobile(textToCopy, onSuccess) {
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(textToCopy).then(() => {
@@ -361,14 +429,29 @@
       }
     }
 
-    // PROCESS ORDER - បង្កើតអត្ថបទសម្រាប់ Bot
+    // Open Telegram Bot
+    function openTelegramBot() {
+      const directBotUrl = `https://t.me/${botUsername}`;
+      if (tg) {
+        if (typeof tg.openTelegramLink === 'function') {
+          tg.openTelegramLink(directBotUrl);
+        } else if (typeof tg.openLink === 'function') {
+          tg.openLink(directBotUrl);
+        } else {
+          window.open(directBotUrl, '_blank');
+        }
+      } else {
+        window.open(directBotUrl, '_blank');
+      }
+    }
+
+    // SEND ORDER TO BOT
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
         showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
         return;
       }
 
-      // បង្កើតអត្ថបទបញ្ជាទិញ
       let orderText = `🛒 ការបញ្ជាទិញថ្មីពី Mini App\n`;
       orderText += `---------------------------\n`;
       orderText += `👤 អតិថិជន: ${customerInfo.name || 'N/A'}\n`;
@@ -386,65 +469,102 @@
       orderText += `---------------------------\n`;
       orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
 
-      // រក្សាទុកអត្ថបទក្នុង localStorage ដើម្បីឱ្យ Bot អាចអានបាន
       localStorage.setItem('pendingOrderText', orderText);
 
-      // Copy ទៅក្ដារចុច
       copyToClipboardMobile(orderText, 
-        // ជោគជ័យ
         () => {
-          // លុបទិន្នន័យដែលលែងត្រូវការ
           localStorage.removeItem('pendingOrder');
           localStorage.removeItem('pendingOrdersList');
           localStorage.removeItem('cartData');
-          
-          // បង្ហាញ Modal បើក Bot
-          const modal = document.getElementById('botActionModal');
-          modal.classList.add('flex');
+          document.getElementById('botActionModal').classList.add('flex');
         },
-        // បរាជ័យ (Block ដោយទូរស័ព្ទ)
         (failedText) => {
-          document.getElementById('manualOrderText').value = failedText;
-          const modal = document.getElementById('manualCopyModal');
-          modal.classList.add('flex');
+          // Fallback: បង្ហាញអត្ថបទក្នុង Modal ផ្សេង
+          showToast('⚠️ សូមចម្លងអត្ថបទដោយខ្លួនឯង');
+          document.getElementById('botActionModal').classList.add('flex');
         }
       );
     }
 
-    // REDIRECT TO BOT
-    function redirectToBotChat() {
-      const directBotUrl = `https://t.me/${botUsername}`;
-      
-      // ផ្ញើអត្ថបទទៅ Bot តាមរយៈ Deep Link (ប្រសិនបើ Bot គាំទ្រ)
-      // បើមិនគាំទ្រទេ គ្រាន់តែបើក Chat
-      if (tg) {
-        if (typeof tg.openTelegramLink === 'function') {
-          tg.openTelegramLink(directBotUrl);
-        } else if (typeof tg.openLink === 'function') {
-          tg.openLink(directBotUrl);
-        } else {
-          window.open(directBotUrl, '_blank');
-        }
-        setTimeout(() => { if (typeof tg.close === 'function') tg.close(); }, 300);
-      } else {
-        window.location.href = directBotUrl;
+    // FILE UPLOAD HANDLERS
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        processSelectedFile(file);
       }
-
-      // បិទ Modals
-      closeBotModal();
-      closeManualCopyModal();
-      
-      // បង្ហាញ Success Modal
-      setTimeout(() => {
-        const successModal = document.getElementById('successModal');
-        successModal.classList.add('flex');
-      }, 500);
     }
 
-    // ការបើក Bot ពី Success Modal (បើអ្នកប្រើប្រាស់មិនទាន់បានបើក)
-    function openBotFromSuccess() {
-      closeSuccessModal();
-      redirectToBotChat();
+    // Drag and Drop Support
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        processSelectedFile(file);
+      } else {
+        showToast('⚠️ សូមជ្រើសរើសឯកសាររូបភាពប៉ុណ្ណោះ!');
+      }
+    });
+
+    function processSelectedFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('⚠️ សូមជ្រើសរើសឯកសាររូបភាពប៉ុណ្ណោះ!');
+        return;
+      }
+
+      selectedImageFile = file;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        selectedImageDataUrl = e.target.result;
+        document.getElementById('imagePreview').src = selectedImageDataUrl;
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('previewContainer').classList.remove('hidden');
+        document.getElementById('uploadZone').classList.add('has-image');
+        document.getElementById('uploadIcon').textContent = '✅';
+        document.getElementById('uploadText').innerHTML = 'បានជ្រើសរូបភាពរួចរាល់!';
+        showToast('📸 បានជ្រើសរូបភាពរួចរាល់!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      selectedImageFile = null;
+      selectedImageDataUrl = null;
+      document.getElementById('fileInput').value = '';
+      document.getElementById('previewContainer').classList.add('hidden');
+      document.getElementById('uploadZone').classList.remove('has-image');
+      document.getElementById('uploadIcon').textContent = '📤';
+      document.getElementById('uploadText').innerHTML = 'ចុចដើម្បីជ្រើសរូបភាព<br><span class="text-[10px] text-slate-400">ឬទាញរូបភាពមកទីនេះ</span>';
+    }
+
+    function sendImageToBot() {
+      if (!selectedImageFile) {
+        showToast('⚠️ សូមជ្រើសរូបភាពបង្កាន់ដៃទូទាត់ជាមុនសិន!');
+        return;
+      }
+
+      // បើក Telegram Bot ម្តងទៀត
+      openTelegramBot();
+
+      // បង្ហាញ Success
+      closeUploadModal();
+      setTimeout(() => {
+        document.getElementById('successModal').classList.add('flex');
+      }, 300);
+
+      // លុបរូបភាពចេញ
+      removeImage();
+
+      showToast('✅ សូមចូលទៅកាន់ Telegram Bot ហើយបិទភ្ជាប់រូបភាព!');
     }
   </script>
 </body>
