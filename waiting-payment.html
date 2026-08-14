@@ -306,24 +306,56 @@
     }
 
     // Load Data
+        
     let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
     const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
-    if (pendingOrdersList.length === 0 && singlePending) {
-      pendingOrdersList.push(singlePending);
+    
+    // ប្រសិនបើគ្មានទិន្នន័យទាល់តែសោះ សូមបង្ហាញសារ ឬឱ្យវាទៅទំព័រដើម
+    if (pendingOrdersList.length === 0 && !singlePending) {
+        // ជម្រើសទី 1: បង្ហាញសារមិត្តភាពជំនួសឱ្យ 0 Order
+        document.getElementById('orderCountBadge').innerText = `0 Order(s)`;
+        document.getElementById('orderItemsSummary').innerHTML = `<p class="text-slate-500 text-center py-3">🛒 បច្ចុប្បន្នមិនមានការបញ្ជាទិញកំពុងរង់ចាំទេ។</p>`;
+        document.getElementById('grandTotal').innerText = `$0.00`;
+        
+        // ជម្រើសទី 2 (ល្អបំផុត): លោតទៅទំព័រដើមវិញដោយស្វ័យប្រវត្តិ ប្រសិនបើគ្មានទិន្នន័យ
+        // window.location.href = "index.html"; // លុបសញ្ញា // នៅពីមុខបន្ទាត់នេះ បើចង់ឱ្យវាលោតដោយស្វ័យប្រវត្តិ
+        
+        // បញ្ឈប់ការដំណើរការកូដដែលនៅសល់
+        // return; 
+    } else {
+        // ប្រសិនបើមានទិន្នន័យ សូមបន្តដូចដើម
+        if (pendingOrdersList.length === 0 && singlePending) {
+            pendingOrdersList.push(singlePending);
+        }
+
+        document.getElementById('orderCountBadge').innerText = `${pendingOrdersList.length} Order(s)`;
+        pendingOrdersList.forEach(order => {
+            if (order.cart) allCartItems.push(...order.cart);
+            if (order.details) {
+            totalGrand += parseFloat(order.details.grandTotal || 0);
+            if (order.details.customer && order.details.customer.name) {
+                customerInfo = order.details.customer;
+            }
+            }
+        });
+
+        // Render Data
+        if (allCartItems.length > 0) {
+            itemsSummaryDiv.innerHTML = allCartItems.map((item, idx) => {
+            const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
+            const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
+            return `
+                <div class="flex justify-between items-center py-1 border-b border-slate-200/60 last:border-none">
+                <span class="font-medium">${idx + 1}. <b>#${codeText}</b> - ${item.title || 'ទំនិញ'}</span>
+                <span class="font-extrabold text-slate-900">$${parseFloat(item.price || 0).toFixed(2)}</span>
+                </div>
+            `;
+            }).join('');
+        } else {
+            itemsSummaryDiv.innerHTML = `<p class="text-slate-400 italic text-center py-2">គ្មានទំនិញទេ</p>`;
+        }
+        document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
     }
-
-    let allCartItems = [];
-    let totalGrand = 0;
-    let customerInfo = { name: 'N/A', phone: 'N/A', address: 'N/A' };
-
-    if (pendingOrdersList.length > 0) {
-      document.getElementById('orderCountBadge').innerText = `${pendingOrdersList.length} Order(s)`;
-      pendingOrdersList.forEach(order => {
-        if (order.cart) allCartItems.push(...order.cart);
-        if (order.details) {
-          totalGrand += parseFloat(order.details.grandTotal || 0);
-          if (order.details.customer && order.details.customer.name) {
-            customerInfo = order.details.customer;
           }
         }
       });
