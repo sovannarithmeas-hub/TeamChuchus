@@ -79,14 +79,6 @@
     .btn-glow:active {
       transform: translateY(1px) scale(0.98);
     }
-
-    .modal-animate {
-      animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    @keyframes modalPop {
-      from { opacity: 0; transform: scale(0.85); }
-      to { opacity: 1; transform: scale(1); }
-    }
   </style>
 </head>
 <body class="p-3 flex items-center justify-center relative overflow-x-hidden">
@@ -152,13 +144,13 @@
       </div>
     </div>
 
-    <!-- Instructions Box (Update ថ្មីអត់បាច់ Paste) -->
+    <!-- Instructions Box (កែសម្រួលពាក្យពេចន៍) -->
     <div class="bg-blue-50/80 border border-blue-200/80 p-3 rounded-2xl text-[11px] text-blue-900 space-y-1 shadow-xs">
       <p class="font-extrabold flex items-center gap-1">💡 ជំហានទូទាត់ និងបញ្ជូនទិន្នន័យ៖</p>
       <ol class="list-decimal list-inside space-y-1 text-[10px] text-blue-950 font-medium pl-1">
         <li>ទូទាត់ប្រាក់តាម ABA KHQR ខាងលើ</li>
-        <li>ចុចប៊ូតុង <b>"បញ្ជូនទិន្នន័យបញ្ជាទិញទៅ Bot"</b></li>
-        <li>អត្ថបទនឹងលោតចូលប្រអប់សារស្រាប់ សូមភ្ជាប់ <b class="text-rose-600">រូបភាពបង្កាន់ដៃ (Screenshot)</b> រួចចុច Send ផ្ញើ!</li>
+        <li>ចុចប៊ូតុង <b>"បញ្ជូនទិន្នន័យទិញចូល Telegram Bot"</b></li>
+        <li>គ្រាន់តែចុច <b class="text-rose-600">ផ្ញើសារ (Send)</b> ដែលមានស្រាប់ រួចផ្ញើ <b class="text-rose-600">Screenshot</b> ជាការស្រេច!</li>
       </ol>
     </div>
 
@@ -167,7 +159,7 @@
       <button type="button" onclick="sendOrderToBot()" 
               class="btn-glow w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25">
         <span>🤖</span>
-        <span>បញ្ជូនទិន្នន័យបញ្ជាទិញទៅ Bot ឥឡូវនេះ</span>
+        <span>បញ្ជូនទិន្នន័យទិញចូល Telegram Bot</span>
       </button>
 
       <a href="index.html" class="block w-full text-center text-slate-500 text-xs py-2 hover:text-slate-800 font-semibold transition">
@@ -255,34 +247,28 @@
       document.getElementById('qrModal').classList.remove('hidden');
       document.getElementById('qrModal').classList.add('flex');
     }
-    
     function closeQrModal() {
       document.getElementById('qrModal').classList.add('hidden');
       document.getElementById('qrModal').classList.remove('flex');
     }
-
+    
     function copyABA() {
       const abaAcc = "017666209";
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(abaAcc);
-      } else {
-        const t = document.createElement("textarea");
-        t.value = abaAcc;
-        document.body.appendChild(t);
-        t.select();
-        try{ document.execCommand('copy'); }catch(e){}
-        document.body.removeChild(t);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(abaAcc).then(() => {
+          showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`);
+        });
       }
-      showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`);
     }
 
-    // 🌟 ការបញ្ជូនទិន្នន័យជា Draft ចូល Bot 🌟
+    // PROCESS ORDER & AUTO-DRAFT TO BOT
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
         showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
         return;
       }
 
+      // 1. រៀបចំអត្ថបទបញ្ជាទិញ
       let orderText = `🛒 ការបញ្ជាទិញថ្មីពី Mini App\n`;
       orderText += `---------------------------\n`;
       orderText += `👤 អតិថិជន: ${customerInfo.name || 'N/A'}\n`;
@@ -298,33 +284,30 @@
 
       orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${totalGrand.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
-      orderText += `📸 សូមភ្ជាប់រូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) នៅទីនេះរួចចុចបញ្ជូន!`;
+      orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
 
-      // Clear ទិន្នន័យបន្ទាប់ពីចងក្រងសាររួច
+      // 2. Clear Local Storage ព្រោះទិន្នន័យបានបញ្ជូនរួចរាល់
       localStorage.removeItem('pendingOrder');
       localStorage.removeItem('pendingOrdersList');
       localStorage.removeItem('cartData');
 
-      // បំលែងអត្ថបទទៅជា URL Encoding ដើម្បីបោះចូលកន្ទុយ Link
+      // 3. បម្លែងអត្ថបទទៅជា URL Parameters (encodeURIComponent)
       const encodedText = encodeURIComponent(orderText);
       const directBotUrl = `https://t.me/${botUsername}?text=${encodedText}`;
 
-      // បើក Telegram Bot
-      if (tg) {
+      // 4. ចាក់បញ្ជូនទៅកាន់ Telegram
+      if (tg && tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
+        // បើស្ថិតក្នុងកម្មវិធី Telegram (Mobile / Desktop WebApp)
         if (typeof tg.openTelegramLink === 'function') {
           tg.openTelegramLink(directBotUrl);
-        } else if (typeof tg.openLink === 'function') {
-          tg.openLink(directBotUrl);
         } else {
-          window.open(directBotUrl, '_blank');
+          tg.openLink(directBotUrl);
         }
         
-        // បិទផ្ទាំង WebApp ស្វ័យប្រវត្តិ
-        setTimeout(() => { 
-          if (typeof tg.close === 'function') tg.close(); 
-        }, 300);
+        // បិទផ្ទាំង WebApp ដើម្បីអោយវាធ្លាក់ទៅផ្ទាំង Chat ភ្លាមៗ
+        setTimeout(() => { if (typeof tg.close === 'function') tg.close(); }, 300);
       } else {
-        // សម្រាប់ Browser លើ PC ធម្មតា
+        // បើស្ថិតក្នុង Browser ធម្មតា (Chrome/Safari)
         window.location.href = directBotUrl;
       }
     }
