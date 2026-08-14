@@ -152,13 +152,13 @@
       </div>
     </div>
 
-    <!-- Instructions Box -->
+    <!-- Instructions Box (Update ថ្មីអត់បាច់ Paste) -->
     <div class="bg-blue-50/80 border border-blue-200/80 p-3 rounded-2xl text-[11px] text-blue-900 space-y-1 shadow-xs">
-      <p class="font-extrabold flex items-center gap-1">💡 ជំហានបញ្ជូនការបញ្ជាទិញ៖</p>
+      <p class="font-extrabold flex items-center gap-1">💡 ជំហានទូទាត់ និងបញ្ជូនទិន្នន័យ៖</p>
       <ol class="list-decimal list-inside space-y-1 text-[10px] text-blue-950 font-medium pl-1">
-        <li>ទូទាត់ប្រាក់តាម ABA ខាងលើ រួចថតទុកបង្កាន់ដៃ (Screenshot)</li>
-        <li>ចុចប៊ូតុង <b class="text-blue-600">"បើក Telegram Bot ឥឡូវនេះ"</b> ខាងក្រោម</li>
-        <li>ភ្ជាប់រូបភាពបង្កាន់ដៃ (Screenshot) រួចចុចផ្ញើជាការស្រេច។</li>
+        <li>ទូទាត់ប្រាក់តាម ABA KHQR ខាងលើ</li>
+        <li>ចុចប៊ូតុង <b>"បញ្ជូនទិន្នន័យបញ្ជាទិញទៅ Bot"</b></li>
+        <li>អត្ថបទនឹងលោតចូលប្រអប់សារស្រាប់ សូមភ្ជាប់ <b class="text-rose-600">រូបភាពបង្កាន់ដៃ (Screenshot)</b> រួចចុច Send ផ្ញើ!</li>
       </ol>
     </div>
 
@@ -167,7 +167,7 @@
       <button type="button" onclick="sendOrderToBot()" 
               class="btn-glow w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25">
         <span>🤖</span>
-        <span>បើក Telegram Bot ឥឡូវនេះ</span>
+        <span>បញ្ជូនទិន្នន័យបញ្ជាទិញទៅ Bot ឥឡូវនេះ</span>
       </button>
 
       <a href="index.html" class="block w-full text-center text-slate-500 text-xs py-2 hover:text-slate-800 font-semibold transition">
@@ -189,26 +189,6 @@
     </div>
   </div>
 
-  <!-- CUSTOM POPUP ALERT -->
-  <div id="botActionModal" class="fixed inset-0 bg-slate-900/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
-    <div class="bg-white p-6 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate">
-      <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">✅</div>
-      <div class="space-y-1.5">
-        <h3 class="font-extrabold text-slate-900 text-base">ទិន្នន័យបញ្ជាទិញបានរៀបចំរួចរាល់!</h3>
-        <p class="text-xs text-slate-600 leading-relaxed font-medium">
-          សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក Bot។ អត្ថបទនឹងលោតចូលប្រអប់សារស្រាប់ លោកអ្នកគ្រាន់តែ <b class="text-blue-600">ភ្ជាប់រូបភាពបង្កាន់ដៃ (Screenshot)</b> រួចចុចផ្ញើជាការស្រេច។
-        </p>
-      </div>
-      <div class="space-y-2 pt-2">
-        <button type="button" onclick="redirectToBotChat()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
-          <span>💬</span>
-          <span>ចូលទៅកាន់ Telegram Bot</span>
-        </button>
-        <button type="button" onclick="closeBotModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-4 rounded-2xl text-xs transition active:scale-95">បិទ (Close)</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast -->
   <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 hidden z-[70] transition-all font-medium"></div>
 
@@ -221,7 +201,6 @@
     }
 
     const botUsername = "TobChuchusAuto_bot";
-    let currentOrderText = ""; // សម្រាប់ផ្ទុកអត្ថបទបញ្ជាទិញ
 
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
@@ -276,29 +255,28 @@
       document.getElementById('qrModal').classList.remove('hidden');
       document.getElementById('qrModal').classList.add('flex');
     }
+    
     function closeQrModal() {
       document.getElementById('qrModal').classList.add('hidden');
       document.getElementById('qrModal').classList.remove('flex');
     }
-    function closeBotModal() {
-      document.getElementById('botActionModal').classList.add('hidden');
-      document.getElementById('botActionModal').classList.remove('flex');
-    }
+
     function copyABA() {
       const abaAcc = "017666209";
       if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(abaAcc).then(() => showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`));
+        navigator.clipboard.writeText(abaAcc);
       } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = abaAcc;
-        document.body.appendChild(textArea);
-        textArea.select();
-        try { document.execCommand('copy'); showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`); } catch (e) {}
-        document.body.removeChild(textArea);
+        const t = document.createElement("textarea");
+        t.value = abaAcc;
+        document.body.appendChild(t);
+        t.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(t);
       }
+      showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`);
     }
 
-    // PROCESS ORDER
+    // 🌟 ការបញ្ជូនទិន្នន័យជា Draft ចូល Bot 🌟
     function sendOrderToBot() {
       if (allCartItems.length === 0) {
         showToast('⚠️ គ្មានទំនិញត្រូវទូទាត់ទេ!');
@@ -320,29 +298,18 @@
 
       orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${totalGrand.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
-      orderText += `📸 ភ្ជាប់រូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) មកកាន់ Bot នេះដើម្បីបញ្ជាក់ការទូទាត់!`;
+      orderText += `📸 សូមភ្ជាប់រូបភាពបង្កាន់ដៃទូទាត់ (Screenshot) នៅទីនេះរួចចុចបញ្ជូន!`;
 
-      // រក្សាទុកអត្ថបទទៅក្នុង Variable សម្រាប់ផ្ញើតាម Link
-      currentOrderText = orderText;
-
-      // Clear Data 
+      // Clear ទិន្នន័យបន្ទាប់ពីចងក្រងសាររួច
       localStorage.removeItem('pendingOrder');
       localStorage.removeItem('pendingOrdersList');
       localStorage.removeItem('cartData');
 
-      // បង្ហាញ Modal ប្រាប់ភ្ញៀវ
-      document.getElementById('botActionModal').classList.remove('hidden');
-      document.getElementById('botActionModal').classList.add('flex');
-    }
-
-    // REDIRECT រួមបញ្ចូលជាមួយ PARAMETER ?text=
-    function redirectToBotChat() {
-      // បម្លែងអត្ថបទឱ្យទៅជាទម្រង់ដែលអាចបញ្ជូនតាម URL បាន (URL Encoding)
-      const encodedText = encodeURIComponent(currentOrderText);
-      
-      // បញ្ចូលអត្ថបទទៅក្នុង Link របស់ Bot 
+      // បំលែងអត្ថបទទៅជា URL Encoding ដើម្បីបោះចូលកន្ទុយ Link
+      const encodedText = encodeURIComponent(orderText);
       const directBotUrl = `https://t.me/${botUsername}?text=${encodedText}`;
-      
+
+      // បើក Telegram Bot
       if (tg) {
         if (typeof tg.openTelegramLink === 'function') {
           tg.openTelegramLink(directBotUrl);
@@ -351,8 +318,13 @@
         } else {
           window.open(directBotUrl, '_blank');
         }
-        setTimeout(() => { if (typeof tg.close === 'function') tg.close(); }, 300);
+        
+        // បិទផ្ទាំង WebApp ស្វ័យប្រវត្តិ
+        setTimeout(() => { 
+          if (typeof tg.close === 'function') tg.close(); 
+        }, 300);
       } else {
+        // សម្រាប់ Browser លើ PC ធម្មតា
         window.location.href = directBotUrl;
       }
     }
