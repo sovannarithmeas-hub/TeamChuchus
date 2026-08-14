@@ -17,209 +17,232 @@
 
     body { 
       font-family: 'Kantumruy Pro', sans-serif; 
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      background: #f8fafc;
     }
 
-    /* Glassmorphism Card Style */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+    /* Custom Input Focus Glow */
+    input:focus, textarea:focus {
+      user-select: text;
+      -webkit-user-select: text;
     }
 
-    /* Input Focus Glow Animations */
-    .custom-input {
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Animations */
+    @keyframes bounceSoft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
     }
-    .custom-input:focus {
-      background-color: #ffffff;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-      transform: translateY(-1px);
-    }
+    .animate-bounce-soft { animation: bounceSoft 2s infinite ease-in-out; }
 
-    /* Dynamic Pulse & Wave Animations */
     @keyframes pulseGlow {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.85; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.03); }
     }
-    .animate-pulse-glow {
-      animation: pulseGlow 2s infinite ease-in-out;
+    .animate-pulse-glow { animation: pulseGlow 2.5s infinite ease-in-out; }
+
+    /* Custom Animated Dropdown Menu */
+    .dropdown-menu {
+      transform-origin: top;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      transform: scaleY(0.85) translateY(-10px);
+      pointer-events: none;
+    }
+    .dropdown-menu.open {
+      opacity: 1;
+      transform: scaleY(1) translateY(0);
+      pointer-events: auto;
     }
 
-    @keyframes slideUpFade {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-appear {
-      animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    /* Glassmorphic Cards */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
   </style>
 </head>
-<body class="min-h-screen p-3 sm:p-4 flex flex-col items-center justify-center">
+<body class="min-h-screen p-3 flex flex-col items-center justify-center">
 
-  <div class="glass-card w-full max-w-md p-5 rounded-3xl shadow-xl border border-white/80 space-y-4 animate-appear">
+  <!-- Main Container -->
+  <div class="glass-card w-full max-w-md p-4 sm:p-5 rounded-3xl shadow-xl border border-slate-200/80 space-y-4">
     
-    <!-- 🚚 Header Page Section -->
-    <div class="flex items-center justify-between border-b border-slate-200/80 pb-3.5">
-      <div class="flex items-center gap-3">
-        <button type="button" onclick="goBack()" 
-                class="w-9 h-9 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-2xl transition flex items-center justify-center active:scale-90 border border-slate-200/60 shadow-xs">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-          </svg>
+    <!-- 🚚 Header Page -->
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="goBack()" class="p-2 bg-slate-100 hover:bg-slate-200/80 active:scale-90 rounded-2xl text-slate-600 transition flex items-center justify-center border border-slate-200/60 shadow-xs">
+          ⬅️
         </button>
-        
         <div class="relative">
           <img src="https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/photo_2026-08-10_18-23-16.jpg" 
-               onerror="this.src='https://via.placeholder.com/50';" 
-               class="w-11 h-11 rounded-2xl object-cover border-2 border-blue-500/30 shadow-sm"
+               onerror="this.src='https://via.placeholder.com/40';" 
+               class="w-10 h-10 rounded-2xl object-cover border-2 border-blue-500/30 shadow-xs"
                oncontextmenu="return false;">
-          <span class="absolute -bottom-1 -right-1 flex h-3.5 w-3.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white"></span>
-          </span>
+          <span class="absolute -bottom-1 -right-1 text-xs animate-bounce-soft">🚚</span>
         </div>
-
         <div>
-          <h1 class="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
-            <span>🚚</span>
-            <span>ព័ត៌មានដឹកជញ្ជូន និងទូទាត់</span>
+          <h1 class="font-extrabold text-sm text-slate-800 flex items-center gap-1">
+            ព័ត៌មានដឹកជញ្ជូន
           </h1>
-          <p class="text-[10px] text-slate-500 font-medium mt-0.5">បំពេញព័ត៌មានដើម្បីបន្តទៅការបង់ប្រាក់</p>
+          <p class="text-[10px] text-slate-400 font-medium">បំពេញព័ត៌មានដើម្បីបន្តទៅការបង់ប្រាក់</p>
         </div>
       </div>
     </div>
 
-    <!-- 📦 Selected Items Summary Container -->
-    <div class="bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-blue-50/80 border border-blue-100/80 p-3.5 rounded-2xl space-y-2 text-xs shadow-inner">
-      <div class="flex items-center justify-between border-b border-blue-200/60 pb-1.5">
-        <span class="font-bold text-blue-900 flex items-center gap-1.5 text-[11px]">
-          <span class="p-1 bg-blue-500 text-white rounded-lg text-[10px]">📦</span> 
-          <span>ទំនិញដែលបានជ្រើសរើស</span>
+    <!-- 📦 Selected Items Summary Card -->
+    <div class="bg-gradient-to-r from-blue-50/80 to-indigo-50/50 border border-blue-100/80 p-3 rounded-2xl space-y-1.5 text-xs shadow-xs">
+      <div class="flex items-center justify-between border-b border-blue-100/80 pb-1.5">
+        <span class="font-extrabold text-blue-900 flex items-center gap-1 text-[11px]">
+          📦 ទំនិញដែលបានជ្រើសរើស
         </span>
-        <span id="itemsBadgeCount" class="text-[10px] font-extrabold bg-blue-600 text-white px-2 py-0.5 rounded-full shadow-xs">
+        <span id="itemsBadgeCount" class="bg-blue-600 text-white font-black text-[9px] px-2 py-0.5 rounded-full shadow-xs">
           0 មុខ
         </span>
       </div>
-      <div id="selectedItems" class="space-y-1.5 pt-0.5 text-slate-700 max-h-36 overflow-y-auto pr-1"></div>
+      <div id="selectedItems" class="space-y-1 pt-1 text-slate-700"></div>
     </div>
 
-    <!-- 📝 Delivery Form Section -->
-    <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-4 text-xs">
+    <!-- 📝 Form Section -->
+    <form id="deliveryForm" onsubmit="submitOrder(event)" class="space-y-3.5 text-xs">
       
-      <div class="space-y-3">
-        <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1.5 border-l-4 border-blue-600 pl-2">
-          <span>📍</span> ព័ត៌មានអ្នកទទួល និងទីតាំង
+      <div class="space-y-2.5">
+        <p class="font-extrabold text-slate-800 text-[12px] flex items-center gap-1.5">
+          <span class="animate-bounce-soft">📍</span> ព័ត៌មានអ្នកទទួល និងទីតាំង
         </p>
 
-        <!-- Name Input -->
-        <div class="space-y-1">
-          <label class="font-semibold block text-slate-700 flex items-center gap-1">
-            <span>👤</span> ឈ្មោះអតិថិជន <span class="text-rose-500">*</span>
-          </label>
+        <!-- Customer Name -->
+        <div>
+          <label class="font-bold block mb-1 text-slate-700 text-[11px]">👤 ឈ្មោះអតិថិជន *</label>
           <input type="text" id="custName" required placeholder="ឧទាហរណ៍៖ សុខ ជា" 
-                 class="custom-input w-full p-3 bg-slate-50/80 border border-slate-200 rounded-2xl outline-none text-slate-800 font-medium placeholder:text-slate-400">
+                 class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400 shadow-inner">
         </div>
 
-        <!-- Phone Input -->
-        <div class="space-y-1">
-          <label class="font-semibold block text-slate-700 flex items-center gap-1">
-            <span>📞</span> លេខទូរស័ព្ទ <span class="text-rose-500">*</span>
-          </label>
+        <!-- Phone Number -->
+        <div>
+          <label class="font-bold block mb-1 text-slate-700 text-[11px]">📞 លេខទូរស័ព្ទ *</label>
           <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012 345 678" 
-                 class="custom-input w-full p-3 bg-slate-50/80 border border-slate-200 rounded-2xl outline-none text-slate-800 font-medium placeholder:text-slate-400">
+                 class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400 shadow-inner">
         </div>
 
-        <!-- Address Textarea -->
-        <div class="space-y-1">
-          <label class="font-semibold block text-slate-700 flex items-center gap-1">
-            <span>📍</span> អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង <span class="text-rose-500">*</span>
-          </label>
+        <!-- Delivery Address -->
+        <div>
+          <label class="font-bold block mb-1 text-slate-700 text-[11px]">📍 អាសយដ្ឋានដឹកជញ្ជូន / ទីតាំង *</label>
           <textarea id="custAddress" required rows="2" placeholder="ឧទាហរណ៍៖ ភ្នំពេញ, ផ្ទះលេខ..., ផ្លូវ..." 
-                    class="custom-input w-full p-3 bg-slate-50/80 border border-slate-200 rounded-2xl outline-none text-slate-800 font-medium placeholder:text-slate-400 resize-none"></textarea>
+                    class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-medium placeholder:text-slate-400 shadow-inner resize-none"></textarea>
         </div>
 
-        <!-- Delivery Location Select -->
-        <div class="space-y-1">
-          <label class="font-semibold block text-slate-700 flex items-center gap-1">
-            <span>🛵</span> តំបន់ដឹកជញ្ជូន
-          </label>
+        <!-- 🚚 Custom Animated Dropdown Selector -->
+        <div>
+          <label class="font-bold block mb-1 text-slate-700 text-[11px]">🚚 តំបន់ដឹកជញ្ជូន</label>
+          
           <div class="relative">
-            <select id="deliveryLocation" onchange="calculateTotal()" 
-                    class="custom-input w-full p-3 bg-slate-50/80 border border-slate-200 rounded-2xl outline-none font-semibold text-slate-800 appearance-none cursor-pointer pr-8">
-              <option value="1.5">ភ្នំពេញ ($1.50)</option>
-              <option value="2.5">តាមខេត្ត ($2.50)</option>
-            </select>
-            <span class="absolute right-3.5 top-3.5 pointer-events-none text-slate-400 text-xs">▼</span>
+            <!-- Custom Trigger Button -->
+            <button type="button" id="dropdownTrigger" onclick="toggleDropdown()" 
+                    class="w-full p-2.5 bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-2xl outline-none flex items-center justify-between transition-all font-bold text-slate-800 shadow-xs active:scale-[0.99]">
+              <div class="flex items-center gap-2">
+                <span id="selectedLocationIcon" class="text-base">🏙️</span>
+                <span id="selectedLocationText">ភ្នំពេញ ($1.50)</span>
+              </div>
+              <svg id="dropdownArrow" class="w-4 h-4 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+
+            <!-- Animated Dropdown Options Menu -->
+            <div id="dropdownMenu" class="dropdown-menu absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-30 overflow-hidden p-1 space-y-1">
+              
+              <!-- Option 1: Phnom Penh -->
+              <div onclick="selectLocation('1.5', 'ភ្នំពេញ ($1.50)', '🏙️')" 
+                   class="location-option flex items-center justify-between p-2.5 rounded-xl cursor-pointer hover:bg-blue-50 transition-all font-semibold text-slate-700 bg-blue-50/60 border border-blue-100">
+                <div class="flex items-center gap-2">
+                  <span class="text-base">🏙️</span>
+                  <div>
+                    <p class="text-xs font-bold text-slate-800">ភ្នំពេញ</p>
+                    <p class="text-[9px] text-slate-400">សេវាដឹកជញ្ជូនរហ័សក្នុងក្រុង</p>
+                  </div>
+                </div>
+                <span class="font-extrabold text-blue-600 bg-white px-2 py-0.5 rounded-lg text-[10px] border border-blue-100 shadow-2xs">$1.50</span>
+              </div>
+
+              <!-- Option 2: Provinces -->
+              <div onclick="selectLocation('2.5', 'តាមខេត្ត ($2.50)', '🏞️')" 
+                   class="location-option flex items-center justify-between p-2.5 rounded-xl cursor-pointer hover:bg-blue-50 transition-all font-semibold text-slate-700">
+                <div class="flex items-center gap-2">
+                  <span class="text-base">🏞️</span>
+                  <div>
+                    <p class="text-xs font-bold text-slate-800">តាមខេត្ត</p>
+                    <p class="text-[9px] text-slate-400">ផ្ញើតាមក្រុមហ៊ុនដឹកជញ្ជូន</p>
+                  </div>
+                </div>
+                <span class="font-extrabold text-blue-600 bg-slate-50 px-2 py-0.5 rounded-lg text-[10px] border border-slate-200 shadow-2xs">$2.50</span>
+              </div>
+
+            </div>
           </div>
+          <!-- Hidden Input for Form Submission -->
+          <input type="hidden" id="deliveryLocationValue" value="1.5">
         </div>
       </div>
 
       <!-- 💳 Payment Method Selection Card -->
-      <div class="pt-2 border-t border-slate-200/80 space-y-2.5">
-        <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1.5 border-l-4 border-emerald-500 pl-2">
+      <div class="pt-2 border-t border-slate-100 space-y-2">
+        <p class="font-extrabold text-slate-800 text-[12px] flex items-center gap-1.5">
           <span>💳</span> ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់
         </p>
 
         <div class="grid grid-cols-1 gap-2">
-          <label class="relative flex items-center justify-between p-3.5 border-2 border-blue-600 bg-gradient-to-r from-blue-50/60 to-indigo-50/40 rounded-2xl cursor-pointer shadow-xs transition-transform active:scale-[0.99]">
-            <div class="flex items-center gap-3">
+          <label class="flex items-center justify-between p-3 border-2 border-blue-600 bg-gradient-to-r from-blue-50/60 to-indigo-50/40 rounded-2xl cursor-pointer shadow-xs transition-all active:scale-[0.99]">
+            <div class="flex items-center gap-2.5">
               <input type="radio" name="paymentMethod" value="ABA_KHQR" checked class="w-4 h-4 text-blue-600 accent-blue-600">
               <div>
-                <p class="font-bold text-slate-900 text-xs flex items-center gap-1">
-                  <span>ABA KHQR (ទូទាត់ភ្លាមៗ)</span>
-                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                </p>
+                <p class="font-bold text-slate-800 text-xs">ABA KHQR (ទូទាត់ភ្លាមៗ)</p>
                 <p class="text-[10px] text-slate-500 font-medium">ស្កែន ABA Mobile App ស្វ័យប្រវត្តិ</p>
               </div>
             </div>
-            <span class="text-[10px] bg-rose-600 text-white font-extrabold px-2.5 py-1 rounded-lg shadow-xs tracking-wider">ABA</span>
+            <span class="text-[10px] bg-rose-600 text-white font-black px-2 py-0.5 rounded-lg shadow-2xs animate-pulse-glow">ABA</span>
           </label>
         </div>
       </div>
 
-      <!-- 💰 Dynamic Pricing Summary Container -->
-      <div class="border border-slate-200/80 pt-3 space-y-1.5 font-bold bg-slate-50/90 p-3.5 rounded-2xl shadow-inner">
-        <div class="flex justify-between text-slate-500 text-xs">
+      <!-- 💵 Pricing Summary Box -->
+      <div class="border border-slate-200/80 pt-3 space-y-1.5 font-bold bg-slate-50/80 p-3.5 rounded-2xl shadow-xs">
+        <div class="flex justify-between text-slate-500 text-[11px]">
           <span>ថ្លៃទំនិញសរុប៖</span>
-          <span id="itemsTotalText" class="text-slate-800 font-extrabold">$0.00</span>
+          <span id="itemsTotalText" class="text-slate-800 font-bold">$0.00</span>
         </div>
-        <div class="flex justify-between text-slate-500 text-xs">
+        <div class="flex justify-between text-slate-500 text-[11px]">
           <span>ថ្លៃដឹកជញ្ជូន៖</span>
-          <span id="deliveryFeeText" class="text-slate-800 font-extrabold">$1.50</span>
+          <span id="deliveryFeeText" class="text-slate-800 font-bold">$1.50</span>
         </div>
-        <div class="flex justify-between items-center text-sm text-blue-900 pt-2 border-t border-slate-200/80">
-          <span class="font-extrabold">សរុបទឹកប្រាក់ត្រូវបង់៖</span>
-          <span id="grandTotalText" class="text-xl text-blue-600 font-black tracking-tight">$0.00</span>
+        <div class="flex justify-between text-xs text-blue-600 pt-2 border-t border-slate-200/80 items-center">
+          <span class="font-extrabold text-slate-800">សរុបទឹកប្រាក់ត្រូវបង់៖</span>
+          <span id="grandTotalText" class="text-lg text-blue-600 font-black tracking-tight">$0.00</span>
         </div>
       </div>
 
       <!-- 🚀 Action Buttons -->
-      <div class="flex gap-2.5 pt-1">
+      <div class="flex gap-2 pt-1">
         <button type="button" onclick="goBack()" 
-                class="w-1/3 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold py-3.5 rounded-2xl text-xs transition active:scale-95 border border-slate-200/60 shadow-xs flex items-center justify-center gap-1">
-          <span>❌</span> <span>បោះបង់</span>
+                class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold py-3 rounded-2xl text-center transition active:scale-95 border border-slate-200/60 shadow-xs">
+          ❌ បោះបង់
         </button>
         <button type="submit" 
-                class="w-2/3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-2xl text-xs shadow-lg shadow-blue-500/25 transition active:scale-95 flex items-center justify-center gap-1.5 animate-pulse-glow">
-          <span>🚀</span> <span>បន្តទៅការបង់ប្រាក់</span>
+                class="w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-2xl shadow-lg shadow-blue-500/25 transition active:scale-95 flex items-center justify-center gap-1.5">
+          <span>🚀 បន្តទៅការបង់ប្រាក់</span>
         </button>
       </div>
 
     </form>
   </div>
 
-  <!-- JAVASCRIPT LOGIC SECTION -->
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // 1. Setup Telegram WebApp
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
     }
 
-    // 2. LocalStorage Checkout Items Retrieval
+    // 1️⃣ ទាញយកទិន្នន័យពី LocalStorage
     const buyNowItem = JSON.parse(localStorage.getItem('buyNowItem'));
     const cartItems = JSON.parse(localStorage.getItem('cartData')) || [];
     let checkoutItems = [];
@@ -236,13 +259,12 @@
 
     let itemsSubtotal = 0;
 
-    // 3. Render Selected Checkout Items
+    // 2️⃣ Render បញ្ជីទំនិញ
     function renderCheckoutSummary() {
       const container = document.getElementById('selectedItems');
-      const badge = document.getElementById('itemsBadgeCount');
       itemsSubtotal = 0;
 
-      badge.innerText = `${checkoutItems.length} មុខ`;
+      document.getElementById('itemsBadgeCount').innerText = `${checkoutItems.length} មុខ`;
 
       container.innerHTML = checkoutItems.map((item, index) => {
         const price = parseFloat(item.price || 0);
@@ -252,12 +274,12 @@
         const itemCode = codeMatch ? codeMatch[1] : (item.code || 'N/A');
 
         return `
-          <div class="flex justify-between items-center border-b border-blue-100/60 pb-1.5 last:border-none last:pb-0">
-            <div class="flex items-center gap-2 truncate pr-2">
-              <span class="font-black text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded-md shrink-0 shadow-xs">#${itemCode}</span>
-              <span class="font-bold text-slate-800 truncate">${item.title}</span>
+          <div class="flex justify-between items-center border-b border-blue-100/60 pb-1 last:border-none">
+            <div class="flex items-center gap-1.5 truncate max-w-[210px]">
+              <span class="font-extrabold text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded-md">#${itemCode}</span>
+              <span class="font-medium text-slate-700 truncate">${item.title}</span>
             </div>
-            <span class="font-black text-slate-900 shrink-0">$${price.toFixed(2)}</span>
+            <span class="font-extrabold text-slate-900">$${price.toFixed(2)}</span>
           </div>
         `;
       }).join('');
@@ -266,26 +288,63 @@
       calculateTotal();
     }
 
-    // 4. Dynamic Grand Total Calculation
+    // 3️⃣ Animated Dropdown Logic
+    function toggleDropdown() {
+      const menu = document.getElementById('dropdownMenu');
+      const arrow = document.getElementById('dropdownArrow');
+      const isOpen = menu.classList.contains('open');
+
+      if (isOpen) {
+        menu.classList.remove('open');
+        arrow.style.transform = 'rotate(0deg)';
+      } else {
+        menu.classList.add('open');
+        arrow.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    function selectLocation(val, labelText, icon) {
+      document.getElementById('deliveryLocationValue').value = val;
+      document.getElementById('selectedLocationText').innerText = labelText;
+      document.getElementById('selectedLocationIcon').innerText = icon;
+
+      // Close Menu
+      toggleDropdown();
+
+      // Recalculate Totals
+      calculateTotal();
+    }
+
+    // Close Dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const trigger = document.getElementById('dropdownTrigger');
+      const menu = document.getElementById('dropdownMenu');
+      if (!trigger.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.remove('open');
+        document.getElementById('dropdownArrow').style.transform = 'rotate(0deg)';
+      }
+    });
+
+    // 4️⃣ គណនាប្រាក់សរុប
     function calculateTotal() {
-      const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
+      const deliveryFee = parseFloat(document.getElementById('deliveryLocationValue').value || 1.5);
       const grandTotal = itemsSubtotal + deliveryFee;
 
       document.getElementById('deliveryFeeText').innerText = `$${deliveryFee.toFixed(2)}`;
       document.getElementById('grandTotalText').innerText = `$${grandTotal.toFixed(2)}`;
     }
 
-    // 5. Back Navigation
+    // 5️⃣ ប៊ូតុង Back
     function goBack() {
       localStorage.removeItem('buyNowItem');
       window.location.href = 'index.html';
     }
 
-    // 6. Form Submission & Pending Order Handlers
+    // 6️⃣ Submit Order
     function submitOrder(event) {
       event.preventDefault();
 
-      const deliveryFee = parseFloat(document.getElementById('deliveryLocation').value || 1.5);
+      const deliveryFee = parseFloat(document.getElementById('deliveryLocationValue').value || 1.5);
       const grandTotal = itemsSubtotal + deliveryFee;
 
       const orderData = {
@@ -316,7 +375,6 @@
       window.location.href = 'waiting-payment.html';
     }
 
-    // Initialize Page
     renderCheckoutSummary();
   </script>
 </body>
