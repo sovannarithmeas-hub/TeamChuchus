@@ -117,6 +117,14 @@
       max-height: 200px;
       object-fit: contain;
     }
+
+    /* Upload Button Styles */
+    .upload-btn {
+      transition: all 0.2s ease;
+    }
+    .upload-btn:active {
+      transform: scale(0.95);
+    }
   </style>
 </head>
 <body class="p-3 flex items-center justify-center relative overflow-x-hidden">
@@ -200,7 +208,6 @@
       <div class="space-y-1.5">
         <h3 class="font-extrabold text-slate-900 text-base">ទិន្នន័យបញ្ជាទិញត្រូវបាន Copy រួចរាល់!</h3>
         <p class="text-xs text-slate-600 leading-relaxed font-medium">
-          សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើក <b>Telegram Bot Chat</b>។<br>
           <span class="text-blue-600 font-bold">អត្ថបទបញ្ជាទិញនឹងមានស្រាប់</span> ក្នុងឆាតរបស់អ្នក។<br>
           បន្ទាប់មកភ្ញៀវគ្រាន់តែ <b class="text-rose-600">ផ្ញើរូបភាពបង្កាន់ដៃទូទាត់</b> បន្ថែមមកកាន់ Bot ប៉ុណ្ណោះ!
         </p>
@@ -208,7 +215,7 @@
       <div class="space-y-2 pt-2">
         <button type="button" onclick="openUploadModal()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
           <span>📤</span>
-          <span>បើក Telegram Bot និង Upload រូបភាព</span>
+          <span>ជ្រើសរូបភាពបង្កាន់ដៃ</span>
         </button>
         <button type="button" onclick="closeBotModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-4 rounded-2xl text-xs transition active:scale-95">បិទ (Close)</button>
       </div>
@@ -250,7 +257,7 @@
         <!-- Action Buttons -->
         <div class="flex gap-2 pt-2">
           <button type="button" onclick="closeUploadModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs active:scale-95">បិទ</button>
-          <button type="button" onclick="sendImageToBot()" class="w-2/3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
+          <button type="button" onclick="confirmAndSend()" id="sendImageBtn" class="w-2/3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition opacity-50 cursor-not-allowed" disabled>
             <span>🚀</span>
             <span>ផ្ញើរូបទៅ Bot</span>
           </button>
@@ -269,15 +276,17 @@
         </svg>
       </div>
       <div class="space-y-1.5">
-        <h3 class="font-extrabold text-slate-900 text-base">✅ បានបញ្ជូនទិន្នន័យដោយជោគជ័យ!</h3>
+        <h3 class="font-extrabold text-slate-900 text-base">✅ រូបភាពបានត្រៀមរួចរាល់!</h3>
         <p class="text-xs text-slate-600 leading-relaxed font-medium">
-          សូមចូលទៅកាន់ Telegram Bot ហើយផ្ញើរូបភាពបង្កាន់ដៃទូទាត់របស់អ្នក។<br>
+          សូមចូលទៅកាន់ Telegram Bot ហើយ <b class="text-blue-600">បិទភ្ជាប់ (Paste)</b> រូបភាពបង្កាន់ដៃទូទាត់របស់អ្នក។<br>
           <span class="text-blue-600">អត្ថបទបញ្ជាទិញមានស្រាប់ក្នុងឆាតរួចហើយ!</span>
         </p>
       </div>
-      <button type="button" onclick="closeSuccessModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs shadow-md shadow-blue-500/20 active:scale-95 transition">
-        យល់ព្រម (OK)
+      <button type="button" onclick="closeSuccessAndOpenBot()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition">
+        <span>💬</span>
+        <span>បើក Telegram Bot</span>
       </button>
+      <button type="button" onclick="closeSuccessModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-4 rounded-2xl text-xs transition active:scale-95">បិទ (Close)</button>
     </div>
   </div>
 
@@ -357,26 +366,28 @@
       document.getElementById('botActionModal').classList.remove('flex');
     }
 
-    // Upload Modal
+    // Upload Modal - បើក Upload Modal ដោយមិនបើក Bot
     function openUploadModal() {
       closeBotModal();
-      // បើក Telegram Bot Chat
-      openTelegramBot();
       // បង្ហាញ Upload Modal
-      setTimeout(() => {
-        document.getElementById('uploadModal').classList.add('flex');
-      }, 500);
+      document.getElementById('uploadModal').classList.add('flex');
+      // Enable send button only when image is selected
+      updateSendButton();
     }
 
     function closeUploadModal() {
       document.getElementById('uploadModal').classList.remove('flex');
-      // លុបរូបភាពដែលបានជ្រើស
       removeImage();
     }
 
     // Success Modal
     function closeSuccessModal() {
       document.getElementById('successModal').classList.remove('flex');
+    }
+
+    function closeSuccessAndOpenBot() {
+      closeSuccessModal();
+      openTelegramBot();
     }
 
     // Copy ABA
@@ -440,6 +451,8 @@
         } else {
           window.open(directBotUrl, '_blank');
         }
+        // Don't close the mini app immediately
+        // setTimeout(() => { if (typeof tg.close === 'function') tg.close(); }, 500);
       } else {
         window.open(directBotUrl, '_blank');
       }
@@ -479,7 +492,6 @@
           document.getElementById('botActionModal').classList.add('flex');
         },
         (failedText) => {
-          // Fallback: បង្ហាញអត្ថបទក្នុង Modal ផ្សេង
           showToast('⚠️ សូមចម្លងអត្ថបទដោយខ្លួនឯង');
           document.getElementById('botActionModal').classList.add('flex');
         }
@@ -532,6 +544,7 @@
         document.getElementById('uploadIcon').textContent = '✅';
         document.getElementById('uploadText').innerHTML = 'បានជ្រើសរូបភាពរួចរាល់!';
         showToast('📸 បានជ្រើសរូបភាពរួចរាល់!');
+        updateSendButton();
       };
       reader.readAsDataURL(file);
     }
@@ -544,25 +557,33 @@
       document.getElementById('uploadZone').classList.remove('has-image');
       document.getElementById('uploadIcon').textContent = '📤';
       document.getElementById('uploadText').innerHTML = 'ចុចដើម្បីជ្រើសរូបភាព<br><span class="text-[10px] text-slate-400">ឬទាញរូបភាពមកទីនេះ</span>';
+      updateSendButton();
     }
 
-    function sendImageToBot() {
+    function updateSendButton() {
+      const sendBtn = document.getElementById('sendImageBtn');
+      if (selectedImageFile) {
+        sendBtn.disabled = false;
+        sendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else {
+        sendBtn.disabled = true;
+        sendBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function confirmAndSend() {
       if (!selectedImageFile) {
         showToast('⚠️ សូមជ្រើសរូបភាពបង្កាន់ដៃទូទាត់ជាមុនសិន!');
         return;
       }
 
-      // បើក Telegram Bot ម្តងទៀត
-      openTelegramBot();
-
-      // បង្ហាញ Success
+      // Close Upload Modal
       closeUploadModal();
+      
+      // Show Success Modal
       setTimeout(() => {
         document.getElementById('successModal').classList.add('flex');
       }, 300);
-
-      // លុបរូបភាពចេញ
-      removeImage();
 
       showToast('✅ សូមចូលទៅកាន់ Telegram Bot ហើយបិទភ្ជាប់រូបភាព!');
     }
