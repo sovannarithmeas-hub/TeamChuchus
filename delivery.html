@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    * { -webkit-tap-highlight-color: transparent; user-select: none; }
+    * { -webkit-tap-highlight-color: transparent; }
     body { 
       font-family: 'Kantumruy Pro', sans-serif; 
       background: linear-gradient(135deg, #f0f7ff 0%, #e0eefd 50%, #f8fafc 100%);
@@ -100,6 +100,19 @@
       border-color: #ef4444 !important;
       box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
     }
+
+    /* បន្ថែម Style សម្រាប់ Field Lock */
+    .custom-input:disabled, .custom-input[readonly] {
+      background-color: #f1f5f9 !important;
+      color: #475569 !important;
+      cursor: not-allowed !important;
+      border-color: #d1d5db !important;
+      opacity: 0.9 !important;
+    }
+    .custom-input:disabled:focus, .custom-input[readonly]:focus {
+      box-shadow: none !important;
+      transform: none !important;
+    }
   </style>
 </head>
 <body class="p-3 flex items-center justify-center relative overflow-x-hidden">
@@ -140,16 +153,18 @@
       <div class="space-y-2.5">
         <p class="font-bold text-slate-800 text-[13px] flex items-center gap-1.5"><span>📍</span> ព័ត៌មានអ្នកទទួល និងទីតាំង</p>
 
+        <!-- Field ឈ្មោះ (បានកែ Lock) -->
         <div>
-          <label class="font-semibold block mb-1 text-slate-700">👤 ឈ្មោះអតិថិជន <span class="text-rose-500">*</span></label>
-          <input type="text" id="custName" required placeholder="ឧទាហរណ៍៖ សុខ ជា" 
-                 oninput="removeError(this)"
-                 class="custom-input w-full p-3 bg-white/80 rounded-2xl outline-none font-medium text-slate-800 placeholder:text-slate-400 shadow-xs">
+          <label class="font-semibold block mb-1 text-slate-700">👤 ឈ្មោះអតិថិជន (ពី Telegram) <span class="text-rose-500">*</span></label>
+          <input type="text" id="custName" required 
+                 readonly disabled
+                 class="custom-input w-full p-3 rounded-2xl outline-none font-medium text-slate-800 shadow-xs bg-slate-100 cursor-not-allowed">
         </div>
 
+        <!-- Field លេខទូរស័ព្ទ (បានកែបញ្ចូលបានតែលេខ) -->
         <div>
           <label class="font-semibold block mb-1 text-slate-700">📞 លេខទូរស័ព្ទ <span class="text-rose-500">*</span></label>
-          <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012 345 678" 
+          <input type="tel" id="custPhone" required placeholder="ឧទាហរណ៍៖ 012345678" 
                  oninput="removeError(this)"
                  class="custom-input w-full p-3 bg-white/80 rounded-2xl outline-none font-medium text-slate-800 placeholder:text-slate-400 shadow-xs">
         </div>
@@ -232,6 +247,60 @@
 
     let itemsSubtotal = 0;
 
+    // =======================================================
+    //  1. ផ្នែកទាញយកឈ្មោះ Telegram និង Lock Field
+    // =======================================================
+    function setupTelegramName() {
+      const nameInput = document.getElementById('custName');
+      let telegramName = "ភ្ញៀវ Telegram";
+      
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const user = tg.initDataUnsafe.user;
+        // ផ្សំ first_name និង last_name (បើមាន)
+        telegramName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+      }
+      
+      // បំពេញឈ្មោះ, Lock មិនឱ្យកែ
+      nameInput.value = telegramName; 
+      nameInput.disabled = true;
+      nameInput.readOnly = true;
+    }
+
+    // =======================================================
+    //  2. ផ្នែកគ្រប់គ្រងការបញ្ចូលតែលេខ (សម្រាប់ Phone)
+    // =======================================================
+    function restrictPhoneInput() {
+      const phoneInput = document.getElementById('custPhone');
+      phoneInput.addEventListener('keydown', function(e) {
+        // អនុញ្ញាតគ្រាប់ចុចគ្រប់គ្រងទស្សន៍ទ្រនិច និងលុប
+        const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+        if (allowedKeys.includes(e.key)) {
+          return; // អនុញ្ញាត
+        }
+        // ប្រសិនបើមិនមែនជាលេខ ០-៩ ទេ ទប់ស្កាត់
+        if (!/^[0-9]$/.test(e.key)) {
+          e.preventDefault();
+        }
+      });
+      // ការពារការ Paste អក្សរ
+      phoneInput.addEventListener('paste', function(e) {
+        const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+        if (!/^[0-9]+$/.test(pasteData)) {
+          e.preventDefault();
+        }
+      });
+    }
+
+    // ហៅមុខងារទាំងពីរនេះនៅពេលទំព័រផ្ទុករួច
+    document.addEventListener('DOMContentLoaded', function() {
+      setupTelegramName();
+      restrictPhoneInput();
+    });
+
+    // =======================================================
+    //  3. មុខងារស្តង់ដាររបស់កម្មវិធី (Render, Validate)
+    // =======================================================
+
     function renderCheckoutSummary() {
       const container = document.getElementById('selectedItems');
       itemsSubtotal = 0;
@@ -273,6 +342,9 @@
 
       requiredInputs.forEach(id => {
         const input = document.getElementById(id);
+        // ប្រសិនបើ Field ឈ្មោះត្រូវបាន Lock រួចហើយ យើងមិនចាំបាច់ពិនិត្យវាទេ
+        if (id === 'custName') return; 
+
         if (!input.value.trim()) {
           isValid = false;
           input.classList.remove('input-error');
