@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    * { -webkit-tap-highlight-color: transparent; user-select: none; }
+    * { -webkit-tap-highlight-color: transparent; }
     body { 
       font-family: 'Kantumruy Pro', sans-serif; 
       background: linear-gradient(135deg, #f0f7ff 0%, #e0eefd 50%, #f8fafc 100%);
@@ -112,10 +112,21 @@
       animation: checkmark 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    /* Image Preview */
-    .image-preview {
-      max-height: 200px;
-      object-fit: contain;
+    .image-preview { max-height: 200px; object-fit: contain; }
+
+    /* Custom Input Styles */
+    .input-field {
+      transition: border-color 0.2s;
+    }
+    .input-field:focus {
+      border-color: #2563eb;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .input-field:disabled, .input-field.readonly {
+      background-color: #f1f5f9; /* ពណ៌ផ្ទៃខាងក្រោយនៅពេល Lock */
+      cursor: not-allowed;
+      opacity: 0.8;
     }
   </style>
 </head>
@@ -135,6 +146,7 @@
       <p class="text-[11px] text-slate-500 font-medium">សូមស្កែន ABA KHQR ដើម្បីបន្តការបញ្ជាទិញ</p>
     </div>
 
+    <!-- Payment Section (Locked and Read-only) -->
     <div class="bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white p-4 rounded-2xl text-center space-y-3 shadow-lg border border-blue-800/40">
       <p class="text-xs font-bold text-blue-200 tracking-wide">📲 ស្កែនទូទាត់ប្រាក់តាម ABA KHQR</p>
       
@@ -156,16 +168,33 @@
       </div>
     </div>
 
+    <!-- Customer Info Form (ជាមួយ Telegram Name Auto-fill) -->
     <div class="bg-slate-50/90 p-3.5 rounded-2xl space-y-2 text-xs border border-slate-200/70 shadow-xs">
       <div class="flex justify-between items-center border-b border-slate-200 pb-1.5">
         <p class="font-bold text-slate-800 flex items-center gap-1">📦 ទំនិញរង់ចាំទូទាត់៖</p>
         <span id="orderCountBadge" class="bg-blue-100 text-blue-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px]">0 Order(s)</span>
       </div>
       <div id="orderItemsSummary" class="space-y-1.5 text-slate-700 max-h-36 overflow-y-auto pr-1"></div>
-      <div class="border-t border-slate-200 pt-2 space-y-1">
+      <div class="border-t border-slate-200 pt-2 space-y-2">
         <div class="flex justify-between items-center font-bold text-sm pt-0.5">
           <span class="text-slate-800 font-extrabold">ទឹកប្រាក់ត្រូវទូទាត់សរុប៖</span>
           <span class="text-blue-600 text-lg font-black" id="grandTotal">$0.00</span>
+        </div>
+
+        <!-- បន្ថែម Form នៅទីនេះ -->
+        <div class="space-y-2 pt-2 border-t border-slate-200/50">
+          <div>
+             <label class="block text-slate-700 font-bold mb-1 flex items-center gap-1 text-[11px]">👤 ឈ្មោះអតិថិជន <span class="text-red-500">*</span></label>
+             <input type="text" id="customerName" class="input-field readonly w-full bg-slate-200 border border-slate-300 text-slate-900 rounded-xl px-3 py-2 text-sm font-medium cursor-not-allowed" placeholder="កំពុងទាញឈ្មោះ..." readonly disabled>
+          </div>
+          <div>
+             <label class="block text-slate-700 font-bold mb-1 flex items-center gap-1 text-[11px]">📞 លេខទូរស័ព្ទ <span class="text-red-500">*</span></label>
+             <input type="tel" id="customerPhone" class="input-field w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2 text-sm font-medium focus:border-blue-500" placeholder="ឧទាហរណ៍៖ 012 345 678" required>
+          </div>
+          <div>
+             <label class="block text-slate-700 font-bold mb-1 flex items-center gap-1 text-[11px]">📍 អាសយដ្ឋានដឹកជញ្ជូន <span class="text-red-500">*</span></label>
+             <textarea id="customerAddress" class="input-field w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2 text-sm font-medium focus:border-blue-500" rows="2" placeholder="ឧទាហរណ៍៖ ផ្ទះលេខ ១២, ផ្លូវ ៣២១, ភ្នំពេញ" required></textarea>
+          </div>
         </div>
       </div>
     </div>
@@ -193,7 +222,7 @@
     </div>
   </div>
 
-  <!-- Bot Action Modal (សម្រាប់បើក Bot) -->
+  <!-- Bot Action Modal -->
   <div id="botActionModal" class="fixed inset-0 bg-slate-900/80 items-center justify-center p-4 z-50 backdrop-blur-sm">
     <div class="bg-white p-6 rounded-3xl text-center space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate">
       <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">📋</div>
@@ -214,28 +243,22 @@
     </div>
   </div>
 
-  <!-- Upload Modal (សម្រាប់ Upload រូបភាព) -->
+  <!-- Upload Modal -->
   <div id="uploadModal" class="fixed inset-0 bg-slate-900/80 items-center justify-center p-4 z-[55] backdrop-blur-sm">
     <div class="bg-white p-6 rounded-3xl space-y-4 max-w-sm w-full shadow-2xl border border-slate-100 modal-animate relative">
-      
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
           <span>📸</span> Upload បង្កាន់ដៃទូទាត់
         </h3>
         <button onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-600 font-bold bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center text-xs active:scale-90 transition">✕</button>
       </div>
-
       <div class="space-y-3">
         <p class="text-xs text-slate-600 font-medium">សូមជ្រើសរើសរូបភាពបង្កាន់ដៃទូទាត់ពីទូរស័ព្ទរបស់អ្នក</p>
-
-        <!-- Upload Area -->
         <div id="uploadZone" class="upload-zone rounded-2xl p-6 text-center space-y-2" onclick="document.getElementById('fileInput').click()">
           <div id="uploadIcon" class="text-4xl">📤</div>
           <p id="uploadText" class="text-xs text-slate-500 font-medium">ចុចដើម្បីជ្រើសរូបភាព<br><span class="text-[10px] text-slate-400">ឬទាញរូបភាពមកទីនេះ</span></p>
           <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
         </div>
-
-        <!-- Image Preview -->
         <div id="previewContainer" class="hidden">
           <div class="bg-slate-50 rounded-2xl p-3 border border-slate-200">
             <img id="imagePreview" class="image-preview w-full rounded-xl" alt="Preview">
@@ -245,8 +268,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Action Buttons -->
         <div class="flex gap-2 pt-2">
           <button type="button" onclick="closeUploadModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs active:scale-95">បិទ</button>
           <button type="button" onclick="confirmAndSend()" id="sendImageBtn" class="w-2/3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition opacity-50 cursor-not-allowed" disabled>
@@ -255,7 +276,6 @@
           </button>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -282,7 +302,6 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 z-[70] transition-all font-medium"></div>
 
   <script>
@@ -292,14 +311,12 @@
       tg.expand();
     }
 
-    // សូមប្តូរ Bot Token នេះទៅតាម Token ពិតរបស់អ្នក!
     const BOT_TOKEN = "8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA"; 
     const CHAT_ID = "321592436"; 
     const botUsername = "@TobChuchusAuto_bot";
 
     let selectedImageFile = null;
-    let selectedImageDataUrl = null;
-    let isSending = false; // ការពារកុំឱ្យចុចផ្ញើច្រើនដង
+    let isSending = false;
 
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
@@ -308,20 +325,54 @@
       setTimeout(() => { toast.classList.remove('show'); }, 2200);
     }
 
-    // Load Data
+    // === ទាញឈ្មោះ Telegram ហើយ Lock field ===
+    function setupCustomerForm() {
+      const nameInput = document.getElementById('customerName');
+      let telegramName = "ភ្ញៀវ";
+      
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const user = tg.initDataUnsafe.user;
+        // ទាញ first_name និង last_name (បើមាន)
+        telegramName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+      }
+      
+      nameInput.value = telegramName;
+      nameInput.disabled = true; // Lock មិនឱ្យកែ
+      nameInput.classList.add('readonly');
+      nameInput.placeholder = "ទាញឈ្មោះរួចរាល់";
+    }
+
+    // === ទប់ស្កាត់ការបញ្ចូលអក្សរក្នុង Phone Field ===
+    document.addEventListener('DOMContentLoaded', function() {
+      setupCustomerForm(); // ហៅដំណើរការទាញឈ្មោះ
+
+      // បន្ថែមការត្រួតពិនិត្យសម្រាប់ Field លេខទូរស័ព្ទ
+      const phoneInput = document.getElementById('customerPhone');
+      phoneInput.addEventListener('keydown', function(e) {
+        // អនុញ្ញាតឱ្យចុច Backspace, Delete, Tab, Arrow keys, Home, End
+        const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+        if (allowedKeys.includes(e.key)) {
+          return; // អនុញ្ញាត
+        }
+        // ត្រួតពិនិត្យថាតើគ្រាប់ចុចជាលេខដែរឬទេ
+        if (!/^[0-9]$/.test(e.key)) {
+          e.preventDefault(); // ទប់ស្កាត់ការបញ្ចូល
+        }
+      });
+    });
+
+    // =======================================================================
+    // Load Data (កែប្រែឱ្យគាំទ្រការស្តារទិន្នន័យពី Form)
+    // =======================================================================
     let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
     const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
     
-    // === កែប្រែផ្នែក Load Data ឱ្យល្អជាងមុន ===
     if (pendingOrdersList.length === 0 && !singlePending) {
-      // គ្មានទិន្នន័យ៖ បង្ហាញថាគ្មានអ្វី
       document.getElementById('orderCountBadge').innerText = `0 Order(s)`;
       document.getElementById('orderItemsSummary').innerHTML = `<p class="text-slate-400 italic text-center py-2">🛒 បច្ចុប្បន្នមិនមានការបញ្ជាទិញទេ។<br><a href="index.html" class="text-blue-600 underline font-bold">ត្រឡប់ទៅទំព័រដើម</a></p>`;
       document.getElementById('grandTotal').innerText = `$0.00`;
     } else {
-      if (pendingOrdersList.length === 0 && singlePending) {
-        pendingOrdersList.push(singlePending);
-      }
+      if (pendingOrdersList.length === 0 && singlePending) pendingOrdersList.push(singlePending);
 
       let allCartItems = [];
       let totalGrand = 0;
@@ -333,13 +384,10 @@
           if (order.cart) allCartItems.push(...order.cart);
           if (order.details) {
             totalGrand += parseFloat(order.details.grandTotal || 0);
-            if (order.details.customer && order.details.customer.name) {
-              customerInfo = order.details.customer;
-            }
+            if (order.details.customer) customerInfo = order.details.customer;
           }
         });
         
-        // Render Data
         const itemsSummaryDiv = document.getElementById('orderItemsSummary');
         if (allCartItems.length > 0) {
           itemsSummaryDiv.innerHTML = allCartItems.map((item, idx) => {
@@ -352,67 +400,61 @@
               </div>
             `;
           }).join('');
-        } else {
-          itemsSummaryDiv.innerHTML = `<p class="text-slate-400 italic text-center py-2">គ្មានទំនិញទេ</p>`;
         }
         document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
+
+        // ប្រសិនបើមានទិន្នន័យអតិថិជនស្តុកទុកមុន សូមបំពេញចូលទៅក្នុង Form
+        const storedCust = pendingOrdersList[0]?.details?.customer;
+        if (storedCust) {
+            // កុំធ្វើ overwrite ឈ្មោះ Telegram វិញ តែអាចបំពេញ Phone និង Address ឡើងវិញ
+            const phoneInput = document.getElementById('customerPhone');
+            const addrInput = document.getElementById('customerAddress');
+            if(storedCust.phone && phoneInput) phoneInput.value = storedCust.phone;
+            if(storedCust.address && addrInput) addrInput.value = storedCust.address;
+        }
       }
     }
 
-    // QR Modal
-    function openQrModal() {
-      document.getElementById('qrModal').classList.add('flex');
-    }
-    function closeQrModal() {
-      document.getElementById('qrModal').classList.remove('flex');
-    }
+    // =======================================================================
+    // Modals & Actions
+    // =======================================================================
 
-    // Bot Action Modal
-    function closeBotModal() {
-      document.getElementById('botActionModal').classList.remove('flex');
-    }
-
-    // Upload Modal
+    function openQrModal() { document.getElementById('qrModal').classList.add('flex'); }
+    function closeQrModal() { document.getElementById('qrModal').classList.remove('flex'); }
+    function closeBotModal() { document.getElementById('botActionModal').classList.remove('flex'); }
+    
     function openUploadModal() {
       closeBotModal();
       document.getElementById('uploadModal').classList.add('flex');
       updateSendButton();
     }
-
     function closeUploadModal() {
       document.getElementById('uploadModal').classList.remove('flex');
       removeImage();
     }
-
-    // Success Modal
-    function closeSuccessModal() {
-      document.getElementById('successModal').classList.remove('flex');
-    }
+    function closeSuccessModal() { document.getElementById('successModal').classList.remove('flex'); }
 
     function closeSuccessAndOpenBot() {
       closeSuccessModal();
-      openTelegramBot();
-      // === បន្ថែម៖ បិទ Mini App បន្ទាប់ពីបើក Bot ===
-      if (tg && typeof tg.close === 'function') {
-        tg.close();
-      }
+      // ប្តូរទៅប្រើ setTimeout បន្តិច ដើម្បីធានាថា Bot លោតចូល Chat មុនពេល App បិទ
+      setTimeout(() => {
+         openTelegramBot();
+      }, 100);
+      // ពន្យាពេលបិទ App ផងដែរ ឱ្យ Telegram មានពេលបើក Link
+      setTimeout(() => {
+        if (tg && typeof tg.close === 'function') {
+           tg.close();
+        }
+      }, 600);
     }
 
-    // Copy ABA
     function copyABA() {
-      const abaAcc = "017666209";
-      copyToClipboardMobile(abaAcc, () => {
-        showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`);
-      });
+      copyToClipboardMobile("017666209", () => showToast(`📋 បានចម្លងលេខគណនី ABA រួចរាល់!`));
     }
 
     function copyToClipboardMobile(textToCopy, onSuccess) {
       if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          if (onSuccess) onSuccess();
-        }).catch(() => {
-          executeFallbackCopy(textToCopy, onSuccess);
-        });
+        navigator.clipboard.writeText(textToCopy).then(onSuccess).catch(() => executeFallbackCopy(textToCopy, onSuccess));
       } else {
         executeFallbackCopy(textToCopy, onSuccess);
       }
@@ -421,22 +463,16 @@
     function executeFallbackCopy(text, onSuccess) {
       const textArea = document.createElement("textarea");
       textArea.value = text;
-      textArea.style.position = "fixed";
-      textArea.style.top = "0";
-      textArea.style.left = "0";
-      textArea.style.opacity = "0";
+      textArea.style.position = "fixed"; textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.opacity = "0";
       document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      
+      textArea.focus(); textArea.select();
       try { textArea.setSelectionRange(0, 99999); } catch(e) {}
       let successful = false;
-      try { successful = document.execCommand('copy'); } catch (err) { console.error('Fallback Copy Failed', err); }
+      try { successful = document.execCommand('copy'); } catch (err) {}
       document.body.removeChild(textArea);
-      if (successful && onSuccess) { onSuccess(); }
+      if (successful && onSuccess) onSuccess();
     }
 
-    // Open Telegram Bot
     function openTelegramBot() {
       const directBotUrl = `https://t.me/${botUsername}`;
       if (tg) {
@@ -452,9 +488,10 @@
       }
     }
 
-    // SEND ORDER TO BOT
+    // =======================================================================
+    // SEND ORDER TO BOT (បញ្ចូលទិន្នន័យពី Form ផងដែរ)
+    // =======================================================================
     function sendOrderToBot() {
-      // ពិនិត្យថាមានទំនិញឬអត់ ដោយដកចេញពី local storage ថ្មី
       let currentList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
       const currentSingle = JSON.parse(localStorage.getItem('pendingOrder'));
       if (currentList.length === 0 && currentSingle) currentList.push(currentSingle);
@@ -464,34 +501,35 @@
         return;
       }
 
-      // Re-calculate items to ensure accuracy
+      // 1. យកទិន្នន័យពី Form
+      const custName = document.getElementById('customerName').value;
+      const custPhone = document.getElementById('customerPhone').value;
+      const custAddr = document.getElementById('customerAddress').value;
+
+      // 2. ត្រួតពិនិត្យថាបំពេញពេញលេញឬអត់
+      if (!custPhone.trim() || !custAddr.trim()) {
+        showToast('⚠️ សូមបំពេញលេខទូរស័ព្ទ និង អាសយដ្ឋានឱ្យបានពេញលេញ!');
+        return;
+      }
+
       let currentItems = [];
       let currentTotal = 0;
-      let currentCust = { name: 'N/A', phone: 'N/A', address: 'N/A' };
-      
       currentList.forEach(order => {
         if (order.cart) currentItems.push(...order.cart);
-        if (order.details) {
-          currentTotal += parseFloat(order.details.grandTotal || 0);
-          if (order.details.customer && order.details.customer.name) {
-            currentCust = order.details.customer;
-          }
-        }
+        if (order.details) currentTotal += parseFloat(order.details.grandTotal || 0);
       });
 
       let orderText = `🛒 ការបញ្ជាទិញថ្មីពី Mini App\n`;
       orderText += `---------------------------\n`;
-      orderText += `👤 អតិថិជន: ${currentCust.name || 'N/A'}\n`;
-      orderText += `📞 ទូរស័ព្ទ: ${currentCust.phone || 'N/A'}\n`;
-      orderText += `📍 អាសយដ្ឋាន: ${currentCust.address || 'N/A'}\n\n`;
+      orderText += `👤 អតិថិជន: ${custName}\n`;
+      orderText += `📞 ទូរស័ព្ទ: ${custPhone}\n`;
+      orderText += `📍 អាសយដ្ឋាន: ${custAddr}\n\n`;
       orderText += `👖 បញ្ជីទំនិញ (${currentItems.length} មុខ):\n`;
-
       currentItems.forEach((item, idx) => {
         const codeMatch = item.description ? item.description.match(/\[Code:\s*([^\]]+)\]/) : null;
         const codeText = codeMatch ? codeMatch[1] : (item.code || 'N/A');
         orderText += `${idx + 1}. #${codeText} - ${item.title || 'ទំនិញ'} ($${parseFloat(item.price || 0).toFixed(2)})\n`;
       });
-
       orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${currentTotal.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
       orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់មកកាន់ Bot នេះ!`;
@@ -500,45 +538,39 @@
 
       copyToClipboardMobile(orderText, 
         () => {
-          // សម្អាតទិន្នន័យចោលនៅដំណាក់កាលនេះផងដែរ
-          localStorage.removeItem('pendingOrder');
+          // កែប្រែបន្តិច៖ រក្សាទុកទិន្នន័យ Form ទៅ Local Storage ដើម្បីអាចប្រើក្នុង Upload បាន
+          const orderData = currentList[0] || {};
+          if(!orderData.details) orderData.details = {};
+          orderData.details.customer = { name: custName, phone: custPhone, address: custAddr };
+          localStorage.setItem('pendingOrder', JSON.stringify(orderData));
+
           localStorage.removeItem('pendingOrdersList');
           localStorage.removeItem('cartData');
           document.getElementById('botActionModal').classList.add('flex');
         },
-        (failedText) => {
+        () => {
           showToast('⚠️ សូមចម្លងអត្ថបទដោយខ្លួនឯង');
           document.getElementById('botActionModal').classList.add('flex');
         }
       );
     }
 
-    // =======================================================
-    //  ផ្នែកដែលត្រូវបានកែសម្រួលយ៉ាងសំខាន់ (UPLOAD & SEND IMAGE)
-    // =======================================================
-
+    // =======================================================================
+    // UPLOAD & SEND IMAGE
+    // =======================================================================
     function handleFileSelect(event) {
       const file = event.target.files[0];
       if (file) processSelectedFile(file);
     }
 
     const uploadZone = document.getElementById('uploadZone');
-    uploadZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadZone.classList.add('dragover');
-    });
-    uploadZone.addEventListener('dragleave', () => {
-      uploadZone.classList.remove('dragover');
-    });
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => { uploadZone.classList.remove('dragover'); });
     uploadZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadZone.classList.remove('dragover');
+      e.preventDefault(); uploadZone.classList.remove('dragover');
       const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) {
-        processSelectedFile(file);
-      } else {
-        showToast('⚠️ សូមជ្រើសរើសឯកសាររូបភាពប៉ុណ្ណោះ!');
-      }
+      if (file && file.type.startsWith('image/')) processSelectedFile(file);
+      else showToast('⚠️ សូមជ្រើសរើសឯកសាររូបភាពប៉ុណ្ណោះ!');
     });
 
     function processSelectedFile(file) {
@@ -547,11 +579,9 @@
         return;
       }
       selectedImageFile = file;
-      
       const reader = new FileReader();
       reader.onload = function(e) {
-        selectedImageDataUrl = e.target.result;
-        document.getElementById('imagePreview').src = selectedImageDataUrl;
+        document.getElementById('imagePreview').src = e.target.result;
         document.getElementById('fileName').textContent = file.name;
         document.getElementById('previewContainer').classList.remove('hidden');
         document.getElementById('uploadZone').classList.add('has-image');
@@ -565,7 +595,6 @@
 
     function removeImage() {
       selectedImageFile = null;
-      selectedImageDataUrl = null;
       document.getElementById('fileInput').value = '';
       document.getElementById('previewContainer').classList.add('hidden');
       document.getElementById('uploadZone').classList.remove('has-image');
@@ -590,42 +619,29 @@
         showToast('⚠️ សូមជ្រើសរូបភាពបង្កាន់ដៃទូទាត់ជាមុនសិន!');
         return;
       }
-      
       if (isSending) {
         showToast('⏳ កំពុងផ្ញើ... សូមរង់ចាំបន្តិច');
         return;
       }
 
-      // ប្តូរប៊ូតុងទៅជា Loading
       const sendBtn = document.getElementById('sendImageBtn');
-      sendBtn.disabled = true;
-      sendBtn.classList.add('opacity-70', 'cursor-not-allowed');
+      sendBtn.disabled = true; sendBtn.classList.add('opacity-70', 'cursor-not-allowed');
       sendBtn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> កំពុងផ្ញើរូប...`;
       isSending = true;
 
-      // === លុបចោលនូវការត្រួតពិនិត្យ Token ដែលខុសឡូជីខល! ===
-
       try {
-        // 2. បង្កើត FormData ដើម្បីផ្ញើទៅ Telegram API
         let formData = new FormData();
         formData.append('chat_id', CHAT_ID);
         formData.append('photo', selectedImageFile);
-        
-        // ភ្ជាប់អត្ថបទជាមួយរូបផងដែរ (អាចយក OrderText ដែលបាន Copy ពីលើមក Caption)
         const pendingOrderText = localStorage.getItem('pendingOrderText') || 'រូបភាពបង្កាន់ដៃទូទាត់';
         formData.append('caption', pendingOrderText);
 
-        // 3. ផ្ញើ Request ទៅ Telegram
         const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-          method: 'POST',
-          body: formData
+          method: 'POST', body: formData
         });
-
         const result = await response.json();
 
-        // 4. គ្រប់គ្រងលទ្ធផល
         if (result.ok) {
-          // === សំខាន់៖ សម្អាតទិន្នន័យចោលទាំងស្រុង ដើម្បីកុំឱ្យផ្ញើដដែលៗ ===
           localStorage.removeItem('pendingOrder');
           localStorage.removeItem('pendingOrdersList');
           localStorage.removeItem('cartData');
@@ -633,30 +649,20 @@
 
           closeUploadModal();
           showToast('✅ ផ្ញើរូបភាពទៅ Telegram Bot ដោយជោគជ័យ!');
-          
-          setTimeout(() => {
-            document.getElementById('successModal').classList.add('flex');
-          }, 300);
-          
+          setTimeout(() => { document.getElementById('successModal').classList.add('flex'); }, 300);
         } else {
-          // ផ្ញើបរាជ័យ (Telegram ត្រឡប់ Error)
           console.error('Telegram Error:', result);
           showToast(`❌ បរាជ័យ: ${result.description || 'Unknown Error'}`);
         }
-
       } catch (error) {
-        // ផ្ញើបរាជ័យ (Network Error)
         console.error('Network Error:', error);
         showToast('❌ មានបញ្ហាបណ្តាញ ឬ Server មិនដំណើរការ!');
       }
 
-      // 5. Reset ប៊ូតុងវិញ
       sendBtn.innerHTML = `<span>🚀</span><span>ផ្ញើរូបទៅ Bot</span>`;
-      sendBtn.disabled = false;
-      sendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+      sendBtn.disabled = false; sendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
       isSending = false;
     }
-
   </script>
 </body>
 </html>
