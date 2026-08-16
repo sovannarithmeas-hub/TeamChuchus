@@ -332,37 +332,28 @@
       
       if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
         const user = tg.initDataUnsafe.user;
-        // ទាញ first_name និង last_name (បើមាន)
         telegramName = [user.first_name, user.last_name].filter(Boolean).join(' ');
       }
       
       nameInput.value = telegramName;
-      nameInput.disabled = true; // Lock មិនឱ្យកែ
+      nameInput.disabled = true;
       nameInput.classList.add('readonly');
       nameInput.placeholder = "ទាញឈ្មោះរួចរាល់";
     }
 
-    // === ទប់ស្កាត់ការបញ្ចូលអក្សរក្នុង Phone Field ===
     document.addEventListener('DOMContentLoaded', function() {
-      setupCustomerForm(); // ហៅដំណើរការទាញឈ្មោះ
+      setupCustomerForm();
 
-      // បន្ថែមការត្រួតពិនិត្យសម្រាប់ Field លេខទូរស័ព្ទ
       const phoneInput = document.getElementById('customerPhone');
       phoneInput.addEventListener('keydown', function(e) {
-        // អនុញ្ញាតឱ្យចុច Backspace, Delete, Tab, Arrow keys, Home, End
         const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
-        if (allowedKeys.includes(e.key)) {
-          return; // អនុញ្ញាត
-        }
-        // ត្រួតពិនិត្យថាតើគ្រាប់ចុចជាលេខដែរឬទេ
-        if (!/^[0-9]$/.test(e.key)) {
-          e.preventDefault(); // ទប់ស្កាត់ការបញ្ចូល
-        }
+        if (allowedKeys.includes(e.key)) return;
+        if (!/^[0-9]$/.test(e.key)) e.preventDefault();
       });
     });
 
     // =======================================================================
-    // Load Data (កែប្រែឱ្យគាំទ្រការស្តារទិន្នន័យពី Form)
+    // Load Data
     // =======================================================================
     let pendingOrdersList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
     const singlePending = JSON.parse(localStorage.getItem('pendingOrder'));
@@ -403,10 +394,8 @@
         }
         document.getElementById('grandTotal').innerText = `$${totalGrand.toFixed(2)}`;
 
-        // ប្រសិនបើមានទិន្នន័យអតិថិជនស្តុកទុកមុន សូមបំពេញចូលទៅក្នុង Form
         const storedCust = pendingOrdersList[0]?.details?.customer;
         if (storedCust) {
-            // កុំធ្វើ overwrite ឈ្មោះ Telegram វិញ តែអាចបំពេញ Phone និង Address ឡើងវិញ
             const phoneInput = document.getElementById('customerPhone');
             const addrInput = document.getElementById('customerAddress');
             if(storedCust.phone && phoneInput) phoneInput.value = storedCust.phone;
@@ -418,7 +407,6 @@
     // =======================================================================
     // Modals & Actions
     // =======================================================================
-
     function openQrModal() { document.getElementById('qrModal').classList.add('flex'); }
     function closeQrModal() { document.getElementById('qrModal').classList.remove('flex'); }
     function closeBotModal() { document.getElementById('botActionModal').classList.remove('flex'); }
@@ -436,15 +424,9 @@
 
     function closeSuccessAndOpenBot() {
       closeSuccessModal();
-      // ប្តូរទៅប្រើ setTimeout បន្តិច ដើម្បីធានាថា Bot លោតចូល Chat មុនពេល App បិទ
+      setTimeout(() => { openTelegramBot(); }, 100);
       setTimeout(() => {
-         openTelegramBot();
-      }, 100);
-      // ពន្យាពេលបិទ App ផងដែរ ឱ្យ Telegram មានពេលបើក Link
-      setTimeout(() => {
-        if (tg && typeof tg.close === 'function') {
-           tg.close();
-        }
+        if (tg && typeof tg.close === 'function') { tg.close(); }
       }, 600);
     }
 
@@ -489,7 +471,7 @@
     }
 
     // =======================================================================
-    // SEND ORDER TO BOT (បញ្ចូលទិន្នន័យពី Form ផងដែរ)
+    // SEND ORDER TO BOT
     // =======================================================================
     function sendOrderToBot() {
       let currentList = JSON.parse(localStorage.getItem('pendingOrdersList')) || [];
@@ -501,12 +483,10 @@
         return;
       }
 
-      // 1. យកទិន្នន័យពី Form
       const custName = document.getElementById('customerName').value;
       const custPhone = document.getElementById('customerPhone').value;
       const custAddr = document.getElementById('customerAddress').value;
 
-      // 2. ត្រួតពិនិត្យថាបំពេញពេញលេញឬអត់
       if (!custPhone.trim() || !custAddr.trim()) {
         showToast('⚠️ សូមបំពេញលេខទូរស័ព្ទ និង អាសយដ្ឋានឱ្យបានពេញលេញ!');
         return;
@@ -532,13 +512,12 @@
       });
       orderText += `\n💰 ទឹកប្រាក់សរុបត្រូវទូទាត់: $${currentTotal.toFixed(2)}\n`;
       orderText += `---------------------------\n`;
-      orderText += `📸 សូមរង់ចាំការត្រួតពិនិត្យការទូទាត់របស់លោកអ្នក`;
+      orderText += `📸 សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់មកខាងក្រោមដើម្បីបញ្ជាក់!`;
 
       localStorage.setItem('pendingOrderText', orderText);
 
       copyToClipboardMobile(orderText, 
         () => {
-          // កែប្រែបន្តិច៖ រក្សាទុកទិន្នន័យ Form ទៅ Local Storage ដើម្បីអាចប្រើក្នុង Upload បាន
           const orderData = currentList[0] || {};
           if(!orderData.details) orderData.details = {};
           orderData.details.customer = { name: custName, phone: custPhone, address: custAddr };
@@ -556,7 +535,7 @@
     }
 
     // =======================================================================
-    // UPLOAD & SEND IMAGE
+    // UPLOAD & SEND IMAGE (កែសម្រួលខាងក្រោមនេះ)
     // =======================================================================
     function handleFileSelect(event) {
       const file = event.target.files[0];
@@ -633,8 +612,9 @@
         let formData = new FormData();
         formData.append('chat_id', CHAT_ID);
         formData.append('photo', selectedImageFile);
-        const pendingOrderText = localStorage.getItem('pendingOrderText') || 'រូបភាពបង្កាន់ដៃទូទាត់';
-        formData.append('caption', pendingOrderText);
+        // === កែប្រែនៅត្រង់នេះ៖ បង្ខំឱ្យយក caption ពេញលេញ ===
+        const pendingOrderText = localStorage.getItem('pendingOrderText');
+        formData.append('caption', pendingOrderText || 'រូបភាពបង្កាន់ដៃទូទាត់');
 
         const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
           method: 'POST', body: formData
