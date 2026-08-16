@@ -612,9 +612,10 @@
         let formData = new FormData();
         formData.append('chat_id', CHAT_ID);
         formData.append('photo', selectedImageFile);
-        // === កែប្រែនៅត្រង់នេះ៖ បង្ខំឱ្យយក caption ពេញលេញ ===
-        const pendingOrderText = localStorage.getItem('pendingOrderText');
-        formData.append('caption', pendingOrderText || 'រូបភាពបង្កាន់ដៃទូទាត់');
+        
+        // សំខាន់ណាស់៖ ផ្ញើ Caption ពេញលេញជាមួយរូបភាពតែម្តង!
+        const pendingOrderText = localStorage.getItem('pendingOrderText') || 'រូបភាពបង្កាន់ដៃទូទាត់';
+        formData.append('caption', pendingOrderText);
 
         const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
           method: 'POST', body: formData
