@@ -1,85 +1,60 @@
-<!DOCTYPE html>
-<html lang="km">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>រង់ចាំការទូទាត់</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:'Kantumruy Pro',sans-serif;background:#f0f7ff;}</style>
-</head>
-<body class="p-4 max-w-md mx-auto">
-<div class="bg-white rounded-2xl p-5 shadow-lg text-center">
-  <h1 class="font-bold text-lg mb-2">💳 រង់ចាំការទូទាត់</h1>
-  <p class="text-sm text-gray-500 mb-4">ស្កែន ABA KHQR ខាងក្រោម</p>
-  
-  <!-- QR Code (អ្នកអាចប្តូរ src បាន) -->
-  <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Qr_code.png" class="w-48 h-48 mx-auto border-2 border-dashed border-blue-300 rounded-xl p-2 mb-4">
-  
-  <div class="bg-blue-50 rounded-xl p-3 mb-4 text-sm">
-    <p class="font-bold text-blue-800">ABA KHQR</p>
-    <p>SOVANNARITH MEAS</p>
-    <p class="font-mono">017 666 209</p>
-  </div>
+    async function confirmAndSend() {
+      if (!selectedImageFile) {
+        showToast('⚠️ សូមជ្រើសរូបភាពបង្កាន់ដៃទូទាត់ជាមុនសិន!');
+        return;
+      }
+      if (isSending) {
+        showToast('⏳ កំពុងផ្ញើ... សូមរង់ចាំបន្តិច');
+        return;
+      }
 
-  <div class="border-t pt-4 mb-4 text-left">
-    <div id="orderSummary" class="text-sm space-y-1"></div>
-  </div>
+      const sendBtn = document.getElementById('sendImageBtn');
+      sendBtn.disabled = true; sendBtn.classList.add('opacity-70', 'cursor-not-allowed');
+      sendBtn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> កំពុងផ្ញើរូប...`;
+      isSending = true;
 
-  <button id="uploadBtn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md">📸 ជ្រើសរូបបង្កាន់ដៃ</button>
-  <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleUpload()">
-  
-  <div id="preview" class="hidden mt-4">
-    <img id="previewImg" class="w-full max-h-48 object-contain rounded-xl border">
-    <button id="sendBtn" class="w-full mt-3 bg-green-600 text-white font-bold py-3 rounded-xl shadow-md hidden">🚀 ផ្ញើរូបទៅ Bot</button>
-  </div>
-</div>
+      try {
+        // សាងសង់ Caption ពី Order ដោយផ្ទាល់ (ដើម្បីកុំឱ្យខ្វះ Caption)
+        const currentOrder = JSON.parse(localStorage.getItem('pendingOrder'));
+        let finalCaption = 'រូបភាពបង្កាន់ដៃទូទាត់';
+        
+        if (currentOrder && currentOrder.details && currentOrder.details.customer) {
+          const cust = currentOrder.details.customer;
+          finalCaption = `🛒 ការបញ្ជាទិញពី Mini App\n`;
+          finalCaption += `👤 អតិថិជន: ${cust.name || 'N/A'}\n`;
+          finalCaption += `📞 ទូរស័ព្ទ: ${cust.phone || 'N/A'}\n`;
+          finalCaption += `📍 អាសយដ្ឋាន: ${cust.address || 'N/A'}`;
+        }
 
-<script>
-  const BOT_TOKEN = "8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA";
-  const ADMIN_CHAT_ID = "321592436";
-  let selectedFile = null;
+        let formData = new FormData();
+        formData.append('chat_id', CHAT_ID);
+        formData.append('photo', selectedImageFile);
+        formData.append('caption', finalCaption); // ដាក់ Caption ថ្មីដែលទើបសាងសង់
 
-  // បង្ហាញព័ត៌មាន Order
-  const order = JSON.parse(localStorage.getItem('pendingOrder'));
-  if(order && order.cart && order.cart.length>0) {
-    document.getElementById('orderSummary').innerHTML = `
-      <p>👤 ${order.details.customer.name}</p>
-      <p>📞 ${order.details.customer.phone}</p>
-      <p>📍 ${order.details.customer.address}</p>
-      <p class="font-bold mt-2">📦 ${order.cart[0].title} - $${order.cart[0].price}</p>
-    `;
-  }
+        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+          method: 'POST', body: formData
+        });
+        const result = await response.json();
 
-  document.getElementById('uploadBtn').onclick = () => document.getElementById('fileInput').click();
+        if (result.ok) {
+          localStorage.removeItem('pendingOrder');
+          localStorage.removeItem('pendingOrdersList');
+          localStorage.removeItem('cartData');
+          localStorage.removeItem('pendingOrderText');
 
-  function handleUpload() {
-    const file = document.getElementById('fileInput').files[0];
-    if(!file) return;
-    selectedFile = file;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('previewImg').src = e.target.result;
-      document.getElementById('preview').classList.remove('hidden');
-      document.getElementById('sendBtn').classList.remove('hidden');
-    };
-    reader.readAsDataURL(file);
-  }
+          closeUploadModal();
+          showToast('✅ ផ្ញើរូបភាពទៅ Telegram Bot ដោយជោគជ័យ!');
+          setTimeout(() => { document.getElementById('successModal').classList.add('flex'); }, 300);
+        } else {
+          console.error('Telegram Error:', result);
+          showToast(`❌ បរាជ័យ: ${result.description || 'Unknown Error'}`);
+        }
+      } catch (error) {
+        console.error('Network Error:', error);
+        showToast('❌ មានបញ្ហាបណ្តាញ ឬ Server មិនដំណើរការ!');
+      }
 
-  document.getElementById('sendBtn').onclick = async function() {
-    if(!selectedFile) return;
-    const btn = this; btn.disabled = true; btn.innerText = "កំពុងផ្ញើ...";
-    try {
-      let f = new FormData();
-      f.append('chat_id', ADMIN_CHAT_ID);
-      f.append('photo', selectedFile);
-      // ផ្ញើ Caption រួមជាមួយរូប!
-      f.append('caption', `🛒 បញ្ជាទិញពី: ${order.details.customer.name}\n📞 ${order.details.customer.phone}\n📍 ${order.details.customer.address}`);
-      
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method:'POST', body: f });
-      alert("✅ ផ្ញើរូបជោគជ័យ! Bot នឹងផ្ញើប៊ូតុងមកអ្នកភ្លាមៗ។ សូមត្រឡប់ទៅ Telegram វិញ។");
-      localStorage.removeItem('pendingOrder');
-      document.getElementById('preview').classList.add('hidden');
-      btn.classList.add('hidden');
-    } catch(e) { alert('❌ មានបញ្ហាផ្ញើរូប៖ '+e); }
-    btn.disabled = false; btn.innerText = "🚀 ផ្ញើរូបទៅ Bot";
-  };
-</script>
-</body>
-</html>
+      sendBtn.innerHTML = `<span>🚀</span><span>ផ្ញើរូបទៅ Bot</span>`;
+      sendBtn.disabled = false; sendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+      isSending = false;
+    }
