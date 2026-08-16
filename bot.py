@@ -15,7 +15,19 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     chat_id = update.effective_chat.id
 
-    # បង្កើតប៊ូតុង Admin ជានិច្ច
+    # ទាញ Caption ពីរូបភាព (ដើម្បីឱ្យព័ត៌មានបញ្ជាទិញនៅជាប់នឹងរូប)
+    caption_from_user = update.message.caption or "រូបភាពបង្កាន់ដៃទូទាត់"
+    
+    admin_text = f"ភ្ញៀវបានផ្ញើរូបភាព។\nឈ្មោះ: {user.first_name} {user.last_name or ''}\nChat ID: {chat_id}\n\n{caption_from_user}"
+    
+    # ១. ផ្ញើរូបភាពទៅ Admin ជាមួយនឹង Caption
+    await context.bot.send_photo(
+        chat_id=ADMIN_CHAT_ID,
+        photo=update.message.photo[-1].file_id,
+        caption=admin_text
+    )
+
+    # ២. ផ្ញើសារអត្ថបទដាច់ដោយឡែកមួយទៀតដែលមានប៊ូតុង
     keyboard = [
         [
             InlineKeyboardButton("✅ អនុម័ត (Confirm)", callback_data=f'confirm|{chat_id}'),
@@ -23,21 +35,16 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-
-    # រៀបចំអត្ថបទសម្រាប់ Admin (ដោយផ្ទាល់ពី Caption នៃរូបភាព)
-    # ចំណាំ៖ Web App ត្រូវតែផ្ញើ Caption ត្រឹមត្រូវមកជាមួយ!
-    caption_from_user = update.message.caption or "រូបភាពបង្កាន់ដៃទូទាត់"
     
-    admin_text = f"ភ្ញៀវបានផ្ញើរូបភាព។\nឈ្មោះ: {user.first_name} {user.last_name or ''}\nChat ID: {chat_id}\n\n{caption_from_user}"
-    
-    # ផ្ញើរូបទៅ Admin ជាមួយប៊ូតុង
-    await context.bot.send_photo(
+    await context.bot.send_message(
         chat_id=ADMIN_CHAT_ID,
-        photo=update.message.photo[-1].file_id,
-        caption=admin_text,
+        text="👇 សូមចុចប៊ូតុងខាងក្រោម ដើម្បីបញ្ជាក់ ឬបដិសេធការទូទាត់នេះ៖",
         reply_markup=reply_markup
     )
 
+# ==========================================================
+# ពេល Admin ចុចប៊ូតុង
+# ==========================================================
 async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -73,6 +80,9 @@ async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("👋 សួស្តី! សូមចូលទៅកាន់ Mini App របស់យើង ដើម្បីធ្វើការបញ្ជាទិញ និងផ្ញើរូបភាពបង្កាន់ដៃ។")
 
+# ==========================================================
+# ចាប់ផ្តើម Bot
+# ==========================================================
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     application = ApplicationBuilder().token(BOT_TOKEN).build()
