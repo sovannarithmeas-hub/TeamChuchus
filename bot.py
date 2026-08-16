@@ -1,4 +1,3 @@
-# vercel: python3
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, CallbackQueryHandler, filters
@@ -9,24 +8,26 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Messa
 BOT_TOKEN = "8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA"
 ADMIN_CHAT_ID = "321592436"
 
-# ត្រូវប្រាកដថា File ត្រូវបាន Save ត្រឹមត្រូវ!
-
+# ==========================================================
+# ពេលភ្ញៀវផ្ញើសារអត្ថបទមក (ដូចជា បញ្ជាទិញ)
+# ==========================================================
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # ពេលភ្ញៀវផ្ញើអត្ថបទមក យើងនឹងរក្សាទុកវាទុកក្នុង Memory មួយភ្លែត
+    # រក្សាទុកអត្ថបទនេះទុកក្នុង Memory របស់ Bot មួយភ្លែត
     context.user_data['pending_caption'] = update.message.text
-    # ឆ្លើយតបទៅភ្ញៀវថាបានទទួលព័ត៌មាន ហើយរង់ចាំរូបភាព
-    await update.message.reply_text("📝 បានទទួលព័ត៌មានបញ្ជាទិញរួចរាល់។ សូមផ្ញើរូបភាពបង្កាន់ដៃទូទាត់ជាបន្ទាប់។")
+    # ឆ្លើយតបទៅភ្ញៀវវិញ
+    await update.message.reply_text("📝 បានទទួលព័ត៌មាន។ សូមផ្ញើរូបភាពបង្កាន់ដៃ។")
 
+# ==========================================================
+# ពេលភ្ញៀវផ្ញើរូបភាពមក (ដំណើរការសំខាន់)
+# ==========================================================
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     chat_id = update.effective_chat.id
 
-    # ទាញយកអត្ថបទដែលបានផ្ញើពីមុន (បើមាន)
-    caption = context.user_data.get('pending_caption', '')
-    # លុបវាចេញពី Memory ដើម្បីកុំឱ្យប៉ះពាល់រូបថ្មីៗ
-    context.user_data['pending_caption'] = ''
-
-    # បង្កើតប៊ូតុង
+    # 1. ទាញយកអត្ថបទដែលភ្ញៀវបានផ្ញើមុននេះ ហើយលុបវាចោលពី Memory
+    caption = context.user_data.pop('pending_caption', '')
+    
+    # 2. បង្កើតប៊ូតុង Admin ជានិច្ច (សូម្បីតែ caption ទទេក៏ដោយ)
     keyboard = [
         [
             InlineKeyboardButton("✅ អនុម័ត (Confirm)", callback_data=f'confirm|{chat_id}'),
@@ -35,10 +36,10 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # រៀបចំអត្ថបទសម្រាប់ Admin
-    admin_text = f"ភ្ញៀវបានផ្ញើរូបភាពបង្កាន់ដៃ។\nឈ្មោះ: {user.first_name} {user.last_name or ''}\nChat ID: {chat_id}\n\n{caption}"
+    # 3. រៀបចំអត្ថបទសម្រាប់ Admin
+    admin_text = f"ភ្ញៀវបានផ្ញើរូបភាព។\nឈ្មោះ: {user.first_name} {user.last_name or ''}\nChat ID: {chat_id}\n\n{caption}"
     
-    # ផ្ញើរូបទៅ Admin ជាមួយប៊ូតុង
+    # 4. ផ្ញើរូបទៅ Admin ដោយភ្ជាប់ **ប៊ូតុង** ជាមួយវាជានិច្ច
     await context.bot.send_photo(
         chat_id=ADMIN_CHAT_ID,
         photo=update.message.photo[-1].file_id,
@@ -46,9 +47,12 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
     
-    # ឆ្លើយតបទៅភ្ញៀវថាបានផ្ញើជោគជ័យ
+    # 5. ឆ្លើយតបទៅភ្ញៀវថាបានផ្ញើជោគជ័យ
     await update.message.reply_text("📸 រូបភាពរបស់អ្នកបានបញ្ជូនទៅកាន់ Admin ដោយជោគជ័យ។ សូមរង់ចាំការត្រួតពិនិត្យ!")
 
+# ==========================================================
+# ពេល Admin ចុចប៊ូតុង
+# ==========================================================
 async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -82,8 +86,11 @@ async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.edit_message_text(text=f"❌ មានបញ្ហា: {e}")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 សួស្តី! សូមបំពេញព័ត៌មានបញ្ជាទិញតាម Mini App របស់យើង រួចផ្ញើរូបភាពបង្កាន់ដៃមកទីនេះ។")
+    await update.message.reply_text("👋 សួស្តី! សូមបំពេញព័ត៌មានតាម Mini App រួចផ្ញើរូបភាពបង្កាន់ដៃមក។")
 
+# ==========================================================
+# ចាប់ផ្តើម Bot
+# ==========================================================
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     application = ApplicationBuilder().token(BOT_TOKEN).build()
