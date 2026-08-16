@@ -6,12 +6,9 @@ BOT_TOKEN = "8994221143:AAFtNb2tA7eqIzmbonP58qhdvgcxyODwZWA"
 ADMIN_CHAT_ID = "321592436"
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print("📸 Bot បានទទួលរូបភាពហើយ!")
     user = update.effective_user
     chat_id = update.effective_chat.id
-    
-    caption = update.message.caption
-    print(f"📝 Caption ដែលទទួលបាន: {caption}")
+    caption = update.message.caption or "គ្មាន Caption"
 
     # បង្កើតប៊ូតុង
     keyboard = [
@@ -22,13 +19,13 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # បន្ថែមអត្ថបទឱ្យប្រាកដថាមិនទទេ
-    text_to_send = f"🆕 បញ្ជាទិញថ្មីពី {user.first_name}\nChat ID: {chat_id}\n\n{caption if caption else 'គ្មាន Caption'}"
-    
-    # ផ្ញើប៊ូតុងទៅ Admin
+    # សារសម្រាប់ Admin
+    admin_text = f"🆕 បញ្ជាទិញថ្មី\nឈ្មោះ: {user.first_name}\nChat ID: {chat_id}\n\n{caption}"
+
+    # ផ្ញើសារជាមួយប៊ូតុង (សារអត្ថបទខ្លី ដើម្បីកុំឱ្យធំពេក)
     await context.bot.send_message(
         chat_id=ADMIN_CHAT_ID,
-        text=text_to_send,
+        text=admin_text,
         reply_markup=reply_markup
     )
     print("✅ Bot បានផ្ញើប៊ូតុងទៅ Admin រួចរាល់!")
@@ -60,7 +57,7 @@ async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(text="❌ អ្នកបានបដិសេធការទូទាត់នេះ។")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 សួស្តី! សូមប្រើ Mini App ដើម្បីធ្វើការបញ្ជាទិញ។")
+    await update.message.reply_text("👋 សួស្តី! សូមប្រើ Mini App របស់យើងដើម្បីធ្វើការបញ្ជាទិញ។")
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
