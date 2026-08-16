@@ -593,7 +593,7 @@
       }
     }
 
-    async function confirmAndSend() {
+        async function confirmAndSend() {
       if (!selectedImageFile) {
         showToast('⚠️ សូមជ្រើសរូបភាពបង្កាន់ដៃទូទាត់ជាមុនសិន!');
         return;
@@ -613,7 +613,7 @@
         formData.append('chat_id', CHAT_ID);
         formData.append('photo', selectedImageFile);
         
-        // សំខាន់ណាស់៖ ផ្ញើ Caption ពេញលេញជាមួយរូបភាពតែម្តង!
+        // សំខាន់បំផុត៖ ត្រូវប្រាកដថាបន្ទាត់នេះទាញយក Caption ពី Local Storage បានត្រឹមត្រូវ
         const pendingOrderText = localStorage.getItem('pendingOrderText') || 'រូបភាពបង្កាន់ដៃទូទាត់';
         formData.append('caption', pendingOrderText);
 
@@ -623,6 +623,7 @@
         const result = await response.json();
 
         if (result.ok) {
+          // សម្អាតទិន្នន័យចោលបន្ទាប់ពីផ្ញើជោគជ័យ
           localStorage.removeItem('pendingOrder');
           localStorage.removeItem('pendingOrdersList');
           localStorage.removeItem('cartData');
