@@ -5,7 +5,6 @@
 import { createClient } from '@supabase/supabase-js';
 
 // ===== CONFIGURATION =====
-// យកតម្លៃទាំងនេះពី Supabase → Settings → API
 const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE';
 
@@ -181,9 +180,10 @@ async function renderProduct(product) {
     if (availableSizes.length > 0) state.selectedSize = availableSizes[0];
     if (availableColors.length > 0) state.selectedColor = availableColors[0];
     
-    const getStock = (size, color) => {
-        const item = productInventory.find(i => i.size === size && i.color === color);
-        return item ? item.quantity : 0;
+    const colorMap = {
+        'ខៀវ': '#2563eb', 'ខ្មៅ': '#1a1a1a', 'ស': '#ffffff',
+        'ក្រហម': '#dc2626', 'ផ្កាឈូក': '#ec4899', 'ត្នោត': '#8b6914',
+        'បៃតង': '#16a34a', 'លឿង': '#eab308', 'ប្រផេះ': '#6b7280'
     };
     
     let html = `
@@ -213,17 +213,12 @@ async function renderProduct(product) {
                 <div class="color-grid">
     `;
     
-    const colorMap = {
-        'ខៀវ': '#2563eb', 'ខ្មៅ': '#1a1a1a', 'ស': '#ffffff',
-        'ក្រហម': '#dc2626', 'ផ្កាឈូក': '#ec4899', 'ត្នោត': '#8b6914',
-        'បៃតង': '#16a34a', 'លឿង': '#eab308', 'ប្រផេះ': '#6b7280'
-    };
-    
     for (const color of availableColors) {
         const hasStock = productInventory.some(i => i.color === color && i.quantity > 0);
         const selected = state.selectedColor === color ? 'selected' : '';
         const bg = colorMap[color] || '#cccccc';
-        html += `<button class="color-btn ${selected}" data-color="${color}" style="background:${bg};${color === 'ស' ? 'border-color:#ccc;' : ''}" ${!hasStock ? 'disabled' : ''}></button>`;
+        const borderStyle = color === 'ស' ? 'border-color:#ccc;' : '';
+        html += `<button class="color-btn ${selected}" data-color="${color}" style="background:${bg};${borderStyle}" ${!hasStock ? 'disabled' : ''}></button>`;
     }
     
     html += `
@@ -238,12 +233,13 @@ async function renderProduct(product) {
                 
                 <div id="stockInfo" style="font-size:13px;color:var(--tg-hint);margin:8px 0;">
                     ${state.selectedSize && state.selectedColor ? 
-                        `ស្តុក: ${getStock(state.selectedSize, state.selectedColor)}` : 
+                        `ស្តុក: ${getProductStock(productInventory, state.selectedSize, state.selectedColor)}` : 
                         'សូម​ជ្រើស​រើស​ទំហំ និង​ពណ៌'
                     }
                 </div>
                 
-                <button class="btn-primary" id="addToCartBtn" ${!state.selectedSize || !state.selectedColor || getStock(state.selectedSize, state.selectedColor) === 0 ? 'disabled' : ''}>
+                <button class="btn-primary" id="addToCartBtn" 
+                    ${!state.selectedSize || !state.selectedColor || getProductStock(productInventory, state.selectedSize, state.selectedColor) === 0 ? 'disabled' : ''}>
                     <i class="fas fa-cart-plus"></i> បន្ថែម​ទៅ​កន្ត្រក
                 </button>
             </div>
@@ -258,8 +254,8 @@ async function renderProduct(product) {
             document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
             this.classList.add('selected');
             state.selectedSize = this.dataset.size;
-            updateStockInfo();
-            updateAddToCartBtn();
+            updateStockInfoUI(productInventory);
+            updateAddToCartBtnUI(productInventory);
         });
     });
     
@@ -269,8 +265,8 @@ async function renderProduct(product) {
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
             this.classList.add('selected');
             state.selectedColor = this.dataset.color;
-            updateStockInfo();
-            updateAddToCartBtn();
+            updateStockInfoUI(productInventory);
+            updateAddToCartBtnUI(productInventory);
         });
     });
     
@@ -283,7 +279,7 @@ async function renderProduct(product) {
     });
     
     $('quantityPlus').addEventListener('click', () => {
-        const maxStock = getStock(state.selectedSize, state.selectedColor);
+        const maxStock = getProductStock(productInventory, state.selectedSize, state.selectedColor);
         if (state.quantity < maxStock) {
             state.quantity++;
             $('quantityDisplay').textContent = state.quantity;
@@ -299,7 +295,7 @@ async function renderProduct(product) {
             return;
         }
         
-        const stock = getStock(state.selectedSize, state.selectedColor);
+        const stock = getProductStock(productInventory, state.selectedSize, state.selectedColor);
         if (stock < state.quantity) {
             showToast('មិន​មាន​ស្តុក​គ្រប់គ្រាន់');
             return;
@@ -321,24 +317,24 @@ async function renderProduct(product) {
         showToast(`បាន​បន្ថែម ${product.name} (${state.selectedSize}) ${state.quantity} ទៅ​កន្ត្រក`);
     });
     
-    function updateStockInfo() {
-        const stock = getStock(state.selectedSize, state.selectedColor);
+    function updateStockInfoUI(inventory) {
+        const stock = getProductStock(inventory, state.selectedSize, state.selectedColor);
         document.getElementById('stockInfo').textContent = 
             state.selectedSize && state.selectedColor ? 
                 `ស្តុក: ${stock}` : 
                 'សូម​ជ្រើស​រើស​ទំហំ និង​ពណ៌';
     }
     
-    function updateAddToCartBtn() {
+    function updateAddToCartBtnUI(inventory) {
         const btn = document.getElementById('addToCartBtn');
-        const stock = getStock(state.selectedSize, state.selectedColor);
+        const stock = getProductStock(inventory, state.selectedSize, state.selectedColor);
         btn.disabled = !(state.selectedSize && state.selectedColor && stock > 0);
     }
-    
-    function getStock(size, color) {
-        const item = productInventory.find(i => i.size === size && i.color === color);
-        return item ? item.quantity : 0;
-    }
+}
+
+function getProductStock(inventory, size, color) {
+    const item = inventory.find(i => i.size === size && i.color === color);
+    return item ? item.quantity : 0;
 }
 
 // ==============================================
@@ -707,7 +703,7 @@ async function placeOrder() {
 }
 
 // ==============================================
-// ADMIN FUNCTIONS (សង្ខេប)
+// ADMIN FUNCTIONS
 // ==============================================
 async function renderAdminDashboard() {
     const isAdmin = state.user && (state.user.id === 123456789 || state.user.id === 987654321);
@@ -729,6 +725,8 @@ async function renderAdminDashboard() {
     
     const totalRevenue = orders?.reduce((sum, o) => o.status !== 'cancelled' ? sum + o.total_amount : sum, 0) || 0;
     const pendingOrders = orders?.filter(o => o.status === 'pending').length || 0;
+    
+    const statusNames = { pending: 'កំពុង​រង់ចាំ', paid: 'បាន​បង់', processing: 'កំពុង​រៀបចំ', shipped: 'បាន​ផ្ញើ', delivered: 'បាន​ប្រគល់', cancelled: 'បាន​លុប' };
     
     let html = `
         <div class="admin-stats">
@@ -755,8 +753,6 @@ async function renderAdminDashboard() {
     
     if (orders && orders.length > 0) {
         const recent = orders.slice(0, 5);
-        const statusNames = { pending: 'កំពុង​រង់ចាំ', paid: 'បាន​បង់', processing: 'កំពុង​រៀបចំ', shipped: 'បាន​ផ្ញើ', delivered: 'បាន​ប្រគល់', cancelled: 'បាន​លុប' };
-        
         html += `<table class="admin-table"><thead><tr><th>លេខ</th><th>ថ្ងៃ</th><th>តម្លៃ</th><th>ស្ថានភាព</th></tr></thead><tbody>`;
         for (const order of recent) {
             html += `<tr><td>${order.order_number}</td><td>${new Date(order.order_date).toLocaleDateString('km')}</td><td>$${order.total_amount}</td><td><span class="status-badge status-${order.status}">${statusNames[order.status] || order.status}</span></td></tr>`;
