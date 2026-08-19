@@ -7,7 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 // ===== CONFIGURATION =====
 // យកតម្លៃទាំងនេះពី Supabase → Settings → API
 const SUPABASE_URL = 'https://gzclvhcvsfcslilxaiyg.supabase.co';
-const SUPABASE_ANON_KEY = 'ដាក់ anon key របស់អ្នកនៅទីនេះ';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE';
 
 // ===== SUPABASE CLIENT =====
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
