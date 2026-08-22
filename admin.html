@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="km">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#2864ee"><title>Admin · តូបជជុស Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<main class="shell">
+  <section id="authView" class="panel auth-panel">
+    <div class="brand"><div class="brand-mark">🛍️</div><div><b>តូបជជុស Online</b><small>Admin Product Management</small></div></div>
+    <h1>ចូលគ្រប់គ្រងហាង</h1><p class="muted">ផ្នែកនេះសម្រាប់ម្ចាស់ហាងតែប៉ុណ្ណោះ។</p>
+    <form id="loginForm" class="form-grid">
+      <label>Email<input id="email" type="email" required autocomplete="email" placeholder="admin@example.com"></label>
+      <label>Password<input id="password" type="password" required minlength="6" autocomplete="current-password" placeholder="••••••••"></label>
+      <button class="primary" type="submit">ចូល Admin</button>
+    </form>
+    <div class="divider"><span>Admin ដំបូង?</span></div>
+    <form id="signupForm" class="form-grid compact">
+      <button class="ghost" type="submit">បង្កើតគណនី Admin</button>
+      <small class="muted">បន្ទាប់ពីបង្កើតគណនី សូមប្រើ One-time setup code ដើម្បីកំណត់អ្នកជាអ្នកគ្រប់គ្រងដំបូង។</small>
+    </form>
+    <p id="authMsg" class="msg"></p>
+  </section>
+
+  <section id="setupView" class="panel" hidden>
+    <div class="topbar"><div><b>តម្លើង Admin ដំបូង</b><small>គណនីរបស់អ្នកបានបង្កើតរួច</small></div><button id="setupBack" class="icon-btn">×</button></div>
+    <p>បញ្ចូល One-time setup code ដែលបានផ្តល់សម្រាប់ project នេះ។ វាប្រើបានតែម្ដងប៉ុណ្ណោះ។</p>
+    <form id="claimForm" class="form-grid"><label>Setup code<input id="setupCode" required autocomplete="off"></label><button class="primary">កំណត់ជា Admin</button></form>
+    <p id="claimMsg" class="msg"></p>
+  </section>
+
+  <section id="appView" hidden>
+    <header class="topbar panel"><div><b>Admin · ផលិតផល</b><small id="adminEmail"></small></div><div class="top-actions"><button id="refreshBtn" class="ghost">↻ Refresh</button><button id="logoutBtn" class="ghost danger">ចាកចេញ</button></div></header>
+    <section class="panel toolbar"><div><h1>ផលិតផល</h1><p class="muted">បន្ថែម កែប្រែ បិទ/បើក និងលុបផលិតផល។</p></div><button id="newBtn" class="primary">＋ បន្ថែមទំនិញ</button></section>
+    <section id="editor" class="panel editor" hidden>
+      <div class="editor-head"><h2 id="editorTitle">បន្ថែមទំនិញ</h2><button id="cancelBtn" class="icon-btn">×</button></div>
+      <form id="productForm" class="form-grid">
+        <input id="productId" type="hidden">
+        <div class="upload-row"><label class="upload-box"><input id="imageFile" type="file" accept="image/*"><span>📷 ជ្រើសរើសរូបផលិតផល</span><small>JPG, PNG, WEBP · រូបមួយ</small></label><div class="preview"><img id="imagePreview" alt="preview"><span id="previewEmpty">មិនទាន់មានរូប</span></div></div>
+        <div class="two"><label>កូដទំនិញ<input id="code" placeholder="J-001"></label><label>ឈ្មោះទំនិញ<input id="name" required placeholder="ខោជើងត្រង់"></label></div>
+        <div class="two"><label>តម្លៃ (USD)<input id="price" required type="number" min="0" step="0.01" placeholder="15.50"></label><label>ប្រភេទ<input id="category" required placeholder="ខោ"></label></div>
+        <label>ពិពណ៌នា<textarea id="description" rows="4" placeholder="W:33 L:106 ..."></textarea></label>
+        <label class="switch"><input id="active" type="checkbox" checked><span>បង្ហាញលើ Homepage</span></label>
+        <div class="form-actions"><button id="cancelBtn2" type="button" class="ghost">បោះបង់</button><button id="saveBtn" type="submit" class="primary">រក្សាទុកផលិតផល</button></div>
+      </form>
+    </section>
+    <section id="productList" class="product-list"></section>
+  </section>
+</main>
+<script type="importmap">{"imports":{"@supabase/supabase-js":"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"}}</script>
+<script type="module" src="admin.js"></script>
+</body></html>
