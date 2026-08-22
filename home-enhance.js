@@ -1,1 +1,77 @@
-const homeEnhance=()=>{const grid=document.querySelector('.products-grid');if(!grid)return;const base='https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/';const fallbacks=['1786202437306_0.jpg','1786204786006_0.jpg','1786206014936_0.jpg','1786206339665_0.jpg','1786207071391_0.jpg','1786207448890_0.jpg'];grid.querySelectorAll('.shop-card').forEach((card,index)=>{if(card.dataset.enhanced)return;card.dataset.enhanced='1';const img=card.querySelector('img');if(img){if(!img.src||img.src.includes('picsum.photos'))img.src=base+fallbacks[index%fallbacks.length];img.onerror=()=>{img.src=base+fallbacks[index%fallbacks.length]};const wrap=document.createElement('div');wrap.className='product-media';img.replaceWith(wrap);wrap.append(img);const id=card.dataset.id;const code=String(id||'').slice(0,5);wrap.insertAdjacentHTML('beforeend',`<span class="code-badge">#${code}</span><span class="photo-badge">📷 3</span>`)}const body=card.querySelector('div');if(body&&!body.querySelector('.card-actions')){const old=body.querySelector('button');if(old)old.remove();const actions=document.createElement('div');actions.className='card-actions';actions.innerHTML='<button class="cart-card" type="button">🛒 កន្ត្រក</button><button class="buy-card" type="button">⚡ ទិញឥឡូវនេះ</button>';body.append(actions);actions.querySelector('.cart-card').onclick=e=>{e.stopPropagation();card.click();setTimeout(()=>document.querySelector('#add')?.click(),180)};actions.querySelector('.buy-card').onclick=e=>{e.stopPropagation();card.click();setTimeout(()=>document.querySelector('#buy')?.click(),220)}}})};const obs=new MutationObserver(homeEnhance);obs.observe(document.body,{childList:true,subtree:true});setTimeout(homeEnhance,80);
+const STORAGE_BASE='https://gzclvhcvsfcslilxaiyg.supabase.co/storage/v1/object/public/product-images/';
+const FALLBACKS=['1786202437306_0.jpg','1786204786006_0.jpg','1786206014936_0.jpg','1786206339665_0.jpg','1786207071391_0.jpg','1786207448890_0.jpg'];
+const LOGO_URL=STORAGE_BASE+'logo.jpg';
+
+function enhanceLegacyHome(){
+  const grid=document.querySelector('.products-grid');
+  if(!grid)return;
+  document.body.classList.add('legacy-home');
+  const page=document.querySelector('.page-container');
+  if(!page)return;
+
+  let top=document.querySelector('.legacy-home-top');
+  if(!top){
+    top=document.createElement('section');
+    top.className='legacy-home-top';
+    top.innerHTML=`
+      <div class="legacy-brand-row">
+        <img class="legacy-logo" src="${LOGO_URL}" alt="CHUCHUS">
+        <div class="legacy-brand-copy">
+          <h2>ខូជជុស Online <span>PRO</span></h2>
+          <p>ខោជើងវែងគុណភាពល្អ 👖✨</p>
+        </div>
+        <button class="legacy-cart" id="legacyCart" type="button">🛍️<i id="legacyCartCount">0</i></button>
+      </div>
+      <div class="legacy-search"><span>🔍</span><input id="legacySearch" type="search" placeholder="ស្វែងរកទំនិញ (#J01) បញ្ចូលឈ្មោះ..." autocomplete="off"><button id="legacyClear" type="button">×</button></div>
+      <div class="legacy-catalog">
+        <div><h2>✨ សុទ្ធថ្មី <b id="legacyCount">0</b></h2></div>
+        <div class="legacy-view"><button class="active" type="button">▦</button><button type="button">▦</button><button type="button">▤</button></div>
+      </div>
+      <div class="legacy-tabs"><button class="active" data-filter="all">ទាំងអស់</button><button data-filter="ខោ">👖 ខោ</button><button data-filter="អាវ">👕 អាវ</button><button data-filter="ថ្មី">✨ ថ្មី</button></div>`;
+    page.insertBefore(top,grid);
+    document.querySelector('.header')?.classList.add('legacy-hidden-header');
+    document.getElementById('legacyCart')?.addEventListener('click',()=>document.getElementById('cartBtn')?.click());
+  }
+
+  const cards=[...grid.querySelectorAll('.shop-card')];
+  cards.forEach((card,index)=>{
+    if(card.dataset.legacyEnhanced)return;
+    card.dataset.legacyEnhanced='1';
+    const img=card.querySelector('img');
+    if(img){
+      if(!img.getAttribute('src')||img.src.includes('picsum.photos')||img.src.includes('placehold.co'))img.src=STORAGE_BASE+FALLBACKS[index%FALLBACKS.length];
+      img.onerror=()=>{img.onerror=null;img.src=STORAGE_BASE+FALLBACKS[index%FALLBACKS.length]};
+      const media=document.createElement('div');media.className='product-media';
+      img.replaceWith(media);media.appendChild(img);
+      const code=String(card.dataset.id||'').slice(0,5).toUpperCase();
+      media.insertAdjacentHTML('beforeend',`<span class="code-badge">#${code}</span><span class="photo-badge">📷 3</span>`);
+    }
+    const body=card.querySelector('div:not(.product-media)')||card.lastElementChild;
+    if(body){
+      body.classList.add('legacy-card-body');
+      const title=body.querySelector('h3');
+      if(title){const spec=document.createElement('p');spec.className='legacy-spec';spec.textContent='លក់ដាច់គុណភាព 100%';title.after(spec)}
+      const old=body.querySelector('button');if(old)old.remove();
+      const actions=document.createElement('div');actions.className='card-actions';actions.innerHTML='<button class="cart-card" type="button">🛒 កន្ត្រក</button><button class="buy-card" type="button">⚡ ទិញ</button>';body.append(actions);
+      actions.querySelector('.cart-card').onclick=e=>{e.stopPropagation();card.click();setTimeout(()=>document.querySelector('#add')?.click(),180)};
+      actions.querySelector('.buy-card').onclick=e=>{e.stopPropagation();card.click();setTimeout(()=>document.querySelector('#buy')?.click(),220)};
+    }
+  });
+
+  const allCards=[...grid.querySelectorAll('.shop-card')];
+  const countEl=document.getElementById('legacyCount');if(countEl)countEl.textContent=allCards.length+' មុខ';
+  const cartCount=document.getElementById('cartCount'), legacyCount=document.getElementById('legacyCartCount');if(legacyCount)legacyCount.textContent=cartCount?.textContent||'0';
+  const search=document.getElementById('legacySearch');
+  if(search&&!search.dataset.bound){
+    search.dataset.bound='1';
+    const filter=()=>{const q=search.value.trim().toLowerCase();allCards.forEach(c=>{c.style.display=(!q||c.textContent.toLowerCase().includes(q))?'':'none'});const visible=allCards.filter(c=>c.style.display!=='none').length;if(countEl)countEl.textContent=visible+' មុខ'};
+    search.addEventListener('input',filter);
+    document.getElementById('legacyClear')?.addEventListener('click',()=>{search.value='';filter();search.focus()});
+  }
+  top.querySelectorAll('.legacy-tabs button').forEach(btn=>{if(btn.dataset.bound)return;btn.dataset.bound='1';btn.onclick=()=>{top.querySelectorAll('.legacy-tabs button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');const f=btn.dataset.filter;allCards.forEach(c=>{const text=c.textContent.toLowerCase();c.style.display=f==='all'||text.includes(f.toLowerCase())?'':'none'});const visible=allCards.filter(c=>c.style.display!=='none').length;if(countEl)countEl.textContent=visible+' មុខ'}});
+}
+
+const observer=new MutationObserver(enhanceLegacyHome);
+observer.observe(document.body,{childList:true,subtree:true});
+setTimeout(enhanceLegacyHome,80);
+setInterval(enhanceLegacyHome,1200);
