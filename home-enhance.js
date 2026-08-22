@@ -19,10 +19,13 @@ function enhanceLegacyHome(){
     document.body.classList.add('legacy-home');
     header?.classList.add('legacy-hidden-header');
 
+    // Remove the old generic homepage heading/subtitle above the storefront.
+    page.querySelector('.section-head')?.remove();
+
     let top=document.querySelector('.legacy-home-top');
     if(!top){
       top=document.createElement('section');top.className='legacy-home-top';
-      top.innerHTML=`<div class="legacy-brand-row"><img class="legacy-logo" src="${LOGO_URL}" alt="CHUCHUS"><div class="legacy-brand-copy"><h2>ខូជជុស Online <span>PRO</span></h2><p>ខោជើងវែងគុណភាពល្អ 👖✨</p></div><button class="legacy-cart" id="legacyCart" type="button">🛍️<i id="legacyCartCount">0</i></button></div><div class="legacy-search"><span>🔍</span><input id="legacySearch" type="search" placeholder="ស្វែងរកទំនិញ (#J01) បញ្ចូលឈ្មោះ..." autocomplete="off"><button id="legacyClear" type="button">×</button></div><div class="legacy-catalog"><div><h2>✨ សុទ្ធថ្មី <b id="legacyCount">0</b></h2></div><div class="legacy-view"><button class="active" type="button">▦</button><button type="button">▦</button><button type="button">▤</button></div></div><div class="legacy-tabs"><button class="active" data-filter="all">ទាំងអស់</button><button data-filter="ខោ">👖 ខោ</button><button data-filter="អាវ">👕 អាវ</button><button data-filter="ថ្មី">✨ ថ្មី</button></div>`;
+      top.innerHTML=`<div class="legacy-brand-row"><img class="legacy-logo" src="${LOGO_URL}" alt="CHUCHUS"><div class="legacy-brand-copy"><h2>តូបជជុស Online</h2><p>ខោជើងវែងគុណភាពល្អ 👖✨</p></div><button class="legacy-cart" id="legacyCart" type="button">🛍️<i id="legacyCartCount">0</i></button></div><div class="legacy-search"><span>🔍</span><input id="legacySearch" type="search" placeholder="ស្វែងរកទំនិញ (#J01) បញ្ចូលឈ្មោះ..." autocomplete="off"><button id="legacyClear" type="button">×</button></div><div class="legacy-catalog"><div><h2>✨ សុទ្ធថ្មី <b id="legacyCount">0</b></h2></div><div class="legacy-view"><button class="active" type="button">▦</button><button type="button">▦</button><button type="button">▤</button></div></div><div class="legacy-tabs"><button class="active" data-filter="all">ទាំងអស់</button><button data-filter="ខោ">👖 ខោ</button><button data-filter="អាវ">👕 អាវ</button><button data-filter="ថ្មី">✨ ថ្មី</button></div>`;
       page.insertBefore(top,grid);
       document.getElementById('legacyCart')?.addEventListener('click',()=>document.getElementById('cartBtn')?.click());
     }
