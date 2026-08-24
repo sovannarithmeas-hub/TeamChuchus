@@ -1,191 +1,24 @@
 import {createClient} from '@supabase/supabase-js';
 
 const U='https://gzclvhcvsfcslilxaiyg.supabase.co';
-const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6Y2x2aGN2c2Zjc2xpbHhhaXlnIiwicm9sZSI6IkFub24iLCJpYXQiOjE3ODYwMjUyMjAsImV4cCI6MjEwMTYwMTIyMH0.8gD4bwPpxdLl9kGtPVCRRPylEsES_DHWH4KhKDJvzuE';
+const K='sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww';
 const db=createClient(U,K);
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=x=>{const e=$('toast');e.textContent=x;e.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.remove('show'),2600)};
 const msg=(id,x,bad=true)=>{$(id).textContent=x||'';$(id).style.color=bad?'#d33':'#16804a'};
 
-let products=[];
-let currentImageUrl='';
-let checking=false;
-
-function show(v){
-  $('authView').hidden=v!=='auth';
-  $('appView').hidden=v!=='app';
-}
-
-function resetEditor(){
-  $('productForm').reset();
-  $('productId').value='';
-  $('active').checked=true;
-  currentImageUrl='';
-  $('imageFile').value='';
-  $('imagePreview').src='';
-  $('imagePreview').classList.remove('show');
-  $('previewEmpty').style.display='block';
-  $('editorTitle').textContent='បន្ថែមទំនិញ';
-  $('editor').hidden=false;
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
+let products=[];let currentImageUrl='';let checking=false;
+function show(v){$('authView').hidden=v!=='auth';$('appView').hidden=v!=='app'}
+function resetEditor(){$('productForm').reset();$('productId').value='';$('active').checked=true;currentImageUrl='';$('imageFile').value='';$('imagePreview').src='';$('imagePreview').classList.remove('show');$('previewEmpty').style.display='block';$('editorTitle').textContent='បន្ថែមទំនិញ';$('editor').hidden=false;window.scrollTo({top:0,behavior:'smooth'})}
 function closeEditor(){$('editor').hidden=true}
-
-function render(){
-  if(!products.length){
-    $('productList').innerHTML='<div class="panel empty">មិនទាន់មានផលិតផល</div>';
-    return;
-  }
-  $('productList').innerHTML=products.map(p=>`<article class="product-item"><img src="${esc(p.image_url||'')}" onerror="this.style.opacity=.25"><div class="product-info"><h3>${esc(p.name)} ${p.is_active?'<span class="status">បង្ហាញ</span>':'<span class="status off">លាក់</span>'}</h3><p>${esc(p.code||'គ្មានកូដ')} · ${esc(p.category||'')} · <b>$${Number(p.price||0).toFixed(2)}</b></p><p>${esc(p.description||'')}</p></div><div class="actions"><button class="ghost edit" data-id="${p.id}">កែ</button><button class="ghost toggle" data-id="${p.id}">${p.is_active?'លាក់':'បង្ហាញ'}</button><button class="ghost danger del" data-id="${p.id}">លុប</button></div></article>`).join('');
-  document.querySelectorAll('.edit').forEach(b=>b.onclick=()=>edit(products.find(p=>String(p.id)===b.dataset.id)));
-  document.querySelectorAll('.toggle').forEach(b=>b.onclick=()=>toggle(products.find(p=>String(p.id)===b.dataset.id)));
-  document.querySelectorAll('.del').forEach(b=>b.onclick=()=>removeProduct(products.find(p=>String(p.id)===b.dataset.id)));
-}
-
-async function load(){
-  const {data,error}=await db.from('products').select('*').order('created_at',{ascending:false});
-  if(error){toast(error.message);return}
-  products=data||[];
-  render();
-}
-
-function edit(p){
-  if(!p)return;
-  $('productId').value=p.id;
-  $('code').value=p.code||'';
-  $('name').value=p.name||'';
-  $('price').value=p.price??'';
-  $('category').value=p.category||'';
-  $('description').value=p.description||'';
-  $('active').checked=p.is_active!==false;
-  $('imageFile').value='';
-  currentImageUrl=p.image_url||'';
-  if(currentImageUrl){
-    $('imagePreview').src=currentImageUrl;
-    $('imagePreview').classList.add('show');
-    $('previewEmpty').style.display='none';
-  }else{
-    $('imagePreview').classList.remove('show');
-    $('previewEmpty').style.display='block';
-  }
-  $('editorTitle').textContent='កែផលិតផល';
-  $('editor').hidden=false;
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-async function upload(file,id){
-  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-  const path=`products/${id||crypto.randomUUID()}-${Date.now()}.${ext}`;
-  const {error}=await db.storage.from('product-images').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg',cacheControl:'31536000'});
-  if(error)throw error;
-  return `${U}/storage/v1/object/public/product-images/${path}`;
-}
-
-async function saveProduct(e){
-  e.preventDefault();
-  const b=$('saveBtn');
-  b.disabled=true;
-  try{
-    const id=$('productId').value||crypto.randomUUID();
-    const file=$('imageFile').files[0];
-    let imageUrl=currentImageUrl;
-    if(file)imageUrl=await upload(file,id);
-    const payload={id,code:$('code').value.trim()||null,name:$('name').value.trim(),price:Number($('price').value),category:$('category').value.trim(),description:$('description').value.trim()||null,is_active:$('active').checked,updated_at:new Date().toISOString()};
-    if(imageUrl)payload.image_url=imageUrl;
-    const q=products.some(p=>String(p.id)===String(id))?db.from('products').update(payload).eq('id',id):db.from('products').insert(payload);
-    const {error}=await q;
-    if(error)throw error;
-    toast('បានរក្សាទុកផលិតផល');
-    closeEditor();
-    await load();
-  }catch(x){
-    console.error(x);
-    toast(x.message||'មិនអាចរក្សាទុកបាន');
-  }finally{b.disabled=false}
-}
-
-async function toggle(p){
-  if(!p)return;
-  const {error}=await db.from('products').update({is_active:!p.is_active,updated_at:new Date().toISOString()}).eq('id',p.id);
-  if(error)return toast(error.message);
-  await load();
-}
-
-async function removeProduct(p){
-  if(!p||!confirm(`លុប “${p.name}” មែនទេ?`))return;
-  const {error}=await db.from('products').delete().eq('id',p.id);
-  if(error)return toast(error.message);
-  toast('បានលុបផលិតផល');
-  await load();
-}
-
-async function check(){
-  if(checking)return;
-  checking=true;
-  try{
-    const {data:{session}}=await db.auth.getSession();
-    if(!session){
-      show('auth');
-      return;
-    }
-
-    const {data:isAdmin,error}=await db.rpc('is_admin');
-    if(error){
-      await db.auth.signOut();
-      show('auth');
-      msg('authMsg','មិនអាចពិនិត្យសិទ្ធិ Admin បានទេ។ សូមសាកម្តងទៀត។');
-      return;
-    }
-
-    if(!isAdmin){
-      await db.auth.signOut();
-      show('auth');
-      msg('authMsg','Email នេះ Login បាន ប៉ុន្តែមិនមានសិទ្ធិ Admin ទេ។');
-      return;
-    }
-
-    $('adminEmail').textContent=session.user.email||'';
-    show('app');
-    await load();
-  }finally{
-    checking=false;
-  }
-}
-
-$('loginForm').onsubmit=async e=>{
-  e.preventDefault();
-  const b=$('loginBtn');
-  b.disabled=true;
-  msg('authMsg','');
-  try{
-    const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
-    if(error){
-      msg('authMsg',error.message);
-      return;
-    }
-    await check();
-  }finally{b.disabled=false}
-};
-
-$('newBtn').onclick=resetEditor;
-$('cancelBtn').onclick=closeEditor;
-$('cancelBtn2').onclick=closeEditor;
-$('refreshBtn').onclick=load;
-$('logoutBtn').onclick=async()=>{await db.auth.signOut();show('auth');$('password').value='';msg('authMsg','បានចាកចេញពី Admin។',false)};
-$('productForm').onsubmit=saveProduct;
-$('imageFile').onchange=e=>{
-  const f=e.target.files[0];
-  if(!f)return;
-  const url=URL.createObjectURL(f);
-  $('imagePreview').src=url;
-  $('imagePreview').classList.add('show');
-  $('previewEmpty').style.display='none';
-};
-
-db.auth.onAuthStateChange((event)=>{
-  if(event==='SIGNED_OUT')show('auth');
-});
-
-check();
+function render(){if(!products.length){$('productList').innerHTML='<div class="panel empty">មិនទាន់មានផលិតផល</div>';return}$('productList').innerHTML=products.map(p=>`<article class="product-item"><img src="${esc(p.image_url||'')}" onerror="this.style.opacity=.25"><div class="product-info"><h3>${esc(p.name)} ${p.is_active?'<span class="status">បង្ហាញ</span>':'<span class="status off">លាក់</span>'}</h3><p>${esc(p.code||'គ្មានកូដ')} · ${esc(p.category||'')} · <b>$${Number(p.price||0).toFixed(2)}</b></p><p>${esc(p.description||'')}</p></div><div class="actions"><button class="ghost edit" data-id="${p.id}">កែ</button><button class="ghost toggle" data-id="${p.id}">${p.is_active?'លាក់':'បង្ហាញ'}</button><button class="ghost danger del" data-id="${p.id}">លុប</button></div></article>`).join('');document.querySelectorAll('.edit').forEach(b=>b.onclick=()=>edit(products.find(p=>String(p.id)===b.dataset.id)));document.querySelectorAll('.toggle').forEach(b=>b.onclick=()=>toggle(products.find(p=>String(p.id)===b.dataset.id)));document.querySelectorAll('.del').forEach(b=>b.onclick=()=>removeProduct(products.find(p=>String(p.id)===b.dataset.id)))}
+async function load(){const {data,error}=await db.from('products').select('*').order('created_at',{ascending:false});if(error){toast(error.message);return}products=data||[];render()}
+function edit(p){if(!p)return;$('productId').value=p.id;$('code').value=p.code||'';$('name').value=p.name||'';$('price').value=p.price??'';$('category').value=p.category||'';$('description').value=p.description||'';$('active').checked=p.is_active!==false;$('imageFile').value='';currentImageUrl=p.image_url||'';if(currentImageUrl){$('imagePreview').src=currentImageUrl;$('imagePreview').classList.add('show');$('previewEmpty').style.display='none'}else{$('imagePreview').classList.remove('show');$('previewEmpty').style.display='block'}$('editorTitle').textContent='កែផលិតផល';$('editor').hidden=false;window.scrollTo({top:0,behavior:'smooth'})}
+async function upload(file,id){const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=`products/${id||crypto.randomUUID()}-${Date.now()}.${ext}`;const {error}=await db.storage.from('product-images').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg',cacheControl:'31536000'});if(error)throw error;return `${U}/storage/v1/object/public/product-images/${path}`}
+async function saveProduct(e){e.preventDefault();const b=$('saveBtn');b.disabled=true;try{const id=$('productId').value||crypto.randomUUID();const file=$('imageFile').files[0];let imageUrl=currentImageUrl;if(file)imageUrl=await upload(file,id);const payload={id,code:$('code').value.trim()||null,name:$('name').value.trim(),price:Number($('price').value),category:$('category').value.trim(),description:$('description').value.trim()||null,is_active:$('active').checked,updated_at:new Date().toISOString()};if(imageUrl)payload.image_url=imageUrl;const q=products.some(p=>String(p.id)===String(id))?db.from('products').update(payload).eq('id',id):db.from('products').insert(payload);const {error}=await q;if(error)throw error;toast('បានរក្សាទុកផលិតផល');closeEditor();await load()}catch(x){console.error(x);toast(x.message||'មិនអាចរក្សាទុកបាន')}finally{b.disabled=false}}
+async function toggle(p){if(!p)return;const {error}=await db.from('products').update({is_active:!p.is_active,updated_at:new Date().toISOString()}).eq('id',p.id);if(error)return toast(error.message);await load()}
+async function removeProduct(p){if(!p||!confirm(`លុប “${p.name}” មែនទេ?`))return;const {error}=await db.from('products').delete().eq('id',p.id);if(error)return toast(error.message);toast('បានលុបផលិតផល');await load()}
+async function check(){if(checking)return;checking=true;try{const {data:{session}}=await db.auth.getSession();if(!session){show('auth');return}const {data:isAdmin,error}=await db.rpc('is_admin');if(error){await db.auth.signOut();show('auth');msg('authMsg','មិនអាចពិនិត្យសិទ្ធិ Admin បានទេ។ សូមសាកម្តងទៀត។');return}if(!isAdmin){await db.auth.signOut();show('auth');msg('authMsg','Email នេះ Login បាន ប៉ុន្តែមិនមានសិទ្ធិ Admin ទេ។');return}$('adminEmail').textContent=session.user.email||'';show('app');await load()}finally{checking=false}}
+$('loginForm').onsubmit=async e=>{e.preventDefault();const b=$('loginBtn');b.disabled=true;msg('authMsg','');try{const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){msg('authMsg',error.message);return}await check()}finally{b.disabled=false}};
+$('newBtn').onclick=resetEditor;$('cancelBtn').onclick=closeEditor;$('cancelBtn2').onclick=closeEditor;$('refreshBtn').onclick=load;$('logoutBtn').onclick=async()=>{await db.auth.signOut();show('auth');$('password').value='';msg('authMsg','បានចាកចេញពី Admin។',false)};$('productForm').onsubmit=saveProduct;$('imageFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);$('imagePreview').src=url;$('imagePreview').classList.add('show');$('previewEmpty').style.display='none'};db.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')show('auth')});check();
