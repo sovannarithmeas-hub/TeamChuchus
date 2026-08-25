@@ -1,0 +1,1 @@
+const AdminImageTools=(()=>{const U='https://gzclvhcvsfcslilxaiyg.supabase.co',K='sb_publishable_VVZOPQCUQFRDSlOgXhUI5g_kri2S-Ww';return{U,K}})();
