@@ -1,0 +1,14 @@
+/* Homepage product card safety fix */
+.products-grid{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+.products-grid .shop-card{width:100%;min-width:0;height:auto;display:block;overflow:hidden}
+.products-grid .shop-card>img{display:block;width:100%;height:auto;aspect-ratio:1/1.08;object-fit:cover;object-position:center;max-width:100%;min-width:0}
+.products-grid .shop-card>div{width:100%;min-width:0;max-width:100%;overflow:hidden;padding:10px 11px 12px}
+.products-grid .shop-card>div h3{width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.products-grid .shop-card>div small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.products-grid .shop-card>div>.price{display:block}
+.products-grid .shop-card>div>button{display:block;width:100%;min-height:42px}
+@media (min-width:650px){.products-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
+@media (max-width:420px){.products-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.products-grid .shop-card>img{aspect-ratio:1/1.08}.products-grid .shop-card>div{padding:9px 10px 11px}.products-grid .shop-card>div h3{font-size:14px}.products-grid .shop-card>div small{font-size:10px}.products-grid .shop-card>div>button{font-size:10px;min-height:40px}}
+/* Prevent a saved grid mode from changing the normal card layout unexpectedly */
+.products-grid.grid-mode-compact{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:650px){.products-grid.grid-mode-compact{grid-template-columns:repeat(4,minmax(0,1fr))}}
