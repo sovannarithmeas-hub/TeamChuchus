@@ -9,20 +9,15 @@
     const header=document.querySelector('.header');
     const back=$('backBtn');
 
-    if(header) header.classList.toggle('legacy-hidden-header',!active);
-    if(back) back.style.display=active?'flex':'none';
+    // Keep exactly one back button: the original header #backBtn.
+    // Remove any legacy/injected detail back buttons left by older versions.
+    pg.querySelectorAll('.detail-back-btn').forEach(el=>el.remove());
 
-    if(detail&&!detail.querySelector('.detail-back-btn')){
-      const b=document.createElement('button');
-      b.type='button';
-      b.className='detail-back-btn';
-      b.textContent='← ត្រឡប់ទៅទំនិញ';
-      b.onclick=e=>{
-        e.preventDefault();
-        e.stopPropagation();
-        back?.click();
-      };
-      detail.insertBefore(b,detail.firstChild);
+    if(header) header.classList.toggle('legacy-hidden-header',!active);
+    if(back){
+      back.style.display=active?'flex':'none';
+      back.setAttribute('aria-label','ត្រឡប់ទៅទំនិញ');
+      back.title='ត្រឡប់ទៅទំនិញ';
     }
   };
 
@@ -32,15 +27,20 @@
     s.id='product-back-fix-style';
     s.textContent=`
       .header.legacy-hidden-header{display:none!important}
-      .header:not(.legacy-hidden-header){position:sticky!important;top:0!important;z-index:100!important}
-      .detail-back-btn{
-        position:sticky!important;top:0!important;z-index:90!important;
-        display:flex;align-items:center;width:100%;min-height:48px;
-        margin:0;padding:10px 14px;border:0;border-bottom:1px solid #e5edf5;
-        background:rgba(255,255,255,.97);backdrop-filter:blur(14px);
-        color:#162238;font:800 14px/1.2 'Noto Sans Khmer',sans-serif;
-        text-align:left;cursor:pointer;
+      .header:not(.legacy-hidden-header){
+        position:sticky!important;
+        top:0!important;
+        z-index:1000!important;
       }
+      .header:not(.legacy-hidden-header) #backBtn{
+        display:flex!important;
+        position:relative!important;
+        flex:0 0 auto;
+        align-items:center;
+        justify-content:center;
+        z-index:1001!important;
+      }
+      .detail-back-btn{display:none!important}
       .product-detail-v2{overflow:visible!important}
     `;
     document.head.appendChild(s);
